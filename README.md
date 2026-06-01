@@ -68,7 +68,7 @@ git clone https://github.com/beichenO2/knowlever-open.git
 cd knowlever-open
 
 # Clone partners next to this repo (adjust paths if needed)
-git clone https://github.com/beichenO2/KnowLever.git ../KnowLever
+git clone <your-open-source-KnowLever-url> ../KnowLever
 git clone https://github.com/beichenO2/AutoOffice.git ../AutoOffice
 
 export ECOSYSTEM_ROOT="$(cd .. && pwd)"
