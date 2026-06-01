@@ -1,0 +1,101 @@
+:root {
+  --bg: #0b0f14;
+  --card: #141b24;
+  --border: #243044;
+  --text: #e8eef7;
+  --muted: #8fa3bf;
+  --accent: #5b8def;
+  --gold: #e8c547;
+  --radius: 16px;
+  font-family: "SF Pro Text", "PingFang SC", "Helvetica Neue", system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--text);
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(91, 141, 239, 0.18), transparent),
+    var(--bg);
+}
+
+.wrap { max-width: 1080px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+
+.notice {
+  padding: 0.85rem 1rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: rgba(91, 141, 239, 0.08);
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+.notice a { color: var(--accent); }
+.notice code { color: var(--gold); font-size: 0.88em; }
+.loading { color: var(--muted); }
+.err { color: #f08080; }
+
+header {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin-bottom: 2.5rem;
+}
+header img { width: 72px; height: 72px; }
+header h1 { margin: 0; font-size: 1.85rem; font-weight: 650; letter-spacing: -0.02em; }
+header p { margin: 0.35rem 0 0; color: var(--muted); font-size: 1rem; max-width: 36rem; }
+
+.hero-badge {
+  display: inline-block;
+  margin-top: 0.75rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  background: rgba(232, 197, 71, 0.12);
+  color: var(--gold);
+  border: 1px solid rgba(232, 197, 71, 0.35);
+}
+
+h2 { font-size: 1.1rem; color: var(--muted); font-weight: 500; margin: 2rem 0 1rem; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.35rem;
+  transition: border-color 0.2s, transform 0.2s;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+.card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+.card h3 { margin: 0 0 0.5rem; font-size: 1.15rem; }
+.card p { margin: 0; color: var(--muted); font-size: 0.9rem; line-height: 1.5; }
+.card .meta {
+  margin-top: 1rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+  display: flex;
+  justify-content: space-between;
+}
+.status-ready { color: #6ee7a0; }
+.status-soon { color: var(--muted); }
+
+footer {
+  margin-top: 3rem;
+  padding-top  1.5rem;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.85rem;
+}

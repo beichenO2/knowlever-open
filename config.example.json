@@ -1,0 +1,21 @@
+{
+  "single_user": true,
+  "default_topic": "demo-parity",
+  "llm": {
+    "model": "your-model-id",
+    "provider": "openai-compatible",
+    "comment": "实际密钥与路由由 KnowLever 引擎侧配置（PolarPrivate / 自建 proxy 等）"
+  },
+  "paths": {
+    "data_root": "data/topics",
+    "examples_root": "examples"
+  },
+  "ecosystem": {
+    "comment": "通过环境变量指向并排克隆的引擎仓库",
+    "env": {
+      "ECOSYSTEM_ROOT": "父目录，内含 KnowLever 与 AutoOffice",
+      "KNOWLEVER_ROOT": "KnowLever 仓库根",
+      "AUTOOFFICE_DIR": "AutoOffice 仓库根"
+    }
+  }
+}

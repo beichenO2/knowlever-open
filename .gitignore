@@ -1,0 +1,21 @@
+node_modules/
+.DS_Store
+.env
+.env.*
+
+# 运行期产物（可本地重建）
+data/topics/*/normalized/
+data/topics/*/wiki/
+data/topics/*/output/
+data/topics/*/reports/
+data/topics/*/vector/
+
+# 私人学习资料（勿提交）
+示例/
+samples-private/*
+!samples-private/README.md
+*.pdf
+!docs/**/*.pdf
+
+# 本地配置覆盖
+config.local.json

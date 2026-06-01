@@ -1,0 +1,20 @@
+{
+  "name": "knowlever-open-source",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Single-user simplified KnowLever — command-line compile, public examples only",
+  "scripts": {
+    "setup": "bash scripts/setup.sh",
+    "init:demo": "node scripts/init-demo.js",
+    "compile": "node scripts/compile.js",
+    "build": "node scripts/build.js",
+    "pipeline": "node scripts/pipeline.js",
+    "check-deps": "node scripts/check-deps.js",
+    "office-import": "node scripts/office-import.js",
+    "home": "node scripts/serve-home.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT"
+}

@@ -1,0 +1,18 @@
+[
+  {
+    "id": "demo-parity",
+    "title": "Agent Wiki 演示库",
+    "description": "演示库：3 篇公开 md；可用 AutoOffice 把 示例/ 里的 PDF 转成 md 再编译。",
+    "href": "/library/demo-parity/",
+    "status": "ready",
+    "pages": 20
+  },
+  {
+    "id": "placeholder-new",
+    "title": "新建知识库",
+    "description": "运行 npm run init:demo 与 pipeline 后，在 site/topics.json 登记 /library/<topic>/。",
+    "href": "#",
+    "status": "soon",
+    "pages": 0
+  }
+]
