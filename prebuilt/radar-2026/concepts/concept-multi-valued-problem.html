@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="相位差与角度之间存在多对一映射关系的技术难题，导致相位法测角时无法直接确定唯一角度值">
+  <meta name="last-modified" content="2026-06-01">
+  <title>多值性问题 — Radar 2026</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <style>.page-summary{color:var(--text-muted,#666);font-size:1.05rem;line-height:1.6;margin:-0.5rem 0 1.5rem;padding:0.75rem 1rem;background:var(--bg-secondary,#f8f9fa);border-radius:8px;border-left:3px solid var(--accent,#3b82f6);}</style>
+</head>
+<body>
+  <header class="site-header" data-site-nav></header>
+
+  <div class="breadcrumb">
+    <a href="../index.html">首页</a><span>›</span>
+    <a href="../concepts-hub.html">概念</a><span>›</span>
+    多值性问题
+  </div>
+
+  <div class="page-layout">
+    <main class="page-content">
+
+      <div class="page-meta">
+        <span class="type-badge concept">💡 Concept</span>
+        <span class="status-badge draft">draft</span>
+        <span class="confidence-badge" style="display:inline-flex;align-items:center;gap:4px;font-size:0.8rem;color:#f59e0b;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;"></span>65%</span>
+        <span class="date-info">更新: 2026-06-01</span>
+      </div>
+      
+
+      <h1>多值性问题</h1>
+      <p class="page-summary">相位差与角度之间存在多对一映射关系的技术难题，导致相位法测角时无法直接确定唯一角度值</p>
+
+      <div class="nav-mermaid" style="margin-bottom:1.5rem;overflow-x:auto;"><pre class="mermaid" style="font-size:15px;min-height:80px;">
+graph LR
+  current["多值性问题"]:::current
+  current -.- r0["自动测角系统"]:::related
+  click r0 "../entities/entity-auto-angle-tracking.html"
+  current -.- r1["相位法测角"]:::related
+  click r1 "../entities/entity-phase-angle-measurement.html"
+  current -.- r2["雷达角度测量技术"]:::related
+  click r2 "../sources/src-20260601-2026目标角度测量.html"
+  classDef current fill:#3b82f6,stroke:#1e40af,color:#fff,font-weight:bold
+  classDef parent fill:#e0f2fe,stroke:#38bdf8,color:#0c4a6e
+  classDef child fill:#f0fdf4,stroke:#86efac,color:#14532d
+  classDef related fill:#fef3c7,stroke:#f59e0b,color:#78350f
+</pre></div><h2 id="定义">定义</h2>
+<p>多值性问题是相位法测角中的核心矛盾，指相位差φ与角度θ之间存在多对一映射关系。根据公式φ=2π/λ·d sinθ，当φ值超过2π时，会出现多个角度值对应同一相位差的情况。这种非唯一解特性会显著影响测角精度，导致无法直接通过相位差确定目标真实方位。</p>
+<h2 id="解决什么问题">解决什么问题</h2>
+<p>该问题直接威胁相位法测角的可靠性，因为相位差的周期性特性使得无法区分目标处于主瓣内不同位置或副瓣区域。对于需要高精度测角的雷达系统（如防空火控、卫星跟踪），这种多值性会引发定位偏差，必须通过特殊算法消除。</p>
+<h2 id="工作原理">工作原理</h2>
+<h3 id="数学本质">数学本质</h3>
+<p>相位差φ与角度θ的关系为：
+$<span class="math-inline">$\phi = \frac{2\pi}{\lambda} d \sin \theta$</span>$
+当φ值超过2π时，会出现多个θ值满足方程。例如，当φ=4π时，可能对应θ=0°和θ=180°两个解，导致无法确定真实角度。</p>
+<h3 id="解决方案">解决方案</h3>
+<p>通过引入三天线法，利用不同间距天线的相位差构建方程组：
+$<span class="math-inline">$\theta = \arcsin\left(\frac{\phi_{13}\lambda}{2\pi d_{13}}\right)$</span>$
+其中N=INT[φ12·d13/(φ12·d12)]用于消除多值性，通过天线间距差异实现角度解的唯一性。</p>
+<h2 id="关键公式-方法">关键公式/方法</h2>
+<ol><li><strong>相位差公式</strong>： $<span class="math-inline">$\phi = \frac{2\pi}{\lambda} d \sin \theta$</span>$ - φ：相位差（rad） - λ：波长（m） - d：天线间距（m） - θ：目标方位角（°）</li></ol>
+<ol><li><strong>多值性消除公式</strong>： $<span class="math-inline">$\theta = \arcsin\left(\frac{\phi_{13}\lambda}{2\pi d_{13}}\right)$</span>$ - φ13：天线1-3相位差 - d13：天线1-3间距 - N=INT[φ12·d13/(φ12·d12)]：整数部分提取</li><li><strong>误差传播公式</strong>： $<span class="math-inline">$\Delta\theta = \frac{\Delta\phi \cdot \lambda}{2\pi d \cos \theta}$</span>$ - Δθ：角度误差（°） - Δφ：相位差误差（rad） - d：天线间距（m） - θ：目标方位角（°）</li></ol>
+<h2 id="典型应用">典型应用</h2>
+<p>在三天线相位法测角系统中，当φ13=4π时，通过计算N=INT[φ12·d13/(φ12·d12)]=2，可确定真实角度为：
+$<span class="math-inline">$\theta = \arcsin\left(\frac{4\pi \cdot \lambda}{2\pi d_{13}}\right) = \arcsin\left(\frac{2\lambda}{d_{13}}\right)$</span>$
+这种解模糊技术使相位法测角精度提高一个数量级。</p>
+<h2 id="与其他概念的对比">与其他概念的对比</h2>
+<table>
+<thead><tr><th>维度</th><th>多值性问题</th><th>振幅法测角误差</th></tr></thead>
+<tbody>
+<tr><td>本质</td><td>相位差周期性</td><td>信号幅度非线性</td></tr>
+<tr><td>解决方案</td><td>三天线法</td><td>等信号法</td></tr>
+<tr><td>精度影响</td><td>多值性导致定位偏差</td><td>信号衰减导致精度下降</td></tr>
+<tr><td>适用场景</td><td>高精度测角</td><td>一般方位测量</td></tr>
+</tbody>
+</table>
+<h2 id="常见误区">常见误区</h2>
+<ol><li>认为所有相位差都对应唯一角度值，忽视周期性特性</li><li>忽视天线间距对多值性的影响，误用单天线测角</li><li>将多值性问题等同于相位法测角的全部误差来源</li></ol>
+<h2 id="关联知识">关联知识</h2>
+<ul><li><span style="color:var(--text-muted,#888);border-bottom:1px dashed var(--text-muted,#ccc)" title="concept-phase-angle-measurement">相位法测角原理</span></li><li><a href="../entities/entity-auto-angle-tracking.html" class="wiki-link">自动测角系统</a></li><li><span style="color:var(--text-muted,#888);border-bottom:1px dashed var(--text-muted,#ccc)" title="concept-beam-scanning">波束扫描技术</span></li><li><span style="color:var(--text-muted,#888);border-bottom:1px dashed var(--text-muted,#ccc)" title="concept-antenna-pattern">天线方向图特性</span></li></ul>
+<p>来源：<code>2026目标角度测量.pdf</code>（AutoOffice to-markdown）</p>
+<div align="right" style="opacity: 0.5; font-size: 0.8em;">✨ <i>Compiled by MiniMax-M2.7-highspeed</i></div>
+      
+      
+      <nav class="page-pager">
+        <div class="page-pager__cell"><a href="../concepts/concept-doppler-spectrum-analysis.html" class="page-pager__link"><span class="page-pager__arr">←</span><span class="page-pager__text">多普勒频谱分析</span></a></div>
+        <div class="page-pager__cell page-pager__cell--next"><a href="../concepts/concept-no-clutter-zone.html" class="page-pager__link"><span class="page-pager__text">无杂波区</span><span class="page-pager__arr">→</span></a></div>
+      </nav>
+
+    </main>
+
+    <aside class="sidebar">
+      <section>
+        <h4>页面信息</h4>
+        <ul>
+          <li>类型：概念</li>
+          <li>状态：draft</li>
+          <li>置信度：<span class="confidence-badge" style="display:inline-flex;align-items:center;gap:4px;font-size:0.8rem;color:#f59e0b;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;"></span>65%</span></li>
+          <li>创建：2026-06-01</li>
+          <li>更新：2026-06-01</li>
+        </ul>
+      </section>
+      
+      <section>
+        <h4>目录</h4>
+        <ul>
+          <li><a href="#定义">定义</a></li>
+          <li><a href="#解决什么问题">解决什么问题</a></li>
+          <li><a href="#工作原理">工作原理</a></li>
+          <li class="toc-sub"><a href="#数学本质">数学本质</a></li>
+          <li class="toc-sub"><a href="#解决方案">解决方案</a></li>
+          <li><a href="#关键公式-方法">关键公式/方法</a></li>
+          <li><a href="#典型应用">典型应用</a></li>
+          <li><a href="#与其他概念的对比">与其他概念的对比</a></li>
+          <li><a href="#常见误区">常见误区</a></li>
+          <li><a href="#关联知识">关联知识</a></li>
+        </ul>
+      </section>
+    </aside>
+  </div>
+
+  <footer>
+    <p>Radar 2026 — 编译预览 · 源文件: wiki/concept-multi-valued-problem.md · 重编译: 2026-06-01</p>
+  </footer>
+
+  <script>window.__KNOWLEVER_BASE="../";window.__KNOWLEVER_SITE_NAME="Radar 2026";</script>
+  <script src="../assets/js/site-common.js"></script>
+  <script src="../assets/data/site-page-data.js"></script>
+  <script src="../assets/js/site-nav.js" defer></script>
+  <script src="../assets/js/site-page.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true, theme: document.documentElement.dataset.theme==='dark' ? 'dark' : 'default', securityLevel:'loose', flowchart:{nodeSpacing:20, rankSpacing:40, padding:12}, themeVariables:{fontSize:'16px'}});</script>
+  <script src="../assets/js/tooltips.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement !== 'function') return;
+      document.querySelectorAll('.page-content').forEach(function (node) {
+        renderMathInElement(node, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '$', right: '$', display: false }
+          ],
+          throwOnError: false
+        });
+      });
+    });
+  </script>
+</body>
+</html>

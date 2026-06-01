@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="通过正交解调将射频信号转换为便于数字处理的复基带信号">
+  <meta name="last-modified" content="2026-06-01">
+  <title>基带信号处理 — Radar 2026</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <style>.page-summary{color:var(--text-muted,#666);font-size:1.05rem;line-height:1.6;margin:-0.5rem 0 1.5rem;padding:0.75rem 1rem;background:var(--bg-secondary,#f8f9fa);border-radius:8px;border-left:3px solid var(--accent,#3b82f6);}</style>
+</head>
+<body>
+  <header class="site-header" data-site-nav></header>
+
+  <div class="breadcrumb">
+    <a href="../index.html">首页</a><span>›</span>
+    <a href="../concepts-hub.html">概念</a><span>›</span>
+    基带信号处理
+  </div>
+
+  <div class="page-layout">
+    <main class="page-content">
+
+      <div class="page-meta">
+        <span class="type-badge concept">💡 Concept</span>
+        <span class="status-badge draft">draft</span>
+        <span class="confidence-badge" style="display:inline-flex;align-items:center;gap:4px;font-size:0.8rem;color:#f59e0b;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;"></span>60%</span>
+        <span class="date-info">更新: 2026-06-01</span>
+      </div>
+      
+
+      <h1>基带信号处理</h1>
+      <p class="page-summary">通过正交解调将射频信号转换为便于数字处理的复基带信号</p>
+
+      <div class="nav-mermaid" style="margin-bottom:1.5rem;overflow-x:auto;"><pre class="mermaid" style="font-size:15px;min-height:80px;">
+graph LR
+  current["基带信号处理"]:::current
+  p0["雷达信号处理"]:::parent --> current
+  click p0 "../concepts/concept-radar-signal-processing.html"
+  current -.- r0["多普勒频谱分析"]:::related
+  click r0 "../concepts/concept-doppler-spectrum-analysis.html"
+  current -.- r1["恒虚警检测"]:::related
+  click r1 "../concepts/constant-false-alarm-rate.html"
+  current -.- r2["基带信号"]:::related
+  click r2 "../entities/entity-baseband-signal.html"
+  current -.- r3["CFAR处理"]:::related
+  click r3 "../entities/entity-cfar-processing.html"
+  classDef current fill:#3b82f6,stroke:#1e40af,color:#fff,font-weight:bold
+  classDef parent fill:#e0f2fe,stroke:#38bdf8,color:#0c4a6e
+  classDef child fill:#f0fdf4,stroke:#86efac,color:#14532d
+  classDef related fill:#fef3c7,stroke:#f59e0b,color:#78350f
+</pre></div><h2 id="定义">定义</h2>
+<p>基带信号处理是雷达信号处理的核心环节，通过正交解调将高频射频信号转换为低频复基带信号。该过程包含两个关键步骤：1）将射频信号分解为同相（I路）和正交（Q路）双通道信号；2）通过复包络提取目标回波的幅度与相位信息。最终得到的复基带信号具有低频特性，便于后续的数字采样与处理。</p>
+<p>基带信号处理的数学表达式为：
+$<span class="math-inline">$ z(t) = a(t)e^{j[2\pi f_0 t + \phi(t)]} = I(t) + jQ(t) $</span><span class="math-inline">$
+其中 $</span>I(t)<span class="math-inline">$ 和 $</span>Q(t)<span class="math-inline">$ 分别表示同相和正交分量，$</span>a(t)<span class="math-inline">$ 为幅度调制信号，$</span>\phi(t)$ 为相位调制信号。</p>
+<h2 id="解决什么问题">解决什么问题</h2>
+<p>基带信号处理解决了高频射频信号直接处理的三大困难：</p>
+<ol><li><strong>采样难题</strong>：射频信号频率高达GHz级，常规ADC采样速率难以满足</li><li><strong>处理复杂度</strong>：高频信号的实时处理需要极高计算资源</li><li><strong>信息丢失风险</strong>：直接处理可能因带宽限制导致目标信息失真</li></ol>
+<p>通过基带转换，将信号频率降至MHz级，使数字信号处理成为可能。</p>
+<h2 id="工作原理">工作原理</h2>
+<h3 id="正交解调流程">正交解调流程</h3>
+<ol><li><strong>射频信号输入</strong>：<span class="math-inline">$x(t) = a(t)\cos[2\pi f_0 t + \phi(t)]$</span></li><li><strong>正交解调</strong>：通过本地振荡器生成 <span class="math-inline">$\cos(2\pi f_0 t)$</span> 和 <span class="math-inline">$\sin(2\pi f_0 t)$</span> 信号</li><li><strong>混频处理</strong>： - I路：<span class="math-inline">$x(t)\cdot \cos(2\pi f_0 t)$</span> - Q路：<span class="math-inline">$x(t)\cdot \sin(2\pi f_0 t)$</span></li><li><strong>低通滤波</strong>：提取基带信号 <span class="math-inline">$a(t)\cos\phi(t)$</span> 和 <span class="math-inline">$a(t)\sin\phi(t)$</span></li><li><strong>复包络构建</strong>：<span class="math-inline">$z(t) = I(t) + jQ(t)$</span></li></ol>
+<h3 id="数学推导">数学推导</h3>
+<p>射频信号的希尔伯特变换为：
+$<span class="math-inline">$ x^{\hat{}}(t) = \frac{1}{\pi t} * x(t) $</span><span class="math-inline">$
+复包络信号计算公式：
+$</span><span class="math-inline">$ z(t) = x(t) + jx^{\hat{}}(t) = a(t)e^{j[2\pi f_0 t + \phi(t)]} $</span><span class="math-inline">$
+通过 $</span>z(t)e^{-j2\pi f_0 t}<span class="math-inline">$ 得到基带信号：
+$</span><span class="math-inline">$ r(t) = a(t)e^{j\phi(t)} = I(t) + jQ(t) $</span>$</p>
+<h3 id="ascii示意图">ASCII示意图</h3>
+<pre><code>射频信号        ┌───────────────┐
+                │ 正交解调 │
+                └───┬───────┘
+                   │
+           I路信号 ──┐
+                   │
+           Q路信号 ──┘
+                ┌───────────────┐
+                │ 复包络构建 │
+                └───────────────┘
+               ↓
+        复基带信号 z(t)</code></pre>
+<h2 id="关键公式-方法">关键公式/方法</h2>
+<ol><li><strong>正交解调公式</strong>： $<span class="math-inline">$ z(t) = x(t) + jx^{\hat{}}(t) $</span><span class="math-inline">$ 其中 $</span>x^{\hat{}}(t)$ 为希尔伯特变换</li><li><strong>基带信号表达式</strong>： $<span class="math-inline">$ r(t) = a(t)\cos\phi(t) + ja(t)\sin\phi(t) $</span>$ <span class="math-inline">$I(t) = a(t)\cos\phi(t)$</span>, <span class="math-inline">$Q(t) = a(t)\sin\phi,phi(t)$</span></li><li><strong>复包络提取</strong>： $<span class="math-inline">$ z(t) = a(t)e^{j\phi(t)} $</span>$</li><li><strong>信号恢复公式</strong>： $<span class="math-inline">$ x(t) = \frac{1}{2}[z(t)e^{j2\pi f_0 t} + z^*(t)e^{-j2\pi f_0 t}] $</span>$</li></ol>
+<h2 id="典型应用">典型应用</h2>
+<p>以雷达信号处理为例：</p>
+<ul><li>射频信号：<span class="math-inline">$x_T(t) = a(t)\cos[2\pi f_0 t + \phi_0]$</span></li><li>接收信号：<span class="math-inline">$x_R(t) = ka(t)\cos[2\pi f_0 t + 2\pi f_d t + \phi_0]$</span></li><li>基带信号：<span class="math-inline">$r(t) = a(t)\cos\phi(t) + ja(t)\sin\phi(t)$</span></li><li>通过基带信号提取目标幅度、速度等参数</li></ul>
+<h2 id="与其他概念的对比">与其他概念的对比</h2>
+<table>
+<thead><tr><th>对比维度</th><th>基带信号处理</th><th>MTI处理</th><th>MTD处理</th></tr></thead>
+<tbody>
+<tr><td>处理对象</td><td>射频信号</td><td>基带信号</td><td>基带信号</td></tr>
+<tr><td>核心目标</td><td>降低采样率</td><td>抑制固定目标杂波</td><td>提取多普勒频谱</td></tr>
+<tr><td>数学基础</td><td>傅里叶变换/希尔伯特变换</td><td>差分运算</td><td>相参积累/FFT</td></tr>
+<tr><td>信号特性</td><td>复信号</td><td>实信号</td><td>复信号</td></tr>
+<tr><td>应用阶段</td><td>信号转换阶段</td><td>慢时间域处理</td><td>慢时间域处理</td></tr>
+</tbody>
+</table>
+<h2 id="常见误区">常见误区</h2>
+<ol><li><strong>误认为基带信号是实信号</strong>：实际为复信号，包含幅度和相位信息</li><li><strong>混淆正交解调与普通解调</strong>：正交解调需要双通道处理，而普通解调仅提取单路信号</li><li><strong>忽略复包络的物理意义</strong>：复包络包含目标回波的完整信息，不能简单取实部</li><li><strong>误将基带处理等同于数字信号处理</strong>：基带处理是数字信号处理的前提步骤</li></ol>
+<h2 id="关联知识">关联知识</h2>
+<ul><li><a href="../concepts/concept-radar-signal-processing.html" class="wiki-link">雷达信号处理</a> 雷达信号处理的完整流程</li><li><a href="../entities/entity-quadrature-demodulation.html" class="wiki-link">正交解调</a> 正交解调的数学原理</li><li><a href="../entities/entity-cfar-processing.html" class="wiki-link">CFAR处理</a> 恒虚警处理与基带信号的关系</li><li><a href="../concepts/concept-doppler-spectrum-analysis.html" class="wiki-link">多普勒频谱分析</a> 多普勒频谱分析依赖基带信号</li></ul>
+<p>来源：<code>src-20260601-2026-9-雷达信号处理</code></p>
+<div align="right" style="opacity: 0.5; font-size: 0.8em;">✨ <i>Compiled by MiniMax-M2.7-highspeed</i></div>
+<h2 id="图示">图示</h2>
+<pre class="mermaid">
+graph TD
+  A[射频信号] --> B[正交解调]
+  B --> C{复包络提取}
+  C --> D[数字基带信号]
+  D --> E[数字信号处理]
+  E --> F[目标检测]
+  E --> G[参数估计]
+</pre>
+<blockquote><p>基带信号处理流程：射频信号到数字处理的转换过程</p></blockquote>
+      
+      
+      <nav class="page-pager">
+        <div class="page-pager__cell"><a href="../concepts/concept-angle-measurement-principle.html" class="page-pager__link"><span class="page-pager__arr">←</span><span class="page-pager__text">测角原理</span></a></div>
+        <div class="page-pager__cell page-pager__cell--next"><a href="../concepts/concept-distance-doppler-space.html" class="page-pager__link"><span class="page-pager__text">距离-多普勒空间</span><span class="page-pager__arr">→</span></a></div>
+      </nav>
+
+    </main>
+
+    <aside class="sidebar">
+      <section>
+        <h4>页面信息</h4>
+        <ul>
+          <li>类型：概念</li>
+          <li>状态：draft</li>
+          <li>置信度：<span class="confidence-badge" style="display:inline-flex;align-items:center;gap:4px;font-size:0.8rem;color:#f59e0b;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;"></span>60%</span></li>
+          <li>创建：2026-06-01</li>
+          <li>更新：2026-06-01</li>
+        </ul>
+      </section>
+      
+      <section>
+        <h4>目录</h4>
+        <ul>
+          <li><a href="#定义">定义</a></li>
+          <li><a href="#解决什么问题">解决什么问题</a></li>
+          <li><a href="#工作原理">工作原理</a></li>
+          <li class="toc-sub"><a href="#正交解调流程">正交解调流程</a></li>
+          <li class="toc-sub"><a href="#数学推导">数学推导</a></li>
+          <li class="toc-sub"><a href="#ascii示意图">ASCII示意图</a></li>
+          <li><a href="#关键公式-方法">关键公式/方法</a></li>
+          <li><a href="#典型应用">典型应用</a></li>
+          <li><a href="#与其他概念的对比">与其他概念的对比</a></li>
+          <li><a href="#常见误区">常见误区</a></li>
+          <li><a href="#关联知识">关联知识</a></li>
+          <li><a href="#图示">图示</a></li>
+        </ul>
+      </section>
+    </aside>
+  </div>
+
+  <footer>
+    <p>Radar 2026 — 编译预览 · 源文件: wiki/concept-baseband-signal-processing.md · 重编译: 2026-06-01</p>
+  </footer>
+
+  <script>window.__KNOWLEVER_BASE="../";window.__KNOWLEVER_SITE_NAME="Radar 2026";</script>
+  <script src="../assets/js/site-common.js"></script>
+  <script src="../assets/data/site-page-data.js"></script>
+  <script src="../assets/js/site-nav.js" defer></script>
+  <script src="../assets/js/site-page.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true, theme: document.documentElement.dataset.theme==='dark' ? 'dark' : 'default', securityLevel:'loose', flowchart:{nodeSpacing:20, rankSpacing:40, padding:12}, themeVariables:{fontSize:'16px'}});</script>
+  <script src="../assets/js/tooltips.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement !== 'function') return;
+      document.querySelectorAll('.page-content').forEach(function (node) {
+        renderMathInElement(node, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '$', right: '$', display: false }
+          ],
+          throwOnError: false
+        });
+      });
+    });
+  </script>
+</body>
+</html>

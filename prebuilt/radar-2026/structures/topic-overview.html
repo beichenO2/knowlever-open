@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="本主题系统梳理雷达系统核心原理与关键技术，涵盖波形设计、模糊函数、信号处理、目标检测等核心模块，构建从基础理论到工程应用的完整知识体系">
+  <meta name="last-modified" content="2026-06-01">
+  <title>雷达系统知识总览 — Radar 2026</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  
+  <style>.page-summary{color:var(--text-muted,#666);font-size:1.05rem;line-height:1.6;margin:-0.5rem 0 1.5rem;padding:0.75rem 1rem;background:var(--bg-secondary,#f8f9fa);border-radius:8px;border-left:3px solid var(--accent,#3b82f6);}</style>
+</head>
+<body>
+  <header class="site-header" data-site-nav></header>
+
+  <div class="breadcrumb">
+    <a href="../index.html">首页</a><span>›</span>
+    <a href="../sitemap.html">总览</a><span>›</span>
+    雷达系统知识总览
+  </div>
+
+  <div class="page-layout">
+    <main class="page-content">
+
+      <div class="page-meta">
+        <span class="type-badge topic_overview">🗺️ Overview</span>
+        <span class="status-badge draft">draft</span>
+        
+        <span class="date-info">更新: 2026-06-01</span>
+      </div>
+      
+
+      <h1>雷达系统知识总览</h1>
+      <p class="page-summary">本主题系统梳理雷达系统核心原理与关键技术，涵盖波形设计、模糊函数、信号处理、目标检测等核心模块，构建从基础理论到工程应用的完整知识体系</p>
+
+      <div class="nav-mermaid" style="margin-bottom:1.5rem;overflow-x:auto;"><pre class="mermaid" style="font-size:15px;min-height:80px;">
+graph LR
+  current["雷达系统知识总览"]:::current
+  current -.- r0["雷达波形设计"]:::related
+  click r0 "../concepts/concept-radar-waveform-design.html"
+  current -.- r1["模糊函数性质"]:::related
+  click r1 "../concepts/concept-ambiguity-function-properties.html"
+  current -.- r2["多普勒滤波器组"]:::related
+  click r2 "../concepts/concept-doppler-filter-bank.html"
+  current -.- r3["雷达波形"]:::related
+  click r3 "../entities/entity-radar-waveform.html"
+  classDef current fill:#3b82f6,stroke:#1e40af,color:#fff,font-weight:bold
+  classDef parent fill:#e0f2fe,stroke:#38bdf8,color:#0c4a6e
+  classDef child fill:#f0fdf4,stroke:#86efac,color:#14532d
+  classDef related fill:#fef3c7,stroke:#f59e0b,color:#78350f
+</pre></div><h2 id="主题概述">主题概述</h2>
+<p>雷达系统是现代电子战与目标探测的核心技术，本知识体系从基础原理出发，系统解析雷达波形设计、模糊函数分析、信号处理算法、目标检测机制等关键技术。内容涵盖从发射机到接收机的完整系统架构，结合距离/速度/角度三维测量原理，构建覆盖理论分析与工程实践的完整知识网络。该体系特别关注波形优化设计对分辨力提升的关键作用，以及模糊函数在目标识别中的核心地位。</p>
+<h2 id="知识地图">知识地图</h2>
+<pre><code>目的：
+  - 实现目标距离/速度/角度三维测量
+  - 优化雷达系统分辨力与作用距离
+  - 提升抗干扰与目标识别能力
+
+方法：
+  - 雷达波形设计 [[concept-radar-waveform-design]]
+  - 模糊函数分析 [[concept-ambiguity-function-properties]]
+  - 信号处理技术 [[concept-radar-waveform-design]]
+  - 多普勒滤波器组设计 [[concept-doppler-filter-bank]]
+
+原理：
+  - 雷达发射机 [[entity-radar-waveform]]
+  - 雷达接收机与显示器 [[entity-radar-waveform]]
+  - 多普勒频移 [[entity-doppler-shift]]
+  - 距离分辨力 [[entity-range-resolution]]
+  - 模糊函数性质 [[concept-ambiguity-function-properties]]</code></pre>
+<h2 id="核心概念">核心概念</h2>
+<ol><li><strong>雷达波形设计</strong> <a href="../concepts/concept-radar-waveform-design.html" class="wiki-link">雷达波形设计</a>：通过优化信号参数提升系统分辨力的核心方法</li><li><strong>模糊函数</strong> <a href="../entities/entity-ambiguity-function.html" class="wiki-link">模糊函数</a>：描述距离-速度联合分辨能力的数学模型</li><li><strong>多普勒滤波器组</strong> <a href="../concepts/concept-doppler-filter-bank.html" class="wiki-link">多普勒滤波器组</a>：实现速度分辨力的核心信号处理模块</li><li><strong>距离分辨力</strong> <a href="../entities/entity-range-resolution.html" class="wiki-link">距离分辨力</a>：雷达区分距离目标的能力指标</li><li><strong>波形捷变技术</strong>：动态调整信号参数以适应复杂环境</li><li><strong>雷达发射机</strong> <a href="../entities/entity-radar-waveform.html" class="wiki-link">雷达波形</a>：产生和发射雷达信号的核心组件</li><li><strong>运动目标检测</strong> <span style="color:var(--text-muted,#888);border-bottom:1px dashed var(--text-muted,#ccc)" title="concept-movement-target-detection">concept-movement-target-detection</span>：基于多普勒效应的动态目标识别技术</li><li><strong>相控阵雷达</strong> <span style="color:var(--text-muted,#888);border-bottom:1px dashed var(--text-muted,#ccc)" title="concept-phased-array-radar">concept-phased-array-radar</span>：通过波束控制实现多目标跟踪</li><li><strong>雷达作用距离</strong> <span style="color:var(--text-muted,#888);border-bottom:1px dashed var(--text-muted,#ccc)" title="entity-radar-range">entity-radar-range</span>：系统探测目标的最大有效距离</li><li><strong>无杂波区</strong> <a href="../concepts/concept-no-clutter-zone.html" class="wiki-link">无杂波区</a>：减少地面反射干扰的关键工作区域</li></ol>
+<h2 id="关键实体">关键实体</h2>
+<ul><li><strong>雷达波形</strong> <a href="../entities/entity-radar-waveform.html" class="wiki-link">雷达波形</a>：系统发射信号的时域形式，直接影响分辨力</li><li><strong>多普勒频移</strong> <a href="../entities/entity-doppler-shift.html" class="wiki-link">多普勒频移</a>：目标运动引起的频率变化，用于测速</li><li><strong>距离分辨力</strong> <a href="../entities/entity-range-resolution.html" class="wiki-link">距离分辨力</a>：由信号带宽决定的最小可分辨距离</li><li><strong>模糊函数</strong> <a href="../entities/entity-ambiguity-function.html" class="wiki-link">模糊函数</a>：描述信号分辨能力的数学函数</li><li><strong>PRF</strong> <a href="../entities/entity-prf.html" class="wiki-link">PRF参数详解</a>：脉冲重复频率，影响速度分辨与距离模糊</li></ul>
+<h2 id="学习路径">学习路径</h2>
+<ol><li>基础理论：<span style="color:var(--text-muted,#888);border-bottom:1px dashed var(--text-muted,#ccc)" title="concept-radar-principle">concept-radar-principle</span></li><li>信号生成：<a href="../concepts/concept-radar-waveform-design.html" class="wiki-link">雷达波形设计</a></li><li>处理技术：<a href="../concepts/concept-radar-signal-processing.html" class="wiki-link">雷达信号处理</a></li><li>目标检测：<span style="color:var(--text-muted,#888);border-bottom:1px dashed var(--text-muted,#ccc)" title="concept-target-detection">concept-target-detection</span></li><li>系统架构：<span style="color:var(--text-muted,#888);border-bottom:1px dashed var(--text-muted,#ccc)" title="concept-radar-system-architecture">concept-radar-system-architecture</span></li><li>高级优化：<a href="../concepts/concept-ambiguity-function-properties.html" class="wiki-link">模糊函数性质</a></li><li>应用实践：<span style="color:var(--text-muted,#888);border-bottom:1px dashed var(--text-muted,#ccc)" title="concept-pulse-doppler-radar">concept-pulse-doppler-radar</span></li></ol>
+<h2 id="待探索领域">待探索领域</h2>
+<ul><li>抗干扰波形设计的优化算法</li><li>人工智能在目标识别中的应用</li><li>超宽带雷达系统的工程实现</li><li>量子雷达技术的理论突破</li><li>多模态雷达系统融合方法</li><li>高动态环境下的波形自适应机制</li></ul>
+<p>来源：综合知识体系构建</p>
+<div align="right" style="opacity: 0.5; font-size: 0.8em;">✨ <i>Compiled by MiniMax-M2.7-highspeed</i></div>
+      
+      
+      
+
+    </main>
+
+    <aside class="sidebar">
+      <section>
+        <h4>页面信息</h4>
+        <ul>
+          <li>类型：总览</li>
+          <li>状态：draft</li>
+          <li>创建：2026-06-01</li>
+          <li>更新：2026-06-01</li>
+        </ul>
+      </section>
+      
+      <section>
+        <h4>目录</h4>
+        <ul>
+          <li><a href="#主题概述">主题概述</a></li>
+          <li><a href="#知识地图">知识地图</a></li>
+          <li><a href="#核心概念">核心概念</a></li>
+          <li><a href="#关键实体">关键实体</a></li>
+          <li><a href="#学习路径">学习路径</a></li>
+          <li><a href="#待探索领域">待探索领域</a></li>
+        </ul>
+      </section>
+    </aside>
+  </div>
+
+  <footer>
+    <p>Radar 2026 — 编译预览 · 源文件: wiki/topic-overview.md · 重编译: 2026-06-01</p>
+  </footer>
+
+  <script>window.__KNOWLEVER_BASE="../";window.__KNOWLEVER_SITE_NAME="Radar 2026";</script>
+  <script src="../assets/js/site-common.js"></script>
+  <script src="../assets/data/site-page-data.js"></script>
+  <script src="../assets/js/site-nav.js" defer></script>
+  <script src="../assets/js/site-page.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true, theme: document.documentElement.dataset.theme==='dark' ? 'dark' : 'default', securityLevel:'loose', flowchart:{nodeSpacing:20, rankSpacing:40, padding:12}, themeVariables:{fontSize:'16px'}});</script>
+  <script src="../assets/js/tooltips.js"></script>
+  
+  
+  
+</body>
+</html>

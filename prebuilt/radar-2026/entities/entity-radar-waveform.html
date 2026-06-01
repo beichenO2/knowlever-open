@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="雷达发射的信号形式，包含脉冲串、连续波等类型，是雷达系统实现目标探测与识别的核心参数配置">
+  <meta name="last-modified" content="2026-06-01">
+  <title>雷达波形 — Radar 2026</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  
+  <style>.page-summary{color:var(--text-muted,#666);font-size:1.05rem;line-height:1.6;margin:-0.5rem 0 1.5rem;padding:0.75rem 1rem;background:var(--bg-secondary,#f8f9fa);border-radius:8px;border-left:3px solid var(--accent,#3b82f6);}</style>
+</head>
+<body>
+  <header class="site-header" data-site-nav></header>
+
+  <div class="breadcrumb">
+    <a href="../index.html">首页</a><span>›</span>
+    <a href="../knowledge-hub.html">实体</a><span>›</span>
+    雷达波形
+  </div>
+
+  <div class="page-layout">
+    <main class="page-content">
+
+      <div class="page-meta">
+        <span class="type-badge entity">📦 Entity</span>
+        <span class="status-badge draft">draft</span>
+        <span class="confidence-badge" style="display:inline-flex;align-items:center;gap:4px;font-size:0.8rem;color:#10b981;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;"></span>80%</span>
+        <span class="date-info">更新: 2026-06-01</span>
+      </div>
+      
+
+      <h1>雷达波形</h1>
+      <p class="page-summary">雷达发射的信号形式，包含脉冲串、连续波等类型，是雷达系统实现目标探测与识别的核心参数配置</p>
+
+      <div class="nav-mermaid" style="margin-bottom:1.5rem;overflow-x:auto;"><pre class="mermaid" style="font-size:15px;min-height:80px;">
+graph LR
+  current["雷达波形"]:::current
+  current -.- r0["雷达系统知识总览"]:::related
+  click r0 "../structures/topic-overview.html"
+  current -.- r1["雷达信号处理"]:::related
+  click r1 "../concepts/concept-radar-signal-processing.html"
+  current -.- r2["模糊函数"]:::related
+  click r2 "../concepts/concept-ambiguity-function.html"
+  current -.- r3["多普勒滤波器组"]:::related
+  click r3 "../concepts/concept-doppler-filter-bank.html"
+  classDef current fill:#3b82f6,stroke:#1e40af,color:#fff,font-weight:bold
+  classDef parent fill:#e0f2fe,stroke:#38bdf8,color:#0c4a6e
+  classDef child fill:#f0fdf4,stroke:#86efac,color:#14532d
+  classDef related fill:#fef3c7,stroke:#f59e0b,color:#78350f
+</pre></div><h2 id="定义">定义</h2>
+<p>雷达波形是雷达系统发射的电磁信号形式，属于雷达信号处理领域的核心参数配置。它通过特定的时域/频域特征，直接影响雷达系统的距离分辨力、速度分辨力和抗干扰能力。该概念属于<a href="../concepts/concept-radar-signal-processing.html" class="wiki-link">雷达信号处理</a>的子体系，是模糊函数分析的物理载体。</p>
+<h2 id="详细属性">详细属性</h2>
+<table>
+<thead><tr><th>参数类型</th><th>规格说明</th><th>工作条件</th><th>适用范围</th></tr></thead>
+<tbody>
+<tr><td>波形类型</td><td>脉冲串、连续波、调频波、扩频波等</td><td>温度-40℃~+75℃，湿度<95%</td><td>气象雷达、军事雷达、民用航空</td></tr>
+<tr><td>脉冲宽度</td><td>10ns~100μs</td><td>电磁环境干扰强度<10dB</td><td>高精度测距场景</td></tr>
+<tr><td>重复频率</td><td>1kHz~100kHz</td><td>系统带宽>20MHz</td><td>多目标跟踪系统</td></tr>
+<tr><td>频率捷变</td><td>100MHz~1GHz</td><td>信道干扰强度>20dB</td><td>电子战环境</td></tr>
+</tbody>
+</table>
+<h2 id="工作原理">工作原理</h2>
+<p>雷达波形通过发射机将特定编码的电磁波辐射至目标，接收机通过分析回波信号的时延、频移等特征实现目标参数估计。其核心机制包括：</p>
+<ol><li><strong>脉冲串波形</strong>：通过短时宽脉冲实现距离测量，重复频率决定多普勒分辨能力</li><li><strong>调频连续波</strong>：利用线性调频实现距离-速度二维分辨，通过匹配滤波提升信噪比</li><li><strong>扩频波形</strong>：通过伪随机码扩展频谱，增强抗干扰能力，如巴克码信号</li></ol>
+<h2 id="使用场景与优缺点">使用场景与优缺点</h2>
+<h3 id="应用场景">应用场景</h3>
+<ul><li>气象雷达：采用C波段线性调频波形</li><li>军事雷达：使用多参数捷变脉冲串</li><li>民航雷达：采用恒载频矩形脉冲</li></ul>
+<h3 id="优势">优势</h3>
+<ul><li>通过波形优化可同时提升距离/速度分辨力</li><li>支持多种抗干扰编码设计</li><li>适应不同环境下的目标探测需求</li></ul>
+<h3 id="局限性">局限性</h3>
+<ul><li>复杂波形设计增加系统成本</li><li>高分辨率需求导致发射功率限制</li><li>多参数捷变波形易受电磁干扰</li></ul>
+<h2 id="原文证据">原文证据</h2>
+<blockquote><p>雷达波形指的是雷达发射信号的形式。如常规脉冲串，线性调频连续波等。</p></blockquote>
+<blockquote><p>足够的复杂：满足抗干扰、低截获的要求；易于处理：降低系统成本；</p></blockquote>
+<h2 id="关联知识">关联知识</h2>
+<ul><li><a href="../concepts/concept-ambiguity-function.html" class="wiki-link">模糊函数</a></li><li><span style="color:var(--text-muted,#888);border-bottom:1px dashed var(--text-muted,#ccc)" title="concept-range-resolution">距离分辨力计算</span></li><li><a href="../concepts/concept-doppler-filter-bank.html" class="wiki-link">多普勒滤波器组</a></li><li><a href="../entities/entity-doppler-shift.html" class="wiki-link">多普勒频移</a></li></ul>
+<h2 id="来源">来源</h2>
+<p>来源：<code>2026-8-模糊函数及雷达波形设计.pdf</code>（AutoOffice to-markdown）</p>
+<div align="right" style="opacity: 0.5; font-size: 0.8em;">✨ <i>Compiled by MiniMax-M2.7-highspeed</i></div>
+      
+      
+      <nav class="page-pager">
+        <div class="page-pager__cell"><a href="../entities/entity-quadrature-demodulation.html" class="page-pager__link"><span class="page-pager__arr">←</span><span class="page-pager__text">正交解调</span></a></div>
+        <div class="page-pager__cell page-pager__cell--next"><a href="../entities/entity-range-resolution.html" class="page-pager__link"><span class="page-pager__text">距离分辨力</span><span class="page-pager__arr">→</span></a></div>
+      </nav>
+
+    </main>
+
+    <aside class="sidebar">
+      <section>
+        <h4>页面信息</h4>
+        <ul>
+          <li>类型：实体</li>
+          <li>状态：draft</li>
+          <li>置信度：<span class="confidence-badge" style="display:inline-flex;align-items:center;gap:4px;font-size:0.8rem;color:#10b981;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;"></span>80%</span></li>
+          <li>创建：2026-06-01</li>
+          <li>更新：2026-06-01</li>
+        </ul>
+      </section>
+      
+      <section>
+        <h4>目录</h4>
+        <ul>
+          <li><a href="#定义">定义</a></li>
+          <li><a href="#详细属性">详细属性</a></li>
+          <li><a href="#工作原理">工作原理</a></li>
+          <li><a href="#使用场景与优缺点">使用场景与优缺点</a></li>
+          <li class="toc-sub"><a href="#应用场景">应用场景</a></li>
+          <li class="toc-sub"><a href="#优势">优势</a></li>
+          <li class="toc-sub"><a href="#局限性">局限性</a></li>
+          <li><a href="#原文证据">原文证据</a></li>
+          <li><a href="#关联知识">关联知识</a></li>
+          <li><a href="#来源">来源</a></li>
+        </ul>
+      </section>
+    </aside>
+  </div>
+
+  <footer>
+    <p>Radar 2026 — 编译预览 · 源文件: wiki/entity-radar-waveform.md · 重编译: 2026-06-01</p>
+  </footer>
+
+  <script>window.__KNOWLEVER_BASE="../";window.__KNOWLEVER_SITE_NAME="Radar 2026";</script>
+  <script src="../assets/js/site-common.js"></script>
+  <script src="../assets/data/site-page-data.js"></script>
+  <script src="../assets/js/site-nav.js" defer></script>
+  <script src="../assets/js/site-page.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true, theme: document.documentElement.dataset.theme==='dark' ? 'dark' : 'default', securityLevel:'loose', flowchart:{nodeSpacing:20, rankSpacing:40, padding:12}, themeVariables:{fontSize:'16px'}});</script>
+  <script src="../assets/js/tooltips.js"></script>
+  
+  
+  
+</body>
+</html>

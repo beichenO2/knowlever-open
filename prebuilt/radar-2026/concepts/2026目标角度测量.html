@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="last-modified" content="2026-06-01">
+  <title>2026目标角度测量 — Radar 2026</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  
+  <style>.page-summary{color:var(--text-muted,#666);font-size:1.05rem;line-height:1.6;margin:-0.5rem 0 1.5rem;padding:0.75rem 1rem;background:var(--bg-secondary,#f8f9fa);border-radius:8px;border-left:3px solid var(--accent,#3b82f6);}</style>
+</head>
+<body>
+  <header class="site-header" data-site-nav></header>
+
+  <div class="breadcrumb">
+    <a href="../index.html">首页</a><span>›</span>
+    <a href="../concepts-hub.html">概念</a><span>›</span>
+    2026目标角度测量
+  </div>
+
+  <div class="page-layout">
+    <main class="page-content">
+
+      <div class="page-meta">
+        <span class="type-badge concept">💡 Concept</span>
+        <span class="status-badge draft">draft</span>
+        <span class="confidence-badge" style="display:inline-flex;align-items:center;gap:4px;font-size:0.8rem;color:#f59e0b;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;"></span>50%</span>
+        <span class="date-info">更新: 2026-06-01</span>
+      </div>
+      <div style="margin-bottom: 1rem;">
+        <span class="tag">radar-2026</span>
+      </div>
+
+      <h1>2026目标角度测量</h1>
+      
+
+      <blockquote><p>来源：<code>2026目标角度测量.pdf</code>（AutoOffice to-markdown）</p></blockquote>
+<p>角度测量</p>
+<p>方位角
+角度测量</p>
+<p>N (0 )
+W</p>
+<p>E</p>
+<p>S</p>
+<p>俯仰角</p>
+<p> 测角的物理基础</p>
+<p>天线对于不同方向到达的电磁波
+具有不同的振幅和相位的响应</p>
+<p>电波在均匀介质中传播的直线性，雷达天线的方向性。
+取决于天线波束半功率宽度  0.5</p>
+<p> 测角的性能参数：</p>
+<p>测角范围、测角速度、测角精度或准确度、角分辨力。
+ 测角的方法</p>
+<p>相位法、振幅法</p>
+<p>利用相位响应进行测角</p>
+<p>利用振幅响应进行测角</p>
+<p> 天线的方向图</p>
+<p>半功率点位置</p>
+<p>一般性质
+F ( )  F (0),      ,  
+F ( )  F ( ),      ,  
+  2  1 , 1, 2在主瓣内</p>
+<p>半功率宽度 0.5</p>
+<p>典型函数</p>
+<p>F ( 0.5 )</p>
+<p>只描述主瓣区内</p>
+<p>F ( 2 )  F (1 )
+1
+
+F (0)
+2
+描述主、副瓣</p>
+<p>余弦函数、高斯函数、辛克函数。
+只描述主瓣θ0.5之内</p>
+<p>P224，图7.1</p>
+<p>振幅法测角
+ 测角原理</p>
+<p>利用天线收到的回波信号幅度来做角度测量。幅度变
+化规律取决于天线方向图以及天线的扫描方式。
+ 测角方法</p>
+<p>最大信号法，等信号法。</p>
+<p> 最大信号法</p>
+<p>天线扫描过程中收到最强回波时，
+天线所在指向为目标方向。</p>
+<p>优点： 灵敏度高，能充分
+利用信号能量
+缺点： 精度差，20％θ0.5 ，
+不能判别误差方向</p>
+<p> 等信号法</p>
+<p>利用两个相同且部分重叠的波束。当目标位
+于两波束交叠轴处时，两波束收到回波信号
+相等，交叠轴方向即为目标方向。</p>
+<p>实现方法： 同时波瓣法、顺序波瓣法
+特点：精度高，可判别大小、方向，灵敏度有损失；
+不受起伏影响，抗干扰好；精度提高一个数量级。</p>
+<p>相位法测角
+</p>
+<p>测角原理</p>
+<p>利用多个天线所接收到的回波信号间的相位差  测角
+</p>
+<p>目标方向</p>
+<p>
+法线方向</p>
+<p>
+</p>
+<p>2</p>
+<p></p>
+<p>R</p>
+<p>R  d sin </p>
+<p>
+</p>
+<p>接收机</p>
+<p></p>
+<p>d
+接收机</p>
+<p>R  d sin </p>
+<p></p>
+<p>2</p>
+<p></p>
+<p>d sin </p>
+<p>  
+ 2 d </p>
+<p>ˆ  arc sin 
+    ,  </p>
+<p> 
+ 2d </p>
+<p> max  arc sin </p>
+<p>测角范围   max , max </p>
+<p></p>
+<p>相位法测角实现方法
+将两天线收到的高频信号与同一本振差频后在中频上比相
+uI 1  U I 1 cos  (  L )t     L </p>
+<p>u1  U1 cos(t   )
+u2  U 2 cos(t  90 )</p>
+<p>1
+ud 1  u2  u1
+2</p>
+<p>u1  U1 cos(t   )</p>
+<p>uL  U L cos(Lt   L )
+u2  U 2 cos t</p>
+<p>U 2  U1</p>
+<p>uI 2  U I 2 cos  (  L )t   L </p>
+<p>U O  U O1  U O 2  K dU d 1  K dU d 2  K dU1 sin </p>
+<p>1
+ud 2  u2  u1
+2</p>
+<p>1
+ud 1  U d 1  U 2  U1 sin 
+2
+1
+ud 2  U d 2  U 2  U1 sin 
+2</p>
+<p>U 2  U1</p>
+<p>U O  U O1  U O 2  K dU d 1  K dU d 2  K dU1 sin </p>
+<p>1
+U 2  U1
+2
+1
+
+
+U d 1  2  U1 sin  45  
+2
+2
+
+1
+  
+U d 2  2  U1 sin  45  
+2
+2
+</p>
+<p>线性关系
+U2</p>
+<p>
+
+
+
+U O  K dU1 sin  45    K dU1 sin  45  
+2
+2
+
+</p>
+<p></p>
+<p>相位法测角误差与多值性问题
+测角误差
+</p>
+<p>2</p>
+<p></p>
+<p>d sin </p>
+<p></p>
+<p>d</p>
+<p>d</p>
+<p></p>
+<p>测相模糊</p>
+<p>d </p>
+<p>2</p>
+<p>
+sin   1</p>
+<p>d cos  d</p>
+<p></p>
+<p>2</p>
+<p></p>
+<p>d </p>
+<p>
+2 d cos </p>
+<p>d sin  可能超出2</p>
+<p>  2 N  </p>
+<p>如何解模糊？</p>
+<p>实际读数</p>
+<p>d</p>
+<p>解决方法
+12 </p>
+<p>2</p>
+<p>三天线法测角</p>
+<p>d12 sin   2 不模糊</p>
+<p>目标方向</p>
+<p>
+2
+13 
+d13 sin   2 N   精度高
+</p>
+<p>显然， d12  d13
+13 d13 2 N  
+
+
+12 d12
+12</p>
+<p>13  2 N  </p>
+<p>
+</p>
+<p>接收机</p>
+<p>d12
+接收机</p>
+<p>d 13
+法线方向</p>
+<p></p>
+<p>
+
+d13
+N  INT 12 
+2 
+d12
+
+
+ 13 
+  arc sin 
+
+2
+
+d
+13 
+</p>
+<p>接收机</p>
+<p>12</p>
+<p>13</p>
+<p>  
+ 2 d </p>
+<p>ˆ  arc sin </p>
+<p>目标方向</p>
+<p>
+</p>
+<p>接收机</p>
+<p>d12
+接收机</p>
+<p>d 13
+法线方向</p>
+<p></p>
+<p>接收机</p>
+<p>12</p>
+<p>13</p>
+<p>高度测量</p>
+<p>考虑大气折射</p>
+<p>由目标斜距和仰角得到
+( ae  ht ) 2  R 2  (ae  ha ) 2  2 R ( ae  ha ) cos(90   )
+折算地球半径</p>
+<p> R 2  2 R(ae  ha ) sin  
+ae  ht  (ae  ha ) 1 
+
+2
+(
+a
+
+h
+)
+e
+a
+
+
+二项式展开</p>
+<p>1
+2</p>
+<p>ha  ae</p>
+<p>R2
+ht  ha 
+ R sin 
+2ae
+天线架设不高</p>
+<p>ht  R sin </p>
+<p>自动测角（角度跟踪）
+</p>
+<p>作用 目标精确定位</p>
+<p></p>
+<p>应用 空中交通管制、防空火控、卫星跟踪</p>
+<p></p>
+<p>自动测距</p>
+<p>时间鉴别器</p>
+<p>自动测角</p>
+<p>角误差鉴别器</p>
+<p>原理
+目标偏离轴线（即出现误差角ε），产生一个误差电压，
+其值正比于ε，极性随偏离方向不同而改变。误差电压
+经跟踪系统变换、放大、处理后，控制天线向减小ε方
+向运动，使天线轴线对准目标。</p>
+<p></p>
+<p>方法 圆锥扫描自动测角</p>
+<p>单脉冲自动测角</p>
+<p>顺序波瓣测角法</p>
+<p>圆锥扫描自动测角系统
+目标方向</p>
+<p>天线最大辐射方向偏离等信号轴O’O，当波束以一定
+角速度ωs绕轴O’O旋转时， O’B在空间画出一个圆锥，
+故称圆锥扫描。</p>
+<p>垂直于等信号轴的波束截面位置变化示意图
+y 方位
+波束中心
+等信号轴</p>
+<p>ωs
+φ0</p>
+<p>x 方位
+波束截面
+A</p>
+<p>波束中心
+运动轨迹</p>
+<p>A目标回波信号强弱变化规律
+2π/ωs</p>
+<p>φ0/ωs</p>
+<p>t</p>
+<p>单脉冲自动测角系统</p>
+<p>同时波瓣测角法</p>
+<p>利用和差比较器实现和差波束，同时接收目标回波信号
+差信号
+用于发
+射观察
+和测距</p>
+<p>和信号</p>
+<p>发射信号</p>
+<p>差  2 即信号相位差  ，反相。</p>
+<p>用于测角</p>
+<p>思考</p>
+<ol><li>相位法测角的物理基础是什么？试比较最大信号法和 等信号法测角的原理。</li></ol>
+<ol><li>圆锥扫描自动测角是如何实现的。</li></ol>
+<p>练习1：采用三天线的相位法测角设备，已知 d13 / d12  6，
+若相位计13 的误差 13 是相位计 12 误差 12 的两倍，
+求二者的测角精度之比 13 / 12
+练习2：根据图示各目标位置及波束运动轨迹，画出各
+目标回波信号的变化曲线
+y 仰角
+A
+C</p>
+<p>D</p>
+<p>等信号轴</p>
+<p> D C
+B</p>
+<p>x 方位</p>
+<p>练习：采用三天线的相位法测角设备，已知 d13 / d12  6 ，
+若相位计13 的误差 13 是相位计 12 误差 12 的两倍，
+求二者的测角精度之比 13 / 12
+解：   2 d sin </p>
+<p></p>
+<p></p>
+<p> </p>
+<p>13</p>
+<p>
+2 d cos </p>
+<p></p>
+<p>13 2 d13 cos 13
+d12 13 1
+1
+
+
+
+ 2 
+
+12
+3
+12 d13 12 6
+2 d12 cos 12</p>
+<p>练习：根据图示各目标位置及波束运动轨迹，画
+出各目标回波信号的变化曲线
+A</p>
+<p>y 仰角
+A
+C</p>
+<p>D</p>
+<p>等信号轴</p>
+<p>B</p>
+<p>t</p>
+<p> D C
+B</p>
+<p>x 方位
+C</p>
+<p>目标偏离等信号轴时，扫描过程中回波
+信号幅度会产生强弱变化，圆锥扫描时，
+输出信号近似为正弦波调制的脉冲串， D
+其调制频率为天线的圆锥扫描频率ωs，
+调制深度取决于目标偏离等信号轴方向
+的大小，起始相位由目标偏离等信号轴
+的方向来决定。</p>
+<p>t</p>
+<p>t</p>
+<p>t</p>
+<p>天线波束的扫描方法
+雷达波束通常以一定的方式依次照射给定空域，
+以进行目标探测和目标坐标测量。</p>
+<p>波束形状和扫描方法
+波束形状：</p>
+<p>针状波束、扇形波束</p>
+<p>扫描方法：</p>
+<p>机械扫描、电扫描</p>
+<p> 针状波束</p>
+<p>波束形式：
+θ0.5</p>
+<p>扫描方式：</p>
+<p>特点：同时测距离、方位、俯仰；
+方位、俯仰波束窄；
+扫描速度慢。</p>
+<p>用途：火控</p>
+<p> 扇形波束</p>
+<p>波束形式：</p>
+<p>扫描方式：</p>
+<p>可测 R、α，但β不可测</p>
+<p> 0.5</p>
+<p>  0.5</p>
+<p>特点：方位窄、俯仰宽，或相反；
+扫描速度快。
+用途：警戒</p>
+<p> 扇形波束（余割平方型）</p>
+<p>H</p>
+<p>R</p>
+<p>特点：同高度上目标回波强度相同
+可同时测R、α、β</p>
+<p>β</p>
+<p>用途：搜索、警戒、地面测绘</p>
+<p>PG
+t t Ar
+Pr  Ar S 2 
+(4 ) 2 R 4</p>
+<p>收发同天线</p>
+<p>2 2
+PG
+
+t
+Pr 
+(4 )3 R 4</p>
+<p>同一高度目标回波强度不变</p>
+<p>天线扫描方法</p>
+<p>机械扫描 电扫描</p>
+<p> 机械扫描</p>
+<p>整体运动
+笨重，扫描速度低
+反射面运动
+笨重，扫描速度高
+馈源变动
+更轻，扫描速度更高
+ 电扫描</p>
+<p>相位扫描，频率扫描，时间延迟法
+特点：扫描速度很高，波速控制灵活
+缺点：波束宽度展宽，天线增益减小，系统复杂</p>
+      
+      <section class="related-pages"><h3 class="related-pages__title">相关页面</h3><div class="related-pages__grid"><a href="../concepts/2026-10-脉冲多普勒雷达.html" class="related-pages__card"><span class="type-badge concept">concept</span><div class="related-pages__card-title">2026-10-脉冲多普勒雷达</div></a>
+<a href="../concepts/2026-8-模糊函数及雷达波形设计.html" class="related-pages__card"><span class="type-badge concept">concept</span><div class="related-pages__card-title">2026-8-模糊函数及雷达波形设计</div></a>
+<a href="../concepts/2026-9-雷达信号处理.html" class="related-pages__card"><span class="type-badge concept">concept</span><div class="related-pages__card-title">2026-9-雷达信号处理</div></a>
+<a href="../concepts/2026-9-雷达信号检测.html" class="related-pages__card"><span class="type-badge concept">concept</span><div class="related-pages__card-title">2026-9-雷达信号检测</div></a></div></section>
+      <nav class="page-pager">
+        <div class="page-pager__cell"><a href="../concepts/2026-9-雷达信号检测.html" class="page-pager__link"><span class="page-pager__arr">←</span><span class="page-pager__text">2026-9-雷达信号检测</span></a></div>
+        <div class="page-pager__cell page-pager__cell--next"><a href="../concepts/2026目标距离测量.html" class="page-pager__link"><span class="page-pager__text">2026目标距离测量</span><span class="page-pager__arr">→</span></a></div>
+      </nav>
+
+    </main>
+
+    <aside class="sidebar">
+      <section>
+        <h4>页面信息</h4>
+        <ul>
+          <li>类型：概念</li>
+          <li>状态：draft</li>
+          <li>置信度：<span class="confidence-badge" style="display:inline-flex;align-items:center;gap:4px;font-size:0.8rem;color:#f59e0b;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;"></span>50%</span></li>
+          <li>创建：2026-06-01</li>
+          <li>更新：2026-06-01</li>
+        </ul>
+      </section>
+      <section>
+        <h4>相关页面</h4>
+        <ul>
+          <li><a href="../concepts/2026-10-脉冲多普勒雷达.html">2026-10-脉冲多普勒雷达</a></li>
+          <li><a href="../concepts/2026-8-模糊函数及雷达波形设计.html">2026-8-模糊函数及雷达波形设计</a></li>
+          <li><a href="../concepts/2026-9-雷达信号处理.html">2026-9-雷达信号处理</a></li>
+          <li><a href="../concepts/2026-9-雷达信号检测.html">2026-9-雷达信号检测</a></li>
+        </ul>
+      </section>
+      
+    </aside>
+  </div>
+
+  <footer>
+    <p>Radar 2026 — 编译预览 · 源文件: wiki/2026目标角度测量.md · 重编译: 2026-06-01</p>
+  </footer>
+
+  <script>window.__KNOWLEVER_BASE="../";window.__KNOWLEVER_SITE_NAME="Radar 2026";</script>
+  <script src="../assets/js/site-common.js"></script>
+  <script src="../assets/data/site-page-data.js"></script>
+  <script src="../assets/js/site-nav.js" defer></script>
+  <script src="../assets/js/site-page.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true, theme: document.documentElement.dataset.theme==='dark' ? 'dark' : 'default', securityLevel:'loose', flowchart:{nodeSpacing:20, rankSpacing:40, padding:12}, themeVariables:{fontSize:'16px'}});</script>
+  <script src="../assets/js/tooltips.js"></script>
+  
+  
+  
+</body>
+</html>

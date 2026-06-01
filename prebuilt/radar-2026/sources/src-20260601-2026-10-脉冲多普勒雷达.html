@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="脉冲多普勒雷达通过多普勒效应和频域滤波技术，在强杂波背景下实现动目标检测。资料系统阐述了PD雷达的杂波特性、PRF分类、距离-多普勒空间关系、信号处理方法及性能优化策略，涵盖从基础原理到工程实现的完整技术链条。">
+  <meta name="last-modified" content="2026-06-01">
+  <title>脉冲多普勒雷达技术详解 — Radar 2026</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <style>.page-summary{color:var(--text-muted,#666);font-size:1.05rem;line-height:1.6;margin:-0.5rem 0 1.5rem;padding:0.75rem 1rem;background:var(--bg-secondary,#f8f9fa);border-radius:8px;border-left:3px solid var(--accent,#3b82f6);}</style>
+</head>
+<body>
+  <header class="site-header" data-site-nav></header>
+
+  <div class="breadcrumb">
+    <a href="../index.html">首页</a><span>›</span>
+    <a href="../knowledge-hub.html">来源</a><span>›</span>
+    脉冲多普勒雷达技术详解
+  </div>
+
+  <div class="page-layout">
+    <main class="page-content">
+
+      <div class="page-meta">
+        <span class="type-badge source">📄 Source</span>
+        <span class="status-badge draft">draft</span>
+        <span class="confidence-badge" style="display:inline-flex;align-items:center;gap:4px;font-size:0.8rem;color:#f59e0b;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;"></span>60%</span>
+        <span class="date-info">更新: 2026-06-01</span>
+      </div>
+      
+
+      <h1>脉冲多普勒雷达技术详解</h1>
+      <p class="page-summary">脉冲多普勒雷达通过多普勒效应和频域滤波技术，在强杂波背景下实现动目标检测。资料系统阐述了PD雷达的杂波特性、PRF分类、距离-多普勒空间关系、信号处理方法及性能优化策略，涵盖从基础原理到工程实现的完整技术链条。</p>
+
+      <div class="nav-mermaid" style="margin-bottom:1.5rem;overflow-x:auto;"><pre class="mermaid" style="font-size:15px;min-height:80px;">
+graph LR
+  current["脉冲多普勒雷达技术详解"]:::current
+  current -.- r0["PRF参数详解"]:::related
+  click r0 "../entities/entity-prf.html"
+  current -.- r1["脉冲多普勒雷达"]:::related
+  click r1 "../entities/entity-pulse-doppler-radar.html"
+  current -.- r2["多普勒滤波器组"]:::related
+  click r2 "../concepts/concept-doppler-filter-bank.html"
+  current -.- r3["无杂波区"]:::related
+  click r3 "../concepts/concept-no-clutter-zone.html"
+  classDef current fill:#3b82f6,stroke:#1e40af,color:#fff,font-weight:bold
+  classDef parent fill:#e0f2fe,stroke:#38bdf8,color:#0c4a6e
+  classDef child fill:#f0fdf4,stroke:#86efac,color:#14532d
+  classDef related fill:#fef3c7,stroke:#f59e0b,color:#78350f
+</pre></div><h2 id="概述">概述</h2>
+<p>脉冲多普勒（PD）雷达通过多普勒效应和频域滤波技术，在强杂波背景下实现动目标检测。该技术解决了传统雷达在复杂电磁环境中无法有效区分目标与杂波的问题，广泛应用于机载预警、空间监视、导弹制导等场景。资料系统阐述了PD雷达的杂波特性、PRF分类、距离-多普勒空间关系、信号处理方法及性能优化策略，涵盖从基础原理到工程实现的完整技术链条。</p>
+<p>PD雷达通过频域滤波实现速度分辨，克服传统雷达速度模糊问题。其核心在于利用多普勒频移特性，结合PRF选择与滤波技术，有效抑制地面杂波并检测运动目标。资料详细分析了不同PRF模式下的杂波分布规律、无杂波区的形成条件，以及信号处理中的关键模块设计。</p>
+<h2 id="核心要点">核心要点</h2>
+<h3 id="重要结论">重要结论</h3>
+<ol><li>PD雷达通过多普勒效应检测目标速度，结合频域滤波实现杂波抑制</li><li>PRF选择直接影响杂波重叠与无杂波区分布，决定检测性能</li><li>距离-多普比空间特性揭示了杂波与目标信号的频谱分布规律</li><li>高PRF模式下存在距离模糊，低PRF模式下存在速度模糊</li><li>无杂波区的形成条件：PRF > fc_max（主瓣杂波最大展宽频率）</li></ol>
+<h3 id="关键公式">关键公式</h3>
+<ol><li>多普勒频移计算： $<span class="math-inline">$ f_d = \frac{2v_R}{\lambda} \cos \phi $</span>$</li><li>主瓣杂波中心频率： $<span class="math-inline">$ f_{MB} = \frac{2v_R}{\lambda} \cos \phi_0 $</span>$</li><li>主瓣杂波频率分布范围： $<span class="math-inline">$ \Delta f_{MB} \approx \frac{2v_R}{\lambda \theta_B \sin \phi_0} $</span>$</li><li>无杂波区条件： $<span class="math-inline">$ f_r > f_{c,max} $</span>$</li></ol>
+<h3 id="数据与参数">数据与参数</h3>
+<ul><li>PRF分类：低PRF（<45kHz）、中PRF（45-200kHz）、高PRF（>200kHz）</li><li>主瓣杂波强度最高，其次是高度线杂波</li><li>旁瓣杂波频谱受天线参数和载机速度影响</li><li>高PRF模式下距离模糊，低PRF模式下速度模糊</li></ul>
+<h2 id="知识结构">知识结构</h2>
+<h3 id="目的">目的</h3>
+<p>在强杂波背景下实现动目标检测，解决传统雷达速度模糊和杂波干扰问题</p>
+<h3 id="方法">方法</h3>
+<ol><li>多普勒频移分析：利用目标与雷达的相对运动产生频率变化</li><li>频域滤波处理：采用窄带滤波器组提取特定多普勒频率信号</li><li>PRF优化设计：通过选择合适脉冲重复频率实现杂波抑制</li><li>信号处理技术：结合距离门选通与多普勒滤波器组提升信噪比</li></ol>
+<h3 id="原理">原理</h3>
+<ol><li>多普勒效应：目标运动导致回波频率偏移，反映速度信息</li><li>频域滤波：通过窄带滤波器组分离目标信号与杂波</li><li>PRF选择：平衡距离分辨率与速度分辨率，避免模糊现象</li><li>无杂波区形成：通过PRF选择实现杂波与目标信号分离</li></ol>
+<h2 id="关联知识">关联知识</h2>
+<ul><li><a href="../entities/entity-pulse-doppler-radar.html" class="wiki-link">脉冲多普勒雷达</a>：PD雷达系统架构与工作原理</li><li><a href="../concepts/concept-doppler-filter-bank.html" class="wiki-link">多普勒滤波器组</a>：多普勒滤波器组设计与应用</li><li><a href="../concepts/concept-no-clutter-zone.html" class="wiki-link">无杂波区</a>：无杂波区的形成条件与优化策略</li><li><a href="../entities/entity-prf.html" class="wiki-link">PRF参数详解</a>：PRF参数对雷达性能的影响</li><li><a href="../concepts/concept-distance-doppler-space.html" class="wiki-link">距离-多普勒空间</a>：距离-多普勒空间特性分析</li><li><span style="color:var(--text-muted,#888);border-bottom:1px dashed var(--text-muted,#ccc)" title="concept-motion-target-detection">concept-motion-target-detection</span>：运动目标检测技术原理</li></ul>
+<h2 id="待探讨">待探讨</h2>
+<ol><li>不同PRF模式下杂波重叠区的具体边界计算方法</li><li>实际工程中如何平衡距离分辨率与速度分辨率的 trade-off</li><li>高PRF模式下距离模糊的解算方法与实现路径</li><li>多普勒滤波器组交叠设计对信噪比提升的具体影响</li></ol>
+<p>来源：<code>2026-10-脉冲多普勒雷达.pdf</code>（AutoOffice to-markdown）</p>
+<div align="right" style="opacity: 0.5; font-size: 0.8em;">✨ <i>Compiled by MiniMax-M2.7-highspeed</i></div>
+      
+      
+      <nav class="page-pager">
+        <div class="page-pager__cell"><span class="page-pager__placeholder"></span></div>
+        <div class="page-pager__cell page-pager__cell--next"><a href="../sources/src-20260601-2026-9-雷达信号处理.html" class="page-pager__link"><span class="page-pager__text">雷达信号处理核心技术流程</span><span class="page-pager__arr">→</span></a></div>
+      </nav>
+
+    </main>
+
+    <aside class="sidebar">
+      <section>
+        <h4>页面信息</h4>
+        <ul>
+          <li>类型：来源</li>
+          <li>状态：draft</li>
+          <li>置信度：<span class="confidence-badge" style="display:inline-flex;align-items:center;gap:4px;font-size:0.8rem;color:#f59e0b;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;"></span>60%</span></li>
+          <li>创建：2026-06-01</li>
+          <li>更新：2026-06-01</li>
+        </ul>
+      </section>
+      
+      <section>
+        <h4>目录</h4>
+        <ul>
+          <li><a href="#概述">概述</a></li>
+          <li><a href="#核心要点">核心要点</a></li>
+          <li class="toc-sub"><a href="#重要结论">重要结论</a></li>
+          <li class="toc-sub"><a href="#关键公式">关键公式</a></li>
+          <li class="toc-sub"><a href="#数据与参数">数据与参数</a></li>
+          <li><a href="#知识结构">知识结构</a></li>
+          <li class="toc-sub"><a href="#目的">目的</a></li>
+          <li class="toc-sub"><a href="#方法">方法</a></li>
+          <li class="toc-sub"><a href="#原理">原理</a></li>
+          <li><a href="#关联知识">关联知识</a></li>
+          <li><a href="#待探讨">待探讨</a></li>
+        </ul>
+      </section>
+    </aside>
+  </div>
+
+  <footer>
+    <p>Radar 2026 — 编译预览 · 源文件: wiki/src-20260601-2026-10-脉冲多普勒雷达.md · 重编译: 2026-06-01</p>
+  </footer>
+
+  <script>window.__KNOWLEVER_BASE="../";window.__KNOWLEVER_SITE_NAME="Radar 2026";</script>
+  <script src="../assets/js/site-common.js"></script>
+  <script src="../assets/data/site-page-data.js"></script>
+  <script src="../assets/js/site-nav.js" defer></script>
+  <script src="../assets/js/site-page.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true, theme: document.documentElement.dataset.theme==='dark' ? 'dark' : 'default', securityLevel:'loose', flowchart:{nodeSpacing:20, rankSpacing:40, padding:12}, themeVariables:{fontSize:'16px'}});</script>
+  <script src="../assets/js/tooltips.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement !== 'function') return;
+      document.querySelectorAll('.page-content').forEach(function (node) {
+        renderMathInElement(node, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '$', right: '$', display: false }
+          ],
+          throwOnError: false
+        });
+      });
+    });
+  </script>
+</body>
+</html>

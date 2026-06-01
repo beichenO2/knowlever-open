@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="last-modified" content="2026-06-01">
+  <title>2026雷达发射机 — Radar 2026</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <style>.page-summary{color:var(--text-muted,#666);font-size:1.05rem;line-height:1.6;margin:-0.5rem 0 1.5rem;padding:0.75rem 1rem;background:var(--bg-secondary,#f8f9fa);border-radius:8px;border-left:3px solid var(--accent,#3b82f6);}</style>
+</head>
+<body>
+  <header class="site-header" data-site-nav></header>
+
+  <div class="breadcrumb">
+    <a href="../index.html">首页</a><span>›</span>
+    <a href="../concepts-hub.html">概念</a><span>›</span>
+    2026雷达发射机
+  </div>
+
+  <div class="page-layout">
+    <main class="page-content">
+
+      <div class="page-meta">
+        <span class="type-badge concept">💡 Concept</span>
+        <span class="status-badge draft">draft</span>
+        <span class="confidence-badge" style="display:inline-flex;align-items:center;gap:4px;font-size:0.8rem;color:#f59e0b;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;"></span>50%</span>
+        <span class="date-info">更新: 2026-06-01</span>
+      </div>
+      <div style="margin-bottom: 1rem;">
+        <span class="tag">radar-2026</span>
+      </div>
+
+      <h1>2026雷达发射机</h1>
+      
+
+      <blockquote><p>来源：<code>2026雷达发射机.pdf</code>（AutoOffice to-markdown）</p></blockquote>
+<p>第二章 雷达发射机</p>
+<p>1</p>
+<p>单基地脉冲雷达基本组成
+Chain Home</p>
+<p>2</p>
+<p>本章主要内容
+ 发射机的任务
+ 发射机的功能和技术指标
+ 不同类型的雷达发射机
+ “相参”及“全相参系统”
+ 波形产生与放大器件
+ 固态发射机</p>
+<p>脉冲雷达收发系统简化框图
+Low Power Transmit Section
+(~100mw to ~1W)
+Waveform
+Generator</p>
+<p>至信号
+处理器</p>
+<p>A/D
+Coverters</p>
+<p>High Power Transmit Sections
+(~100 W to ~MW)
+HPA</p>
+<p>Receiver</p>
+<p>Filter</p>
+<p>LNA</p>
+<p>Duplexer</p>
+<p>Filter</p>
+<p>• 雷达的收发系统可以划分成以下两个子系统
+–</p>
+<p>小功率发射和接收模块
+雷达波形产生和接收机</p>
+<p>–</p>
+<p>大功率发射模块</p>
+<p>HPA = 大功率放大器
+LNA = 低噪声放大器</p>
+<p>雷达发射机的任务
+产生发射信号</p>
+<p>什么是调制？
+为什么需要调制？</p>
+<p>大功率的特定调制的电磁振荡</p>
+<p>调制： 将需传输的信息进行编码和处理，使其适合传输
+调制方式： 振幅调制 频率调制 相位调制</p>
+<p>5</p>
+<p>常见雷达波形
+</p>
+<p>连续波（Continuous Wave，CW）</p>
+<p></p>
+<p>频率调制连续波（Frequncey Modulated CW，FMCW）</p>
+<p></p>
+<p>脉冲（Pulsed）</p>
+<p>CW or FM or PM</p>
+<p>4</p>
+<p>雷达发射机的主要质量指标
+ 工作频率 输出信号频率</p>
+<p>雷达的用途</p>
+<p> 输出功率 送至天线输入端的功率</p>
+<p>雷达的威力及
+抗干扰能力</p>
+<p> 总效率</p>
+<p>发射机输出功率与其输入功率之比</p>
+<p> 信号形式</p>
+<p>信号调制形式</p>
+<p> 信号的稳定度或频谱纯度</p>
+<p>雷达的体制
+信号的各项参数</p>
+<p>7</p>
+<p> 工作频率</p>
+<p>雷达的尺寸
+发射功率</p>
+<p>雷达的用途</p>
+<p>天线波束宽度</p>
+<p>工作频率</p>
+<p>大气衰减
+反隐身、抗干扰</p>
+<p>频率越低，发射管尺寸越大，重量越重
+频率越高，功率越低</p>
+<p>f c</p>
+<p></p>
+<p>频率越高，相同角分辨力天线尺寸越小
+频率越高，大气衰减越大
+6</p>
+<p>影响工作频率（波长）选择的部分因素
+从目标检测来看，目标的散射特性与λ有关：当目标尺寸
+>> λ 时，目标对电磁波以散射为主，以绕射为辅，RCS
+大；当目标尺寸<< λ 时，目标对电磁波以绕射为主，以
+散射为辅，RCS小。对隐身目标，雷达波长选择在两个
+极端即米波或毫米波为好。
+从杂波干扰的影响来看：在目标（飞机）与云、雨相混
+的情况下，由于飞机的尺寸远大于水滴的尺寸，依目标
+的反射特性，采用大的 λ可以提高输入信杂比。当目标
+（飞机）以地物为背景时，由于飞机的尺寸远小于地物
+的尺寸，依目标的反射特性，采用小的 λ 较好。</p>
+<p>从接收机灵敏度来看，须考虑所选 λ下接收机内部噪声和
+大气噪声大小以及电磁波在大气中的衰减，λ应长一些。
+从提高距离分辨率、角分辨率、天线增益的角度来看，
+希望 λ要短一些。
+从地面或水面的反射影响来看：水平极化的米波雷达，由于
+地面反射，波瓣分裂；地面反射对厘米波影响较小，故中等
+作用距离的引导雷达均采用厘米波段。
+从多普勒频移来看，多普勒频移不仅与目标和雷达的接近速
+度成正比，而且与波的频率成正比，频率越高，多普勒频移
+越显著。某些场合需要限制雷达的工作频率，但在另一些场
+合，又需要选择相当高的频率，以提高多普勒测速的灵敏度。
+10</p>
+<p> 输出功率</p>
+<p>输出信号功率</p>
+<p>输出功率的两种描述方式</p>
+<p></p>
+<p>峰值功率Pt
+平均功率Pav</p>
+<p>Tr</p>
+<p>发射能量 Et  PavTr  Pt
+占空比</p>
+<p>D </p>
+<p>Tr</p>
+<p>思考：雷达作用距离与发射功率的关系</p>
+<p> PG
+
+t t Ar
+雷达最大测量距离 Rmax  
+
+2
+ (4 ) Smin </p>
+<p>1
+4</p>
+<p>11</p>
+<p> 总效率</p>
+<p>发射机输出功率与其输入功率之比</p>
+<p>输入功率</p>
+<p>输入发射机的总平均功率PS</p>
+<p>输出功率</p>
+<p>平均功率Pav</p>
+<p>总效率</p>
+<p>Pav</p>
+<p>？</p>
+<p></p>
+<p>？</p>
+<p>峰值功率Pt</p>
+<p>PS</p>
+<p> 信号形式</p>
+<p>雷达的体制</p>
+<p>信号调制形式</p>
+<p>雷达常用信号形式：
+P28，表2.1，图2.4
+思考：雷达作用距离与发射信号形式的关系
+12</p>
+<p> 信号的稳定度或频谱纯度</p>
+<p>信号的稳定度： 信号的各项参数，如信号的振幅、频
+率、相位、脉冲宽度和脉冲重复频率
+等是否会随时间出现不应有的变化。
+规律性的不稳定</p>
+<p>随机性的不稳定</p>
+<p>信号的频谱纯度： 雷达信号在应有的信号频谱之外
+的寄生输出。</p>
+<p>信号稳定度在
+频域中的表示</p>
+<p>离散型的寄生谱</p>
+<p>分布型的寄生谱
+雷达原理（第三版） P29</p>
+<p>13</p>
+<p></p>
+<p>理想发射机
+
+
+
+
+
+
+
+
+
+</p>
+<p>可提供足够的能量以发现目标
+容易调制以产生所需波形
+产生稳定的无杂波信号以获得良好的杂波抑制效果
+可提供所需的可调节带宽
+效率高
+可靠性高
+易于维护
+使用寿命长
+对于预计的用途而言，体积小，重量轻
+价格便宜</p>
+<p>折中考虑
+14</p>
+<p>雷达发射机的基本组成
+ 单级振荡式发射机
+ 主振放大式发射机</p>
+<p>15</p>
+<p> 单级振荡式发射机</p>
+<p>在触发脉冲信号激励
+下产生脉宽为τ的视
+频脉冲信号</p>
+<p>产生大功率
+射频信号</p>
+<p>单级振荡式发射机原理框图
+优点 简单，廉价，高效
+缺点 难以产生复杂调制，频率稳定性差
+16</p>
+<p> 主振放大式发射机</p>
+<p>适用于对频率稳定度
+要求很高的场合</p>
+<p>主振放大式发射机原理框图
+主控振荡器</p>
+<p>射频放大链</p>
+<p>提供不同时间，不同
+宽度的触发脉冲信号
+思考：每级电路
+为何采用不同的
+优点：调制准确，能适应多种复杂调制
+脉冲调制器？</p>
+<p>缺点：系统复杂，效率低
+17</p>
+<p></p>
+<p>主振放大式主要特点：发射相位相参信号</p>
+<p>相位相参性 两个信号的相位间存在确定关系
+相参脉冲串</p>
+<p>0°</p>
+<p>0°</p>
+<p>0°</p>
+<p>非相参脉冲串 0°</p>
+<p>30°</p>
+<p>90°</p>
+<p>主振放大发射机产生相参脉冲串，单级振荡发射机产生非相参脉冲串</p>
+<p>全相参系统 发射信号、本振信号、相参振荡电压和定时器的
+触发脉冲均由同一基准信号提供，因而上述信号
+间保持相位相参性。
+18</p>
+<p></p>
+<p>适用于频率捷变雷达
+载频： f 0   N i  M  F
+思考：频率捷变的优势何在？</p>
+<p></p>
+<p>可产生复杂波形
+数字波形产生技术</p>
+<p>容易实现多波形</p>
+<p>19</p>
+<p> 波形产生与放大器件</p>
+<p>单级振荡式发射机</p>
+<p>振荡管、脉冲调制器</p>
+<p>主振放大式发射机</p>
+<p>振荡管、放大链、脉冲调制器</p>
+<p>1921 The invention of the Magnetron as an efficient transmitting
+tube by the American physicist Albert Wallace Hull.
+1936 The development of the Klystron by the technicians George
+F. Metcalf and William C. Hahn, both General Electric. This will
+be an important component in radar units as an amplifier or an
+oscillator tube.
+1939 Two engineers from the university in Birmingham, John
+Turton Randall und Henry Albert Howard Boot built a small but
+powerful radar using a Multicavity-Magnetron. The B–17
+airplanes were fitted with this radar.</p>
+<p>20</p>
+<p></p>
+<p>振荡器的选择
+m 波：超短波三极管
+dm波：微波三极管，磁控管
+cm波：多腔磁控管（分频，倍频，混频）</p>
+<p></p>
+<p>调制器的选择
+刚性开关调制器
+软性开关调制器
+磁性开关调制器</p>
+<p></p>
+<p>给发射机的射频各
+级提供合适的脉冲</p>
+<p>射频放大链
+射频放大管的选择通常由雷达工作频率决定。
+1GHz以上，常选用直线电子注微波管（O型管）和正交场型
+微波管（M型管）。
+1GHz以下，常选用微波三、四极管（栅控管）。
+21</p>
+<p>Klystron（速调管）– High Power Amplifier
+Three Cavity Klystron</p>
+<p>RF Cavities</p>
+<p>Interaction Gaps</p>
+<p>Electron Beam
+Cathode
+Heater</p>
+<p>Collector</p>
+<p>Modulating
+Anode</p>
+<p>Anode
+RF
+In</p>
+<p>Electron Gun</p>
+<p>•
+•
+•
+•</p>
+<p>Drift
+Space
+RF Section</p>
+<p>First developed in early 1950s
+Bandwidth as great as 12%
+RF conversion efficiency 35 - 50%
+Coherent- pulse to pulse</p>
+<p>RF
+Out
+Collector</p>
+<p>Adapted from Skolnik
+Reference 1</p>
+<p>Klystron – How It Works
+RF Cavities
+Electron Beam</p>
+<p>Collector</p>
+<p>Electron Gun
+RF In</p>
+<p>•</p>
+<p>RF Out</p>
+<p>Electron gun generates electron beam (X rays produced/shielding
+required)
+–
+–
+–
+–
+–
+–</p>
+<p>RF section composed of several resonators (resonant cavities)
+RF is coupled in by waveguide through slot in cavity or coax
+RF input is used to modulate the electron stream into bunches
+Resonant frequency of cavity is identical to RF input frequency
+causing cavity to oscillate
+Oscillations in electric field modulate speed of electron beam into
+bunches
+Resonant cavity at output extracts the RF power from the density
+modulated beam and delivers power to output transmission line</p>
+<p>Adapted from Skolnik
+Reference 1</p>
+<p>Example – S-Band Klystron</p>
+<p>VA-87F / VKS-8287
+Air Surveillance / Weather Radar
+6 cavity, S Band
+Tunable over 2.7 to 2.9 GHz
+Peak Power up to 2.0 MW
+Ave Power up to 3 kW
+Gain 50 dB</p>
+<p>Efficiency 45 %</p>
+<p>Bandwidth 30 MHz typ.
+Pulse Duration up to 7.0 μ sec</p>
+<p>Courtesy of CPI. Used with permission.</p>
+<p>MIT/LL Millstone Hill Radar
+Klystron Tubes (Vacuum Devices)</p>
+<p>•</p>
+<p>Outputdevice</p>
+<p>Klystrons(2)</p>
+<p>CenterFrequency</p>
+<p>1295MHz</p>
+<p>Bandwidth</p>
+<p>8MHz</p>
+<p>PeakPower</p>
+<p>3MW</p>
+<p>AveragePower</p>
+<p>120kW</p>
+<p>PulseWidth</p>
+<p>1ms</p>
+<p>BeamWidth</p>
+<p>0.6</p>
+<p>AntennaDiameter</p>
+<p>84ft</p>
+<p>Originally designed in early 1960’s
+Courtesy of MIT Lincoln Laboratory
+Used with Permission</p>
+<p>How Big are High Power Klystron Tubes ?
+Millstone Hill Radar Transmitter Room
+Waveguide output</p>
+<p>Varian X780 Klystron
+• $400,000/tube
+• 7 ft (height) x 1ft (diameter)
+• 600 lbs
+• 3% duty cycle
+• 42 dB gain</p>
+<p>Courtesy of MIT Lincoln Laboratory
+Used with Permission</p>
+<p>Waveguide Harmonic Filter</p>
+<p>• 600W peak input drive level
+Flex Waveguide Output flanges</p>
+<p>Spare Tube</p>
+<p>200’
+antenna
+waveguide</p>
+<p>Vacuum Pump</p>
+<p>Water Coolant
+Hoses, 70 Gal/min</p>
+<p>Power Amplifier Room</p>
+<p>1 kW Peak Solid State Driver Amp.</p>
+<p>Traveling Wave Tube（行波管）
+Cathode
+Gun Anode</p>
+<p>Attenuation
+Collector</p>
+<p>Heater</p>
+<p>Electron
+Beam</p>
+<p>RF In</p>
+<p>Helix Interaction
+Region</p>
+<p>RF Out
+Adapted from Skolnik
+Reference 1</p>
+<p>•
+• Expensive
+• Similar to Klystron, linear beam tubes
+• Interaction between RF field and electron beam over length
+Capable of wide bandwidth at high power</p>
+<p>of tube
+– RF wave mixes with electron beam and transfers DC
+energy from electron beam to increase energy of RF
+wave, causing wave to be amplified</p>
+<p>Photograph of Traveling Wave Tubes
+Another Type of Tube Amplifiers
+Center Freq : 3.3 GHz
+Bandwidth : 400 MHz
+Peak Power : 160 kW
+Duty Cycle : 8 %</p>
+<p>S Band
+VTS-5753
+COUPLED CAVITY
+TWT</p>
+<p>X Band
+VTX-5681C
+COUPLED CAVITY
+TWT</p>
+<p>Center Freq : 10.0 GHz
+Bandwidth : 1 GHz
+Peak Power : 100 kW
+Duty Cycle : 35 %
+Gain : 50 dB</p>
+<p>Gain : 43 dB</p>
+<p>~ 8 ft</p>
+<p>S-Band Transmitter</p>
+<p>Courtesy of MIT Lincoln Laboratory
+Used with Permission</p>
+<p>Simplified
+Representation
+of CFA</p>
+<p>Crossed Field Amplifier (CFA)
+交叉场放大器
+Cathode</p>
+<p>Drift
+Region</p>
+<p>• Capable of :
+–</p>
+<p>High coherent power</p>
+<p>–
+–</p>
+<p>Good efficiency
+Wide bandwidth</p>
+<p>• Relatively low gain (10 dB)
+• Generally noisier and less</p>
+<p>Anode
+and
+Slow-wave
+Circuit</p>
+<p>stable</p>
+<p>RF
+In</p>
+<p>Control
+Electrode</p>
+<p>RF
+Out</p>
+<p>• Resembles magnetron and employs crossed electric and
+magnetic fields
+–
+–</p>
+<p>Electrons emitted from cylindrical cathode
+Under action of crossed electromagnetic fields, electrons form
+rotating bunches
+– Bunches of electrons drift in phase with RF signal and transfer their
+DC energy to the RF wave to produce amplification</p>
+<p>Crossed Field Amplifier
+交叉场放大器</p>
+<p>CPI SFD 233G</p>
+<p>X-Band (9.0 to 9.5 GHZ)
+Peak Output Power 900 kW
+Duty Cycle .1%
+Pulsewidth 0.83 μsec
+Liquid cooled</p>
+<p>Courtesy of CPI. Used with permission.</p>
+<p>Comparison of Different Types of
+High Power Amplifier Tubes（coherent signal）
+Klystron
+Voltage
+Gain
+Bandwidth
+X-Rays
+Efficiency
+Basic
+With Depressed
+Collectors
+Ion Pump
+Weight
+Size
+Cost
+Spurious Noise
+Usable Dynamic Range</p>
+<p>Traveling Wave Tube</p>
+<p>Crossed Field Amplifier</p>
+<p>1 MW requires 90kV
+30 - 70 dB
+1-8%
+Severe, but lead is reliable</p>
+<p>1 MW requires 90kV
+30 - 70 dB
+10 - 35 %
+Severe, but lead is reliable</p>
+<p>1 MW requires 40kV
+8 - 30 dB
+10 - 15 %
+Not a Problem</p>
+<p>15 - 30 %
+40 - 60 %</p>
+<p>15 - 30 %
+40 - 60 %</p>
+<p>35 - 45 %
+NA</p>
+<p>Required with Large Tubes
+Higher
+Larger
+Medium</p>
+<ul><li>dB 90 40-80 dB</li></ul>
+<p>Required with Large Tubes
+Higher
+Larger
+Higher</p>
+<ul><li>dB 90 40-80 dB</li></ul>
+<p>Self Pumping
+Lower
+Smaller
+Medium</p>
+<ul><li>dB 55 to 70 a few dB</li></ul>
+<p>Coaxial Cavity Magnetron
+（同轴谐振腔磁控管）
+ Power Oscillator not an power amplifier</p>
+<p>Poor noise and stability characteristics
+– Restricted use for MTI
+Average power is limited
+– 1 -2 kilowatts
+– Good for short-medium range radars
+Not coherent pulse to pulse
+Coaxial Cavity Magnetron
+Well suited for civil marine radars
+Magnetron Operation
+– Electric and magnetic field are perpendicular
+– Electrons emitted from cathode travel around circular path in bunches
+– Electrons interact with e-m fields and give up their DC energy to the
+RF field
+– RF energy is output with coupling slot</p>
+<p>Coaxial Magnetrons
+S-Band (2.7 to 2.9 GHZ)</p>
+<p>X-Band (9.275 to 9.325 GHZ)</p>
+<p>Courtesy of CPI. Used with permission.</p>
+<p>Model SFD 303B</p>
+<p>Model VMS 1143B</p>
+<p>Peak Output Power 1 MW
+Duty Cycle .1%
+Pulsewidth 3.5 μsec
+Liquid cooled
+Fixed frequency</p>
+<p>Peak Output Power 3 MW
+Duty Cycle .08%
+Pulsewidth 2.0 μsec
+Liquid cooled
+Mechanically tunable</p>
+<p>OOther Types of High Power Amplifiers
+• Hybrid Klystrons
+–</p>
+<p>Twystron, Extended interaction klystron, and Clustered cavity
+klystron
+Multiple cavities replace one or more of the resonant cavities
+Bandwidths ~15 to 20%
+Have been used in low power millimeter wave transmitters</p>
+<p>• Gyrotrons（回旋管）
+–
+–
+–</p>
+<p>Require very high magnetic fields
+Yield very high power in millimeter region
+Slight use in fielded radar systems</p>
+<p>耦合腔
+行波管</p>
+<p>速调管与
+行波速调管</p>
+<p>频率越高，功率越低</p>
+<p>回旋管
+周期永磁
+耦合腔行波管</p>
+<p>周期永磁
+螺线行波管</p>
+<p>磁控管</p>
+<p>微波发射管功率与带宽能力现状
+35</p>
+<p> 固态发射机</p>
+<p>多个微波功率器件组合成固态发射模块；由几十个甚至
+几千个固态发射模块组成固态发射机。</p>
+<p>特点：
+不预热，寿命长
+高可靠性
+设备体积小，重量轻
+工作频带宽，效率高
+系统设计，运用灵活
+维护方便，成本较低</p>
+<p>适用范围 高工作比的雷达和连续波雷达系统</p>
+<p>36</p>
+<p>Solid State Power Transistors
+Available Commercial Devices</p>
+<p>Bipolar PH3135-90S Pulsed Power Transistor
+3.1-3.5 GHz, 90 W</p>
+<p>UF28150J MOSFET Power Transistor
+100-500 MHz, 150 W</p>
+<p>•
+•</p>
+<p>PHA2731-190M Pulsed Power Amplifier Module
+190 Watts 2.7 - 3.1 GHz, 200 us Pulse, 10% Duty</p>
+<p>Solid state power transistors are
+basic building blocks of solid state
+amplifiers
+Advantages of solid state power
+amplifiers
+–
+–
+–</p>
+<p>Small footprint
+Low profile
+High reliability
+Courtesy of MA/COM Technology Solutions
+Used with permission</p>
+<p>37</p>
+<p>Solid State RF Power Amplifiers
+• Solid state power generation device
+–</p>
+<p>Transistor amplifier (silicon bipolar and gallium arsenide)</p>
+<p>• Inherently low power and low gain
+• Operates with low voltages and has high reliability
+• To increase output power, transistors are operated in
+•</p>
+<p>parallel with more than 1 stage
+A module might consist of 8 transistors
+–
+–
+–</p>
+<p>Four in parallel as the final stage, followed by
+Two in parallel,as the second stage, followed by
+Two in series, as the driver stages</p>
+<p>• Solid state power devices cannot operate at high peak
+power
+–
+–</p>
+<p>Fifty watt average power transistor cannot operate at much
+more than 200 watts of peak power without overheating
+Pulse compression needed for reasonable range resolution</p>
+<p>Uses of Solid State Amplifiers in Radar
+• Transmitter for low power application
+• High power transmitter
+–</p>
+<p>A large number of microwave transistors are combined with
+microwave circuitry</p>
+<p>• Many modules distributed on a mechanically steered planar
+array
+–</p>
+<p>A “3 D” radar</p>
+<p>• A module at each of the many elements of an electronically
+scanned phased array
+–</p>
+<p>Called an “active aperture”</p>
+<p>Solid State Radar Examples - PAVE PAWS
+• PAVE PAWS
+–
+–
+–</p>
+<p>First all solid state active aperture electronically steered phased
+array radar
+UHF Band , detection and warning of sea launched missile attack
+1792 active transceiver T / R modules, 340 w of peak power each</p>
+<p>Courtesy of Raytheon
+Used with Permission</p>
+<p>Solid State Radar Examples - TPS-59
+TPS-59</p>
+<p>•Air surveillance radar developed for
+the US Marine Corps
+•Rotating planar L-Band array
+30 ft by 15 ft
+•Each transmitter module has 10 of 100
+watt amplifier units consisting of two
+55 watt silicon bipolar transistors
+(7 watts of gain) driven by a smaller
+25 watt device
+•Each transmitter module feeds one of
+54 rows</p>
+<p>Courtesy of Lockheed Martin
+Used with Permission</p>
+<p>Solid State Radar Examples - RAMP
+• Radar Modernization Project (RAMP)
+–
+–
+–</p>
+<p>L-Band air traffic control surveillance radar developed for Canada
+by Raytheon Canada
+Solid state transmitter with peak power of 28 kW (7% duty cycle)
+14 modules, each consists of 42 - 100 watt peak power silicon
+bipolar transistors in 2-8-32 configuration
+RF amplifier modules combined in pairs-- > 7 of these combined -- > 1
+transmitter
+Only 6 needed to meet sensitivity requirement</p>
+<p>RAMP Radar</p>
+<p>Transmitter Cabinet</p>
+<p>Solid State Transmitter Module</p>
+<p>Courtesy of Raytheon
+Used with Permission</p>
+<p>42</p>
+<p>Example of Solid State Transmitter
+Radar Surveillance Technology Experimental Radar (RSTER)</p>
+<p>Driver Amp Module</p>
+<p>Power Amp Module</p>
+<p>•• 14 channels with 140 kW total
+peak power
+–</p>
+<p>8 kW average power</p>
+<p>•• Each channel is supplied by a
+power amplifier module
+–</p>
+<p>10 kW peak power</p>
+<p>Average Power Output Versus Frequency
+Tube Amplifiers versus Solid State Amplifiers</p>
+<p>Average Power (Watts)</p>
+<p>106
+Tube Amplifier Dominate
+104
+Region of Competition
+102
+Solid State Amplifiers Dominate
+1</p>
+<p>10-2</p>
+<p>.1</p>
+<p>.3</p>
+<p>1</p>
+<p>3</p>
+<p>10
+30
+Frequency (GHz)</p>
+<p>100</p>
+<p>300</p>
+<p>1000</p>
+<p>•</p>
+<p>Vacuum tube amplifiers and solid state amplifiers
+VacuumTube
+Amplifiers</p>
+<p>SolidState
+Amplifiers</p>
+<p>OutputPower</p>
+<p>High
+(10kWto1MW)</p>
+<p>Low
+(10’sto100’sW)</p>
+<p>CostperUnit</p>
+<p>High
+(<span class="math-inline">$10’sKto$</span>300K)</p>
+<p>Low
+($100’s)</p>
+<p>CostperWatt</p>
+<p>$1–3</p>
+<p>Varied</p>
+<p>Size</p>
+<p>Bulkyandheavy</p>
+<p>Smallfootprint</p>
+<p>Applications</p>
+<p>•Dishantenna
+•Passivearray</p>
+<p>•Activearray
+•Digitalarray
+Courtesy of MIT Lincoln Laboratory
+Used with Permission</p>
+<p>Methods of Power Amplification
+• Tube amplifiers
+–
+–
+–</p>
+<p>Krystrons
+Travelling wave tubes
+CFAs</p>
+<p>• Solid State amplifiers
+–</p>
+<p>Solid state power transistors</p>
+<p>Issues to be traded off in choice of high power amplifier
+– Average power output at desired operating frequency
+– Amplifier efficiency
+– Instantaneous and tunable bandwidth
+– Duty cycle
+– Gain
+– Reliability
+– Cost</p>
+<p>Technology</p>
+<p>POT</p>
+<p>单级振荡式</p>
+<p>Maximum Frequency</p>
+<p>Peak/ Average Power</p>
+<p>Typical Gain</p>
+<p>Typical Bandwidth</p>
+<p>Magnetron</p>
+<p>95 GHz</p>
+<p>1 MW / 500 W )¹</p>
+<p>-</p>
+<p>Fixed…10%</p>
+<p>Impatt diode</p>
+<p>140 GHz</p>
+<p>30 W / 10 W )¹</p>
+<p>-</p>
+<p>Fixed…5%</p>
+<p>220 GHz</p>
+<p>1 kW / 10 W )²</p>
+<p>-</p>
+<p>95 GHz</p>
+<p>4 kW / 200 W )¹</p>
+<p>40…60dB</p>
+<p>Octave/ multioctave</p>
+<p>Ring-loop TWT</p>
+<p>18 GHz</p>
+<p>8 kW / 400 W )¹</p>
+<p>40…60dB</p>
+<p>5…15%</p>
+<p>Coupled-cavity TWT</p>
+<p>95 GHz</p>
+<p>100 kW / 25 kW )¹</p>
+<p>40…60dB</p>
+<p>5…15%</p>
+<p>280 GHz</p>
+<p>1 kW / 10 W )²</p>
+<p>40…50dB</p>
+<p>0.5…1%</p>
+<p>35 GHz</p>
+<p>50 kW / 5 kW )¹</p>
+<p>30…60dB</p>
+<p>18 GHz</p>
+<p>500 kW / 1 kW )¹</p>
+<p>10…20dB</p>
+<p>5…15%</p>
+<p>solid-state Silicon BJT</p>
+<p>5 GHz</p>
+<p>300 W / 30 W )³</p>
+<p>5…10dB</p>
+<p>10…25%</p>
+<p>GaAs FET</p>
+<p>30 GHz</p>
+<p>15 W / 5 W )¹</p>
+<p>5…10 dB</p>
+<p>5…20%</p>
+<p>Extended interaction
+oscillator (EIO)
+Helix traveling wave
+tube (TWT)</p>
+<p>Extended interaction
+PAT</p>
+<p>主振放大式</p>
+<p>Klystron (EIK)
+Klystron
+Crossed-Field
+amplifier (CFA)</p>
+<p>)¹ demonstrated at X-Band
+)² demonstrated at 95 GHz
+)³ demonstrated at 1 GHz</p>
+<p>0.2%(elec.)
+4% (mech.)</p>
+<p>0.1…2% (inst.)
+1…10% (mech.)</p>
+<p>Pulse Radar Transmitter Technology</p>
+      
+      <section class="related-pages"><h3 class="related-pages__title">相关页面</h3><div class="related-pages__grid"><a href="../concepts/2026-10-脉冲多普勒雷达.html" class="related-pages__card"><span class="type-badge concept">concept</span><div class="related-pages__card-title">2026-10-脉冲多普勒雷达</div></a>
+<a href="../concepts/2026-8-模糊函数及雷达波形设计.html" class="related-pages__card"><span class="type-badge concept">concept</span><div class="related-pages__card-title">2026-8-模糊函数及雷达波形设计</div></a>
+<a href="../concepts/2026-9-雷达信号处理.html" class="related-pages__card"><span class="type-badge concept">concept</span><div class="related-pages__card-title">2026-9-雷达信号处理</div></a>
+<a href="../concepts/2026-9-雷达信号检测.html" class="related-pages__card"><span class="type-badge concept">concept</span><div class="related-pages__card-title">2026-9-雷达信号检测</div></a></div></section>
+      <nav class="page-pager">
+        <div class="page-pager__cell"><a href="../concepts/2026雷达原理及系统绪论-2.html" class="page-pager__link"><span class="page-pager__arr">←</span><span class="page-pager__text">2026雷达原理及系统绪论-2</span></a></div>
+        <div class="page-pager__cell page-pager__cell--next"><a href="../concepts/2026雷达接收机与显示器.html" class="page-pager__link"><span class="page-pager__text">2026雷达接收机与显示器</span><span class="page-pager__arr">→</span></a></div>
+      </nav>
+
+    </main>
+
+    <aside class="sidebar">
+      <section>
+        <h4>页面信息</h4>
+        <ul>
+          <li>类型：概念</li>
+          <li>状态：draft</li>
+          <li>置信度：<span class="confidence-badge" style="display:inline-flex;align-items:center;gap:4px;font-size:0.8rem;color:#f59e0b;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;"></span>50%</span></li>
+          <li>创建：2026-06-01</li>
+          <li>更新：2026-06-01</li>
+        </ul>
+      </section>
+      <section>
+        <h4>相关页面</h4>
+        <ul>
+          <li><a href="../concepts/2026-10-脉冲多普勒雷达.html">2026-10-脉冲多普勒雷达</a></li>
+          <li><a href="../concepts/2026-8-模糊函数及雷达波形设计.html">2026-8-模糊函数及雷达波形设计</a></li>
+          <li><a href="../concepts/2026-9-雷达信号处理.html">2026-9-雷达信号处理</a></li>
+          <li><a href="../concepts/2026-9-雷达信号检测.html">2026-9-雷达信号检测</a></li>
+        </ul>
+      </section>
+      
+    </aside>
+  </div>
+
+  <footer>
+    <p>Radar 2026 — 编译预览 · 源文件: wiki/2026雷达发射机.md · 重编译: 2026-06-01</p>
+  </footer>
+
+  <script>window.__KNOWLEVER_BASE="../";window.__KNOWLEVER_SITE_NAME="Radar 2026";</script>
+  <script src="../assets/js/site-common.js"></script>
+  <script src="../assets/data/site-page-data.js"></script>
+  <script src="../assets/js/site-nav.js" defer></script>
+  <script src="../assets/js/site-page.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true, theme: document.documentElement.dataset.theme==='dark' ? 'dark' : 'default', securityLevel:'loose', flowchart:{nodeSpacing:20, rankSpacing:40, padding:12}, themeVariables:{fontSize:'16px'}});</script>
+  <script src="../assets/js/tooltips.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement !== 'function') return;
+      document.querySelectorAll('.page-content').forEach(function (node) {
+        renderMathInElement(node, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '$', right: '$', display: false }
+          ],
+          throwOnError: false
+        });
+      });
+    });
+  </script>
+</body>
+</html>

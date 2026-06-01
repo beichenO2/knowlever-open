@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="通过相参积累实现多普勒频谱分析的慢时间域处理模块，用于提升目标速度测量精度">
+  <meta name="last-modified" content="2026-06-01">
+  <title>MTD处理 — Radar 2026</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  
+  <style>.page-summary{color:var(--text-muted,#666);font-size:1.05rem;line-height:1.6;margin:-0.5rem 0 1.5rem;padding:0.75rem 1rem;background:var(--bg-secondary,#f8f9fa);border-radius:8px;border-left:3px solid var(--accent,#3b82f6);}</style>
+</head>
+<body>
+  <header class="site-header" data-site-nav></header>
+
+  <div class="breadcrumb">
+    <a href="../index.html">首页</a><span>›</span>
+    <a href="../knowledge-hub.html">实体</a><span>›</span>
+    MTD处理
+  </div>
+
+  <div class="page-layout">
+    <main class="page-content">
+
+      <div class="page-meta">
+        <span class="type-badge entity">📦 Entity</span>
+        <span class="status-badge draft">draft</span>
+        <span class="confidence-badge" style="display:inline-flex;align-items:center;gap:4px;font-size:0.8rem;color:#10b981;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;"></span>80%</span>
+        <span class="date-info">更新: 2026-06-01</span>
+      </div>
+      
+
+      <h1>MTD处理</h1>
+      <p class="page-summary">通过相参积累实现多普勒频谱分析的慢时间域处理模块，用于提升目标速度测量精度</p>
+
+      <div class="nav-mermaid" style="margin-bottom:1.5rem;overflow-x:auto;"><pre class="mermaid" style="font-size:15px;min-height:80px;">
+graph LR
+  current["MTD处理"]:::current
+  current -.- r0["雷达信号处理"]:::related
+  click r0 "../concepts/concept-radar-signal-processing.html"
+  current -.- r1["雷达信号处理核心技术流程"]:::related
+  click r1 "../sources/src-20260601-2026-9-雷达信号处理.html"
+  current -.- r2["射频信号"]:::related
+  click r2 "../entities/entity-rf-signal.html"
+  current -.- r3["基带信号处理"]:::related
+  click r3 "../concepts/concept-baseband-signal-processing.html"
+  classDef current fill:#3b82f6,stroke:#1e40af,color:#fff,font-weight:bold
+  classDef parent fill:#e0f2fe,stroke:#38bdf8,color:#0c4a6e
+  classDef child fill:#f0fdf4,stroke:#86efac,color:#14532d
+  classDef related fill:#fef3c7,stroke:#f59e0b,color:#78350f
+</pre></div><h2 id="定义">定义</h2>
+<p>MTD（Moving Target Detection）处理是雷达信号处理中的关键模块，属于雷达信号处理（<a href="../concepts/concept-radar-signal-processing.html" class="wiki-link">雷达信号处理</a>）体系下的慢时间域处理技术。其核心功能是通过相参积累实现多普勒频谱分析，用于提取目标速度信息，属于雷达信号检测与参数估计（<span style="color:var(--text-muted,#888);border-bottom:1px dashed var(--text-muted,#ccc)" title="concept-radar-signal-detection">concept-radar-signal-detection</span>）的重要组成部分。</p>
+<h2 id="详细属性">详细属性</h2>
+<table>
+<thead><tr><th>参数</th><th>规格</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td>采样间隔</td><td>T</td><td>脉冲重复周期，通常为100μs</td></tr>
+<tr><td>权值计算</td><td>w(n) = e^{-j2πfd(n-1)T}</td><td>根据多普勒频率计算相参积累权值</td></tr>
+<tr><td>离散频率值</td><td>N-K个</td><td>通常为2的整数次方，如8、32、64</td></tr>
+<tr><td>适用场景</td><td>多普勒频谱分析</td><td>提取目标速度信息</td></tr>
+<tr><td>输入数据</td><td>基带信号</td><td>经过MTI处理后的数据</td></tr>
+<tr><td>输出数据</td><td>多普勒频谱</td><td>目标速度分布信息</td></tr>
+</tbody>
+</table>
+<h2 id="工作原理">工作原理</h2>
+<p>MTD处理通过相参积累技术实现多普勒频谱分析。具体步骤如下：</p>
+<ol><li><strong>权值计算</strong>：根据假设的多普勒频率fd，计算权值w(n) = e^{-j2πfd(n-1)T}。例如，当fd=5kHz，T=100μs时，权值序列依次为1, e^{-j2π<em>5kHz</em>100μs}, e^{-j2π<em>5kHz</em>200μs}, ...。</li><li><strong>相参积累</strong>：对N-K个距离单元数据进行加权求和，公式为P(i) = Σ_{n=k+1}^N w(n) * y(n)，其中y(n)为MTI处理后的数据。例如，当N-K=64时，每个距离单元的信号幅度将被积累64倍。</li><li><strong>FFT频谱分析</strong>：利用快速傅里叶变换（FFT）将时域数据转换为频域，得到离散多普勒频谱。如N-K=8时，FFT可同时计算8个离散频率值，对应不同速度的目标。</li><li><strong>频谱峰值检测</strong>：通过分析多普勒频谱的峰值位置，确定目标的多普勒频率fd，进而计算目标速度v = fd * λ/2，其中λ为波长。</li></ol>
+<h2 id="使用场景与优缺点">使用场景与优缺点</h2>
+<h3 id="使用场景">使用场景</h3>
+<ul><li>多普勒频谱分析：提取目标速度信息</li><li>速度测量：精确测量运动目标的速度</li><li>与CFAR处理结合：实现目标检测与参数估计</li></ul>
+<h3 id="优点">优点</h3>
+<ul><li>提升多普勒频谱分辨率：通过相参积累提高速度测量精度</li><li>适应复杂环境：有效处理多目标和杂波干扰</li><li>与FFT结合：实现高效频谱分析</li></ul>
+<h3 id="注意事项">注意事项</h3>
+<ul><li>需要稳定信号源：避免相参积累误差</li><li>需要足够数据量：N-K应为2的整数次方</li><li>需要处理多普勒模糊：当fd超过系统分辨能力时需采用额外措施</li></ul>
+<h2 id="原文证据">原文证据</h2>
+<ul><li><strong>权值计算</strong>："取权值：w(n) = e^{-j2πfd(n-1)T}...共N-K个离散频率值"（<a href="../sources/src-20260601-2026-9-雷达信号处理.html" class="wiki-link">雷达信号处理核心技术流程</a>）</li><li><strong>相参积累</strong>："N-K次积累后，其幅度值增加了N-K倍...实现了相参积累"（<a href="../sources/src-20260601-2026-9-雷达信号处理.html" class="wiki-link">雷达信号处理核心技术流程</a>）</li><li><strong>FFT实现</strong>："利用FFT可计算y(1)~y(N-k)的离散频谱同时计算出P(1)~P(N-K)"（<a href="../sources/src-20260601-2026-9-雷达信号处理.html" class="wiki-link">雷达信号处理核心技术流程</a>）</li></ul>
+<h2 id="关联知识">关联知识</h2>
+<ul><li><a href="../entities/entity-rf-signal.html" class="wiki-link">射频信号</a> 射频信号的时域表达式及频谱特性</li><li><a href="../concepts/concept-baseband-signal-processing.html" class="wiki-link">基带信号处理</a> 基带信号处理流程</li><li><a href="../entities/entity-cfar-processing.html" class="wiki-link">CFAR处理</a> 恒虚警处理算法原理</li><li><a href="../concepts/concept-doppler-spectrum-analysis.html" class="wiki-link">多普勒频谱分析</a> 多普勒频谱分析技术</li><li><a href="../entities/entity-prf.html" class="wiki-link">PRF参数详解</a> 脉冲重复频率（PRF）的定义与计算</li></ul>
+<p>来源：<code>src-20260601-2026-9-雷达信号处理</code></p>
+<div align="right" style="opacity: 0.5; font-size: 0.8em;">✨ <i>Compiled by MiniMax-M2.7-highspeed</i></div>
+      
+      
+      <nav class="page-pager">
+        <div class="page-pager__cell"><a href="../entities/entity-matched-filter.html" class="page-pager__link"><span class="page-pager__arr">←</span><span class="page-pager__text">匹配滤波器</span></a></div>
+        <div class="page-pager__cell page-pager__cell--next"><a href="../entities/entity-mti-processing.html" class="page-pager__link"><span class="page-pager__text">MTI处理</span><span class="page-pager__arr">→</span></a></div>
+      </nav>
+
+    </main>
+
+    <aside class="sidebar">
+      <section>
+        <h4>页面信息</h4>
+        <ul>
+          <li>类型：实体</li>
+          <li>状态：draft</li>
+          <li>置信度：<span class="confidence-badge" style="display:inline-flex;align-items:center;gap:4px;font-size:0.8rem;color:#10b981;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;"></span>80%</span></li>
+          <li>创建：2026-06-01</li>
+          <li>更新：2026-06-01</li>
+        </ul>
+      </section>
+      
+      <section>
+        <h4>目录</h4>
+        <ul>
+          <li><a href="#定义">定义</a></li>
+          <li><a href="#详细属性">详细属性</a></li>
+          <li><a href="#工作原理">工作原理</a></li>
+          <li><a href="#使用场景与优缺点">使用场景与优缺点</a></li>
+          <li class="toc-sub"><a href="#使用场景">使用场景</a></li>
+          <li class="toc-sub"><a href="#优点">优点</a></li>
+          <li class="toc-sub"><a href="#注意事项">注意事项</a></li>
+          <li><a href="#原文证据">原文证据</a></li>
+          <li><a href="#关联知识">关联知识</a></li>
+        </ul>
+      </section>
+    </aside>
+  </div>
+
+  <footer>
+    <p>Radar 2026 — 编译预览 · 源文件: wiki/entity-mtd-processing.md · 重编译: 2026-06-01</p>
+  </footer>
+
+  <script>window.__KNOWLEVER_BASE="../";window.__KNOWLEVER_SITE_NAME="Radar 2026";</script>
+  <script src="../assets/js/site-common.js"></script>
+  <script src="../assets/data/site-page-data.js"></script>
+  <script src="../assets/js/site-nav.js" defer></script>
+  <script src="../assets/js/site-page.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true, theme: document.documentElement.dataset.theme==='dark' ? 'dark' : 'default', securityLevel:'loose', flowchart:{nodeSpacing:20, rankSpacing:40, padding:12}, themeVariables:{fontSize:'16px'}});</script>
+  <script src="../assets/js/tooltips.js"></script>
+  
+  
+  
+</body>
+</html>

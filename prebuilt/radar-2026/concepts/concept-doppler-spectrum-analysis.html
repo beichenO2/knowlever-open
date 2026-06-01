@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="通过MTD处理实现目标速度测量的多普勒频谱分析技术，利用相参积累和FFT实现多普勒频谱分辨率提升">
+  <meta name="last-modified" content="2026-06-01">
+  <title>多普勒频谱分析 — Radar 2026</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <style>.page-summary{color:var(--text-muted,#666);font-size:1.05rem;line-height:1.6;margin:-0.5rem 0 1.5rem;padding:0.75rem 1rem;background:var(--bg-secondary,#f8f9fa);border-radius:8px;border-left:3px solid var(--accent,#3b82f6);}</style>
+</head>
+<body>
+  <header class="site-header" data-site-nav></header>
+
+  <div class="breadcrumb">
+    <a href="../index.html">首页</a><span>›</span>
+    <a href="../concepts-hub.html">概念</a><span>›</span>
+    多普勒频谱分析
+  </div>
+
+  <div class="page-layout">
+    <main class="page-content">
+
+      <div class="page-meta">
+        <span class="type-badge concept">💡 Concept</span>
+        <span class="status-badge draft">draft</span>
+        <span class="confidence-badge" style="display:inline-flex;align-items:center;gap:4px;font-size:0.8rem;color:#10b981;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;"></span>80%</span>
+        <span class="date-info">更新: 2026-06-01</span>
+      </div>
+      
+
+      <h1>多普勒频谱分析</h1>
+      <p class="page-summary">通过MTD处理实现目标速度测量的多普勒频谱分析技术，利用相参积累和FFT实现多普勒频谱分辨率提升</p>
+
+      <div class="nav-mermaid" style="margin-bottom:1.5rem;overflow-x:auto;"><pre class="mermaid" style="font-size:15px;min-height:80px;">
+graph LR
+  current["多普勒频谱分析"]:::current
+  p0["雷达信号处理"]:::parent --> current
+  click p0 "../concepts/concept-radar-signal-processing.html"
+  current -.- r0["基带信号处理"]:::related
+  click r0 "../concepts/concept-baseband-signal-processing.html"
+  current -.- r1["恒虚警检测"]:::related
+  click r1 "../concepts/constant-false-alarm-rate.html"
+  current -.- r2["基带信号"]:::related
+  click r2 "../entities/entity-baseband-signal.html"
+  current -.- r3["CFAR处理"]:::related
+  click r3 "../entities/entity-cfar-processing.html"
+  classDef current fill:#3b82f6,stroke:#1e40af,color:#fff,font-weight:bold
+  classDef parent fill:#e0f2fe,stroke:#38bdf8,color:#0c4a6e
+  classDef child fill:#f0fdf4,stroke:#86efac,color:#14532d
+  classDef related fill:#fef3c7,stroke:#f59e0b,color:#78350f
+</pre></div><h2 id="定义">定义</h2>
+<p>多普勒频谱分析是雷达信号处理中用于测量目标速度的核心技术，通过MTD（动目标显示）处理实现多普勒频谱的提取与分析。该技术基于目标运动引起的多普勒频移特性，结合相参积累和FFT（快速傅里叶变换）算法，将时域信号转换为频域特征，从而实现对目标速度的精确测量。</p>
+<p>多普勒频谱分析包含两个核心步骤：1）通过相参积累提升信噪比；2）利用FFT将离散多普勒频率转换为频谱分布。其输出结果为距离-速度二维分布图，可直接用于目标检测与参数估计。</p>
+<h2 id="解决什么问题">解决什么问题</h2>
+<p>多普勒频谱分析解决了传统雷达系统中目标速度测量的难题。在复杂电磁环境中，固定目标杂波（如地面回波）会严重干扰运动目标检测。通过多普勒频谱分析，系统能够：</p>
+<ol><li>区分静止目标与运动目标（多普勒频率为0的固定目标被抑制）</li><li>提取运动目标的速度信息（通过多普勒频移计算）</li><li>提高速度测量精度（相参积累提升信噪比）</li></ol>
+<h2 id="工作原理">工作原理</h2>
+<h3 id="时域信号处理流程">时域信号处理流程</h3>
+<ol><li><strong>MTD处理前的数据</strong>：存储N-K个距离单元的基带信号</li><li><strong>相参积累</strong>：对每个距离单元进行加权求和，权重为e^{-j2πfd(n-1)T}</li><li><strong>FFT转换</strong>：将离散多普勒频率序列转换为频谱分布</li></ol>
+<pre><code>N-K个
+       权系数
+       w(k+1) = e^{-j2πfd·0·T} = 1
+       w(k+2) = e^{-j2πfd·1·T}
+       w(k+3) = e^{-j2πfd·2·T}
+       ...
+       w(N) = e^{-j2πfd·(N-k-1)T}</code></pre>
+<h3 id="频域分析">频域分析</h3>
+<p>经过相参积累后的信号幅度P = (N-K)·cA，其中cA为单个距离单元的幅度。通过FFT运算，可得到离散多普勒频率序号i对应的幅度值P(i)，最终形成多普勒频谱图。</p>
+<h2 id="关键公式-方法">关键公式/方法</h2>
+<h3 id="多普勒频率计算公式">多普勒频率计算公式</h3>
+<div class="math-block">$$ f_d = \frac{i}{N-K} \cdot PRF $$</div>
+<ul><li><span class="math-inline">$ f_d $</span>：目标多普勒频率（Hz）</li><li><span class="math-inline">$ i $</span>：离散多普勒频率序号（0~N-K-1）</li><li><span class="math-inline">$ N-K $</span>：对消后脉冲数</li><li><span class="math-inline">$ PRF $</span>：脉冲重复频率（1/T，单位Hz）</li></ul>
+<h3 id="目标速度计算公式">目标速度计算公式</h3>
+<div class="math-block">$$ v = f_d \cdot \frac{\lambda}{2} $$</div>
+<ul><li><span class="math-inline">$ v $</span>：目标速度（m/s）</li><li><span class="math-inline">$ \lambda $</span>：电磁波波长（m）</li><li><span class="math-inline">$ f_d $</span>：多普勒频率（Hz）</li></ul>
+<h3 id="距离计算公式">距离计算公式</h3>
+<div class="math-block">$$ R = n \cdot \Delta t \cdot \frac{c}{2} $$</div>
+<ul><li><span class="math-inline">$ R $</span>：目标距离（m）</li><li><span class="math-inline">$ n $</span>：距离单元序号</li><li><span class="math-inline">$ \Delta t $</span>：距离单元宽度（s）</li><li><span class="math-inline">$ c $</span>：光速（3×10⁸ m/s）</li></ul>
+<h2 id="典型应用">典型应用</h2>
+<h3 id="雷达参数计算示例">雷达参数计算示例</h3>
+<p>某雷达参数：</p>
+<ul><li>脉冲重复周期 T = 100μs → PRF = 10kHz</li><li>距离单元数 N-K = 64</li><li>检测到第j=20个距离单元，第i=32个多普勒单元</li></ul>
+<p>计算：</p>
+<ol><li>目标距离：R = 20×1μs×3×10⁸/2 = 3000m</li><li>多普勒频率：fd = 32/64×10kHz = 5kHz</li><li>目标速度：v = 5kHz×3×10⁻²/2 = 75m/s</li></ol>
+<h2 id="与其他概念的对比">与其他概念的对比</h2>
+<table>
+<thead><tr><th>对比维度</th><th>多普勒频谱分析</th><th>MTI处理</th></tr></thead>
+<tbody>
+<tr><td>核心目标</td><td>目标速度测量</td><td>抑制固定目标杂波</td></tr>
+<tr><td>技术手段</td><td>相参积累+FFT</td><td>差分运算</td></tr>
+<tr><td>输出结果</td><td>距离-速度分布</td><td>速度滤波信号</td></tr>
+<tr><td>适用场景</td><td>运动目标检测</td><td>静止目标抑制</td></tr>
+</tbody>
+</table>
+<h2 id="常见误区">常见误区</h2>
+<ol><li><strong>混淆多普勒频移与速度关系</strong>：需注意波长λ对速度计算的影响</li><li><strong>忽略多普勒模糊</strong>：当目标速度超过PRF/2时会出现速度测量错误</li><li><strong>误用FFT窗函数</strong>：不同窗函数会影响频谱分辨率和旁瓣抑制效果</li></ol>
+<h2 id="关联知识">关联知识</h2>
+<ul><li><a href="../concepts/concept-baseband-signal-processing.html" class="wiki-link">基带信号处理</a> 基带信号处理为多普勒分析提供基础数据</li><li><a href="../entities/entity-cfar-processing.html" class="wiki-link">CFAR处理</a> 恒虚警处理依赖多普勒频谱分析结果</li><li><a href="../concepts/concept-ambiguity-function-properties.html" class="wiki-link">模糊函数性质</a> 模糊函数特性与多普勒频谱分析密切相关</li><li><a href="../entities/entity-prf.html" class="wiki-link">PRF参数详解</a> 脉冲重复频率直接影响多普勒频谱分辨率</li></ul>
+<h2 id="来源">来源</h2>
+<p>来源：<code>src-20260601-2026-9-雷达信号处理</code></p>
+<div align="right" style="opacity: 0.5; font-size: 0.8em;">✨ <i>Compiled by MiniMax-M2.7-highspeed</i></div>
+<h2 id="图示">图示</h2>
+<pre class="mermaid">
+graph LR
+  A[MTI处理] --> B[差分运算]
+  A --> C[抑制固定目标]
+  D[MTD处理] --> E[相参积累]
+  D --> F[提升分辨率]
+  B --> G[多普勒频谱分析]
+  E --> G
+  G --> H[速度测量]
+</pre>
+<blockquote><p>多普勒频谱分析对比：MTI与MTD处理方法的差异与关联</p></blockquote>
+      
+      
+      <nav class="page-pager">
+        <div class="page-pager__cell"><a href="../concepts/concept-doppler-filter-bank.html" class="page-pager__link"><span class="page-pager__arr">←</span><span class="page-pager__text">多普勒滤波器组</span></a></div>
+        <div class="page-pager__cell page-pager__cell--next"><a href="../concepts/concept-multi-valued-problem.html" class="page-pager__link"><span class="page-pager__text">多值性问题</span><span class="page-pager__arr">→</span></a></div>
+      </nav>
+
+    </main>
+
+    <aside class="sidebar">
+      <section>
+        <h4>页面信息</h4>
+        <ul>
+          <li>类型：概念</li>
+          <li>状态：draft</li>
+          <li>置信度：<span class="confidence-badge" style="display:inline-flex;align-items:center;gap:4px;font-size:0.8rem;color:#10b981;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;"></span>80%</span></li>
+          <li>创建：2026-06-01</li>
+          <li>更新：2026-06-01</li>
+        </ul>
+      </section>
+      
+      <section>
+        <h4>目录</h4>
+        <ul>
+          <li><a href="#定义">定义</a></li>
+          <li><a href="#解决什么问题">解决什么问题</a></li>
+          <li><a href="#工作原理">工作原理</a></li>
+          <li class="toc-sub"><a href="#时域信号处理流程">时域信号处理流程</a></li>
+          <li class="toc-sub"><a href="#频域分析">频域分析</a></li>
+          <li><a href="#关键公式-方法">关键公式/方法</a></li>
+          <li class="toc-sub"><a href="#多普勒频率计算公式">多普勒频率计算公式</a></li>
+          <li class="toc-sub"><a href="#目标速度计算公式">目标速度计算公式</a></li>
+          <li class="toc-sub"><a href="#距离计算公式">距离计算公式</a></li>
+          <li><a href="#典型应用">典型应用</a></li>
+          <li class="toc-sub"><a href="#雷达参数计算示例">雷达参数计算示例</a></li>
+          <li><a href="#与其他概念的对比">与其他概念的对比</a></li>
+          <li><a href="#常见误区">常见误区</a></li>
+          <li><a href="#关联知识">关联知识</a></li>
+          <li><a href="#来源">来源</a></li>
+          <li><a href="#图示">图示</a></li>
+        </ul>
+      </section>
+    </aside>
+  </div>
+
+  <footer>
+    <p>Radar 2026 — 编译预览 · 源文件: wiki/concept-doppler-spectrum-analysis.md · 重编译: 2026-06-01</p>
+  </footer>
+
+  <script>window.__KNOWLEVER_BASE="../";window.__KNOWLEVER_SITE_NAME="Radar 2026";</script>
+  <script src="../assets/js/site-common.js"></script>
+  <script src="../assets/data/site-page-data.js"></script>
+  <script src="../assets/js/site-nav.js" defer></script>
+  <script src="../assets/js/site-page.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true, theme: document.documentElement.dataset.theme==='dark' ? 'dark' : 'default', securityLevel:'loose', flowchart:{nodeSpacing:20, rankSpacing:40, padding:12}, themeVariables:{fontSize:'16px'}});</script>
+  <script src="../assets/js/tooltips.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement !== 'function') return;
+      document.querySelectorAll('.page-content').forEach(function (node) {
+        renderMathInElement(node, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '$', right: '$', display: false }
+          ],
+          throwOnError: false
+        });
+      });
+    });
+  </script>
+</body>
+</html>

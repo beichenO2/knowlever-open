@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="实现目标角度实时跟踪的闭环控制系统">
+  <meta name="last-modified" content="2026-06-01">
+  <title>自动测角系统 — Radar 2026</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  
+  <style>.page-summary{color:var(--text-muted,#666);font-size:1.05rem;line-height:1.6;margin:-0.5rem 0 1.5rem;padding:0.75rem 1rem;background:var(--bg-secondary,#f8f9fa);border-radius:8px;border-left:3px solid var(--accent,#3b82f6);}</style>
+</head>
+<body>
+  <header class="site-header" data-site-nav></header>
+
+  <div class="breadcrumb">
+    <a href="../index.html">首页</a><span>›</span>
+    <a href="../knowledge-hub.html">实体</a><span>›</span>
+    自动测角系统
+  </div>
+
+  <div class="page-layout">
+    <main class="page-content">
+
+      <div class="page-meta">
+        <span class="type-badge entity">📦 Entity</span>
+        <span class="status-badge draft">draft</span>
+        <span class="confidence-badge" style="display:inline-flex;align-items:center;gap:4px;font-size:0.8rem;color:#f59e0b;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;"></span>65%</span>
+        <span class="date-info">更新: 2026-06-01</span>
+      </div>
+      
+
+      <h1>自动测角系统</h1>
+      <p class="page-summary">实现目标角度实时跟踪的闭环控制系统</p>
+
+      <div class="nav-mermaid" style="margin-bottom:1.5rem;overflow-x:auto;"><pre class="mermaid" style="font-size:15px;min-height:80px;">
+graph LR
+  current["自动测角系统"]:::current
+  current -.- r0["测角原理"]:::related
+  click r0 "../concepts/concept-angle-measurement-principle.html"
+  current -.- r1["多值性问题"]:::related
+  click r1 "../concepts/concept-multi-valued-problem.html"
+  current -.- r2["天线方向图"]:::related
+  click r2 "../entities/entity-antenna-pattern.html"
+  current -.- r3["相位法测角"]:::related
+  click r3 "../entities/entity-phase-angle-measurement.html"
+  classDef current fill:#3b82f6,stroke:#1e40af,color:#fff,font-weight:bold
+  classDef parent fill:#e0f2fe,stroke:#38bdf8,color:#0c4a6e
+  classDef child fill:#f0fdf4,stroke:#86efac,color:#14532d
+  classDef related fill:#fef3c7,stroke:#f59e0b,color:#78350f
+</pre></div><h2 id="定义">定义</h2>
+<p>自动测角系统是雷达系统中实现目标角度实时跟踪的闭环控制系统，属于角度测量技术领域。该系统通过天线波束扫描和信号处理算法，持续监测目标方位角变化并自动调整天线指向，其核心原理与<span style="color:var(--text-muted,#888);border-bottom:1px dashed var(--text-muted,#ccc)" title="concept-auto-angle-tracking">concept-auto-angle-tracking</span>中的圆锥扫描和单脉冲测角技术密切相关。</p>
+<h2 id="详细属性">详细属性</h2>
+<table>
+<thead><tr><th>参数</th><th>规格</th><th>工作条件</th></tr></thead>
+<tbody>
+<tr><td>扫描方式</td><td>圆锥扫描/单脉冲</td><td>需配合相位法或振幅法测角</td></tr>
+<tr><td>精度</td><td>±0.1°（典型值）</td><td>环境温度-40℃~+60℃</td></tr>
+<tr><td>响应时间</td><td><10ms</td><td>供电电压24V±15%</td></tr>
+<tr><td>适用场景</td><td>空中交通管制、防空火控、卫星跟踪</td><td></td></tr>
+</tbody>
+</table>
+<h2 id="工作原理">工作原理</h2>
+<p>自动测角系统通过以下机制实现目标跟踪：</p>
+<ol><li><strong>圆锥扫描</strong>：天线波束以角速度ωs绕等信号轴旋转，形成圆锥轨迹，目标偏离轴线时产生强度变化</li><li><strong>误差鉴别</strong>：角误差鉴别器将目标偏离量转换为误差电压，其值正比于偏离角度ε</li><li><strong>闭环控制</strong>：误差电压经放大处理后控制天线转向，使轴线对准目标</li><li><strong>多模式切换</strong>：支持相位法/振幅法测角，通过差频比相或等信号法实现高精度定位</li></ol>
+<h2 id="使用场景与优缺点">使用场景与优缺点</h2>
+<h3 id="应用场景">应用场景</h3>
+<ul><li>空中交通管制：实时监控飞行器位置</li><li>防空火控：精确跟踪空中目标</li><li>卫星跟踪：维持天线对准轨道卫星</li></ul>
+<h3 id="优点">优点</h3>
+<ul><li>高精度（可达0.1°）</li><li>实时跟踪能力</li><li>抗干扰能力强</li></ul>
+<h3 id="缺点">缺点</h3>
+<ul><li>系统复杂度高</li><li>需要稳定电源环境</li><li>对机械磨损敏感</li></ul>
+<h3 id="注意事项">注意事项</h3>
+<ul><li>定期校准误差鉴别器</li><li>避免强电磁干扰环境</li><li>保持天线机械结构稳定</li></ul>
+<h2 id="原文证据">原文证据</h2>
+<blockquote><p>"目标偏离轴线（即出现误差角ε），产生一个误差电压，其值正比于ε，极性随偏离方向不同而改变。误差电压经跟踪系统变换、放大、处理后，控制天线向减小ε方向运动，使天线轴线对准目标。"</p></blockquote>
+<blockquote><p>"圆锥扫描自动测角系统通过波束旋转实现目标定位跟踪"</p></blockquote>
+<h2 id="关联知识">关联知识</h2>
+<ul><li><a href="../entities/entity-phase-angle-measurement.html" class="wiki-link">相位法测角</a></li><li><a href="../entities/entity-amplitude-angle-measurement.html" class="wiki-link">振幅法测角</a></li><li><span style="color:var(--text-muted,#888);border-bottom:1px dashed var(--text-muted,#ccc)" title="concept-beam-scanning">波束扫描方法</span></li><li><a href="../concepts/concept-multi-valued-problem.html" class="wiki-link">多值性问题</a></li></ul>
+<p>来源：<code>2026目标角度测量.pdf</code>（AutoOffice to-markdown）</p>
+<div align="right" style="opacity: 0.5; font-size: 0.8em;">✨ <i>Compiled by MiniMax-M2.7-highspeed</i></div>
+      
+      
+      <nav class="page-pager">
+        <div class="page-pager__cell"><a href="../entities/entity-antenna-pattern.html" class="page-pager__link"><span class="page-pager__arr">←</span><span class="page-pager__text">天线方向图</span></a></div>
+        <div class="page-pager__cell page-pager__cell--next"><a href="../entities/entity-baseband-signal.html" class="page-pager__link"><span class="page-pager__text">基带信号</span><span class="page-pager__arr">→</span></a></div>
+      </nav>
+
+    </main>
+
+    <aside class="sidebar">
+      <section>
+        <h4>页面信息</h4>
+        <ul>
+          <li>类型：实体</li>
+          <li>状态：draft</li>
+          <li>置信度：<span class="confidence-badge" style="display:inline-flex;align-items:center;gap:4px;font-size:0.8rem;color:#f59e0b;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;"></span>65%</span></li>
+          <li>创建：2026-06-01</li>
+          <li>更新：2026-06-01</li>
+        </ul>
+      </section>
+      
+      <section>
+        <h4>目录</h4>
+        <ul>
+          <li><a href="#定义">定义</a></li>
+          <li><a href="#详细属性">详细属性</a></li>
+          <li><a href="#工作原理">工作原理</a></li>
+          <li><a href="#使用场景与优缺点">使用场景与优缺点</a></li>
+          <li class="toc-sub"><a href="#应用场景">应用场景</a></li>
+          <li class="toc-sub"><a href="#优点">优点</a></li>
+          <li class="toc-sub"><a href="#缺点">缺点</a></li>
+          <li class="toc-sub"><a href="#注意事项">注意事项</a></li>
+          <li><a href="#原文证据">原文证据</a></li>
+          <li><a href="#关联知识">关联知识</a></li>
+        </ul>
+      </section>
+    </aside>
+  </div>
+
+  <footer>
+    <p>Radar 2026 — 编译预览 · 源文件: wiki/entity-auto-angle-tracking.md · 重编译: 2026-06-01</p>
+  </footer>
+
+  <script>window.__KNOWLEVER_BASE="../";window.__KNOWLEVER_SITE_NAME="Radar 2026";</script>
+  <script src="../assets/js/site-common.js"></script>
+  <script src="../assets/data/site-page-data.js"></script>
+  <script src="../assets/js/site-nav.js" defer></script>
+  <script src="../assets/js/site-page.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true, theme: document.documentElement.dataset.theme==='dark' ? 'dark' : 'default', securityLevel:'loose', flowchart:{nodeSpacing:20, rankSpacing:40, padding:12}, themeVariables:{fontSize:'16px'}});</script>
+  <script src="../assets/js/tooltips.js"></script>
+  
+  
+  
+</body>
+</html>

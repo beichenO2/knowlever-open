@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="描述雷达信号在距离和多普勒频率两个维度上的分布特性，用于区分动目标与杂波">
+  <meta name="last-modified" content="2026-06-01">
+  <title>距离-多普勒空间 — Radar 2026</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <style>.page-summary{color:var(--text-muted,#666);font-size:1.05rem;line-height:1.6;margin:-0.5rem 0 1.5rem;padding:0.75rem 1rem;background:var(--bg-secondary,#f8f9fa);border-radius:8px;border-left:3px solid var(--accent,#3b82f6);}</style>
+</head>
+<body>
+  <header class="site-header" data-site-nav></header>
+
+  <div class="breadcrumb">
+    <a href="../index.html">首页</a><span>›</span>
+    <a href="../concepts-hub.html">概念</a><span>›</span>
+    距离-多普勒空间
+  </div>
+
+  <div class="page-layout">
+    <main class="page-content">
+
+      <div class="page-meta">
+        <span class="type-badge concept">💡 Concept</span>
+        <span class="status-badge draft">draft</span>
+        <span class="confidence-badge" style="display:inline-flex;align-items:center;gap:4px;font-size:0.8rem;color:#f59e0b;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;"></span>60%</span>
+        <span class="date-info">更新: 2026-06-01</span>
+      </div>
+      
+
+      <h1>距离-多普勒空间</h1>
+      <p class="page-summary">描述雷达信号在距离和多普勒频率两个维度上的分布特性，用于区分动目标与杂波</p>
+
+      <div class="nav-mermaid" style="margin-bottom:1.5rem;overflow-x:auto;"><pre class="mermaid" style="font-size:15px;min-height:80px;">
+graph LR
+  current["距离-多普勒空间"]:::current
+  current -.- r0["无杂波区"]:::related
+  click r0 "../concepts/concept-no-clutter-zone.html"
+  current -.- r1["模糊函数"]:::related
+  click r1 "../entities/entity-ambiguity-function.html"
+  current -.- r2["脉冲多普勒雷达技术详解"]:::related
+  click r2 "../sources/src-20260601-2026-10-脉冲多普勒雷达.html"
+  current -.- r3["雷达信号处理总览"]:::related
+  click r3 "../syntheses/synthesis-雷达信号处理总览.html"
+  classDef current fill:#3b82f6,stroke:#1e40af,color:#fff,font-weight:bold
+  classDef parent fill:#e0f2fe,stroke:#38bdf8,color:#0c4a6e
+  classDef child fill:#f0fdf4,stroke:#86efac,color:#14532d
+  classDef related fill:#fef3c7,stroke:#f59e0b,color:#78350f
+</pre></div><h2 id="定义">定义</h2>
+<p>距离-多普勒空间是雷达信号在距离维度（时间轴）和多普勒频率维度（速度轴）上的二维分布特性。该空间通过将回波信号分解为距离门和多普勒频率两个维度，实现对动目标与杂波的分离。在PD雷达中，距离门选通技术将回波信号按距离分段，而多普勒滤波器组则提取特定频率的信号，形成距离-多普勒二维平面。</p>
+<p>该空间具有以下特征：</p>
+<ol><li>每个距离门对应特定空间区域，形成距离轴</li><li>每个多普勒频率对应特定运动状态，形成速度轴</li><li>目标信号在空间中呈现独特的多普勒频移特性</li><li>杂波（如主瓣、旁瓣、高度线杂波）在空间中呈现特定分布规律</li></ol>
+<h2 id="解决什么问题">解决什么问题</h2>
+<p>传统雷达在强杂波环境下难以区分动目标与背景噪声，距离-多普勒空间通过以下方式解决该问题：</p>
+<ol><li>利用多普勒频移特性区分静止杂波与运动目标</li><li>通过距离门选通技术消除非目标区域的杂波干扰</li><li>在二维空间中实现动目标的精确定位与速度测量</li><li>为多普勒滤波器组设计提供频谱分布依据</li></ol>
+<h2 id="工作原理">工作原理</h2>
+<h3 id="二维分布机制">二维分布机制</h3>
+<p>雷达回波信号在距离-多普勒空间中呈现以下分布特性：</p>
+<pre><code>| 多普勒频率
+          |------------------
+          |  |  |  |  |  |
+          |  |  |  |  |  |
+          |  |  |  |  |  |
+          |  |  |  |  |  |
+          |  |  |  |  |  |
+          |  |  |  |  |  |
+          |------------------
+          |  0  1  2  3  4  5
+          | 距离门</code></pre>
+<ul><li>每个距离门对应特定空间区域，形成距离轴</li><li>每个多普勒频率对应特定运动状态，形成速度轴</li><li>目标信号在空间中呈现独特的多普勒频移特性</li><li>杂波（如主瓣、旁瓣、高度线杂波）在空间中呈现特定分布规律</li></ul>
+<h3 id="频谱分布分析">频谱分布分析</h3>
+<ol><li>主瓣杂波：频率分布范围Δf_MB ≈ 2vR/(λθ_B sinφ0)，强度最高</li><li>旁瓣杂波：频率分布范围Δf_PB ≈ 2vR/λ，受天线参数影响</li><li>高度线杂波：位于零多普勒频率位置，强度次之</li><li>无杂波区：当PRF > fc_max时，目标信号落入无杂波区</li></ol>
+<h2 id="关键公式-方法">关键公式/方法</h2>
+<h3 id="多普勒频移计算">多普勒频移计算</h3>
+<div class="math-block">$$ f_d = \frac{2v_R}{\lambda} \cos \phi $$</div>
+<ul><li><span class="math-inline">$f_d$</span>：多普勒频移（Hz）</li><li><span class="math-inline">$v_R$</span>：雷达平台速度（m/s）</li><li><span class="math-inline">$\lambda$</span>：雷达波长（m）</li><li><span class="math-inline">$\phi$</span>：天线波束与地面夹角（rad）</li></ul>
+<h3 id="主瓣杂波频率分布">主瓣杂波频率分布</h3>
+<div class="math-block">$$ \Delta f_{MB} \approx \frac{2v_R}{\lambda \theta_B \sin \phi_0} $$</div>
+<ul><li><span class="math-inline">$\theta_B$</span>：波束主瓣宽度（rad）</li><li><span class="math-inline">$\phi_0$</span>：主波束轴线与地面夹角（rad）</li></ul>
+<h3 id="无杂波区条件">无杂波区条件</h3>
+<div class="math-block">$$ f_r > f_{c,max} $$</div>
+<ul><li><span class="math-inline">$f_r$</span>：脉冲重复频率（Hz）</li><li><span class="math-inline">$f_{c,max}$</span>：主瓣杂波最大展宽频率（Hz）</li></ul>
+<h2 id="典型应用">典型应用</h2>
+<h3 id="prf选择示例">PRF选择示例</h3>
+<p>当某机载PD雷达工作波长λ=3cm，主波束宽度θ_B=3°，载机速度vR=680m/s，波束中心轴线与载机速度矢量夹角φ0=45°时：</p>
+<ol><li>主瓣杂波中心频率： $<span class="math-inline">$ f_{MB} = \frac{2\times 680}{0.03 \times \cos 45°} ≈ 32kHz $</span>$</li><li>主瓣杂波频率分布范围： $<span class="math-inline">$ \Delta f_{MB} ≈ \frac{2\times 680}{0.03 \times 3° \times \sin 45°} ≈ 1.68kHz $</span>$</li><li>当PRF=200kHz时，目标落入无杂波区，检测能力最强</li></ol>
+<h2 id="与其他概念的对比">与其他概念的对比</h2>
+<table>
+<thead><tr><th>概念</th><th>距离-多普勒空间</th><th>传统雷达二维空间</th></tr></thead>
+<tbody>
+<tr><td>维度</td><td>距离+多普勒</td><td>距离+方位</td></tr>
+<tr><td>特点</td><td>频谱分布分析</td><td>时域回波分析</td></tr>
+<tr><td>应用</td><td>动目标检测</td><td>静目标定位</td></tr>
+<tr><td>优势</td><td>分离速度与距离</td><td>简单直观</td></tr>
+<tr><td>局限</td><td>需复杂信号处理</td><td>无法区分速度</td></tr>
+</tbody>
+</table>
+<h2 id="常见误区">常见误区</h2>
+<ol><li>将距离模糊与速度模糊混淆：高PRF导致距离模糊，低PRF导致速度模糊</li><li>误认为高PRF总是更好：高PRF虽提升速度分辨，但会降低距离分辨</li><li>忽视杂波分布规律：不同PRF模式下杂波重叠区不同</li><li>错误理解无杂波区条件：需同时满足PRF > fc_max和目标位置</li></ol>
+<h2 id="关联知识">关联知识</h2>
+<ul><li><span style="color:var(--text-muted,#888);border-bottom:1px dashed var(--text-muted,#ccc)" title="concept-pulse-doppler-radar">concept-pulse-doppler-radar</span>：PD雷达系统架构与工作原理</li><li><a href="../entities/entity-prf.html" class="wiki-link">PRF参数详解</a>：PRF参数对雷达性能的影响</li><li><span style="color:var(--text-muted,#888);border-bottom:1px dashed var(--text-muted,#ccc)" title="concept-motion-target-detection">concept-motion-target-detection</span>：运动目标检测技术原理</li><li><a href="../concepts/concept-doppler-filter-bank.html" class="wiki-link">多普勒滤波器组</a>：多普均滤波器组设计与应用</li></ul>
+<h2 id="来源">来源</h2>
+<p>资料来源：<code>2026-10-脉冲多普勒雷达.pdf</code>（AutoOffice to-markdown）</p>
+<div align="right" style="opacity: 0.5; font-size: 0.8em;">✨ <i>Compiled by MiniMax-M2.7-highspeed</i></div>
+<h2 id="图示">图示</h2>
+<pre class="mermaid">
+graph TD
+  A[雷达信号分布] --> B[距离轴]
+  A --> C[多普勒频率轴]
+  B --> D[地面杂波]
+  B --> E[目标回波]
+  C --> F[主瓣杂波]
+  C --> G[旁瓣杂波]
+  C --> H[高度线杂波]
+  C --> I[无杂波区]
+  style D fill:#FFCCCC,stroke:#FF0000
+  style F fill:#CCCCFF,stroke:#0000FF
+  style G fill:#CCFFCC,stroke:#00FF00
+  style I fill:#FFFFCC,stroke:#FFAA00
+</pre>
+<blockquote><p>距离-多普勒空间分布示意图：横轴为距离，纵轴为多普勒频率，标注不同杂波类型和无杂波区</p></blockquote>
+      
+      
+      <nav class="page-pager">
+        <div class="page-pager__cell"><a href="../concepts/concept-baseband-signal-processing.html" class="page-pager__link"><span class="page-pager__arr">←</span><span class="page-pager__text">基带信号处理</span></a></div>
+        <div class="page-pager__cell page-pager__cell--next"><a href="../concepts/concept-doppler-filter-bank.html" class="page-pager__link"><span class="page-pager__text">多普勒滤波器组</span><span class="page-pager__arr">→</span></a></div>
+      </nav>
+
+    </main>
+
+    <aside class="sidebar">
+      <section>
+        <h4>页面信息</h4>
+        <ul>
+          <li>类型：概念</li>
+          <li>状态：draft</li>
+          <li>置信度：<span class="confidence-badge" style="display:inline-flex;align-items:center;gap:4px;font-size:0.8rem;color:#f59e0b;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;"></span>60%</span></li>
+          <li>创建：2026-06-01</li>
+          <li>更新：2026-06-01</li>
+        </ul>
+      </section>
+      
+      <section>
+        <h4>目录</h4>
+        <ul>
+          <li><a href="#定义">定义</a></li>
+          <li><a href="#解决什么问题">解决什么问题</a></li>
+          <li><a href="#工作原理">工作原理</a></li>
+          <li class="toc-sub"><a href="#二维分布机制">二维分布机制</a></li>
+          <li class="toc-sub"><a href="#频谱分布分析">频谱分布分析</a></li>
+          <li><a href="#关键公式-方法">关键公式/方法</a></li>
+          <li class="toc-sub"><a href="#多普勒频移计算">多普勒频移计算</a></li>
+          <li class="toc-sub"><a href="#主瓣杂波频率分布">主瓣杂波频率分布</a></li>
+          <li class="toc-sub"><a href="#无杂波区条件">无杂波区条件</a></li>
+          <li><a href="#典型应用">典型应用</a></li>
+          <li class="toc-sub"><a href="#prf选择示例">PRF选择示例</a></li>
+          <li><a href="#与其他概念的对比">与其他概念的对比</a></li>
+          <li><a href="#常见误区">常见误区</a></li>
+          <li><a href="#关联知识">关联知识</a></li>
+          <li><a href="#来源">来源</a></li>
+          <li><a href="#图示">图示</a></li>
+        </ul>
+      </section>
+    </aside>
+  </div>
+
+  <footer>
+    <p>Radar 2026 — 编译预览 · 源文件: wiki/concept-distance-doppler-space.md · 重编译: 2026-06-01</p>
+  </footer>
+
+  <script>window.__KNOWLEVER_BASE="../";window.__KNOWLEVER_SITE_NAME="Radar 2026";</script>
+  <script src="../assets/js/site-common.js"></script>
+  <script src="../assets/data/site-page-data.js"></script>
+  <script src="../assets/js/site-nav.js" defer></script>
+  <script src="../assets/js/site-page.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true, theme: document.documentElement.dataset.theme==='dark' ? 'dark' : 'default', securityLevel:'loose', flowchart:{nodeSpacing:20, rankSpacing:40, padding:12}, themeVariables:{fontSize:'16px'}});</script>
+  <script src="../assets/js/tooltips.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement !== 'function') return;
+      document.querySelectorAll('.page-content').forEach(function (node) {
+        renderMathInElement(node, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '$', right: '$', display: false }
+          ],
+          throwOnError: false
+        });
+      });
+    });
+  </script>
+</body>
+</html>

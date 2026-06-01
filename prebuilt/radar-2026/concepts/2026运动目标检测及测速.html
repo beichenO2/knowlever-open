@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="last-modified" content="2026-06-01">
+  <title>2026运动目标检测及测速 — Radar 2026</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  
+  <style>.page-summary{color:var(--text-muted,#666);font-size:1.05rem;line-height:1.6;margin:-0.5rem 0 1.5rem;padding:0.75rem 1rem;background:var(--bg-secondary,#f8f9fa);border-radius:8px;border-left:3px solid var(--accent,#3b82f6);}</style>
+</head>
+<body>
+  <header class="site-header" data-site-nav></header>
+
+  <div class="breadcrumb">
+    <a href="../index.html">首页</a><span>›</span>
+    <a href="../concepts-hub.html">概念</a><span>›</span>
+    2026运动目标检测及测速
+  </div>
+
+  <div class="page-layout">
+    <main class="page-content">
+
+      <div class="page-meta">
+        <span class="type-badge concept">💡 Concept</span>
+        <span class="status-badge draft">draft</span>
+        <span class="confidence-badge" style="display:inline-flex;align-items:center;gap:4px;font-size:0.8rem;color:#f59e0b;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;"></span>50%</span>
+        <span class="date-info">更新: 2026-06-01</span>
+      </div>
+      <div style="margin-bottom: 1rem;">
+        <span class="tag">radar-2026</span>
+      </div>
+
+      <h1>2026运动目标检测及测速</h1>
+      
+
+      <blockquote><p>来源：<code>2026运动目标检测及测速.pdf</code>（AutoOffice to-markdown）</p></blockquote>
+<p>运动目标检测及测速</p>
+<p>雷达目标分类
+固定目标
+运动目标</p>
+<p>背景杂波/干扰
+慢速运动目标
+快速运动目标
+速度</p>
+<p>如何区别？</p>
+<p>回波多普勒效应</p>
+<p>注：假定分析目标为点目标，目标尺寸远小于雷达分辨单元</p>
+<p>多卜勒效应
+1842年，多卜勒发现多普勒现象
+1930年，多普勒规律应用于电磁波
+克里斯琴ꞏ约翰ꞏ多普勒
+Christian Johann Doppler</p>
+<p>雷达发射连续波时的多普勒效应 ……
+发射信号： s (t )  A cos(0t  0 )
+回</p>
+<p>波：</p>
+<p>……</p>
+<p>相位差   0tr</p>
+<p>sr (t )  Ks (t  tr )  KA cos[0 (t  tr )  0 ]</p>
+<p>目标固定不动时</p>
+<p>4
+2
+2R
+R 常数
+
+2R  
+  0tr  2 f 0tr  2 f 0
+
+
+c</p>
+<p>d 
+2 =0
+dt</p>
+<p>固定目标回波信号与发射信号
+之间无频率差</p>
+<p>目标</p>
+<p>雷达发射连续波时的多普勒效应</p>
+<p>vr</p>
+<p>目标以匀速vr 运动时</p>
+<p>  0tr  
+1 d  2vr
+=
+
+2 dt</p>
+<p>4</p>
+<p></p>
+<p>随时间而变化</p>
+<p>R (t )  </p>
+<p>4</p>
+<p>fd </p>
+<p></p>
+<p>( R0  vr t )</p>
+<p>2vr</p>
+<p></p>
+<p>运动目标回波信号与发射信号之间存在频率差</p>
+<p>信号带宽远小于中心频率</p>
+<p>雷达发射窄带信号时的多卜勒效应
+j0t
+s
+(
+t
+)
+
+Re[
+u
+(
+t
+)
+e
+]
+窄带发射信号：</p>
+<p>回波信号： sr (t )  ks (t  tr )  Re[ ku (t  tr )e</p>
+<p>目标不动</p>
+<p>tr 不变</p>
+<p>j0 ( t  tr )</p>
+<p>复包络有一固定迟延
+高频则有一固定相位差</p>
+<p>]</p>
+<p>vr</p>
+<p>雷达发射窄带信号时的多卜勒效应
+目标匀速运动</p>
+<p>2R(t ) 2
+tr 
+ (R0  vrt )
+c
+c</p>
+<p>复包络滞后t r
+高频相位差   0tr</p>
+<p>1 d 
+fd 
+2 dt</p>
+<p>0  2 f 0</p>
+<p>时间的函数</p>
+<p>  </p>
+<p>4</p>
+<p></p>
+<p>( R0  vr t )</p>
+<p>2vr</p>
+<p>vr 为常数</p>
+<p>fd </p>
+<p>vr 变化</p>
+<p>求解复杂</p>
+<p></p>
+<p>vr 为时间的函数</p>
+<p>fd </p>
+<p>2vr</p>
+<p>如何获得多卜勒信息？</p>
+<p></p>
+<p>例. 设雷达工作波长为10cm，目标径向速度为
+300m/s，求回波信号的多普勒频移。
+2  300
+fd 
+
+ 6 kHz
+
+0.1
+c 3  108
+ 3GHz
+f0  
+
+0.1
+2 vr</p>
+<p>无法直接提取</p>
+<p>f 0  f d</p>
+<p>采用差拍法提取目标回波多普勒频移</p>
+<p>回波多普勒信息提取</p>
+<p></p>
+<p>连续波多普勒雷达的回波多普勒信息提取</p>
+<p></p>
+<p>脉冲多普勒雷达的回波多普勒信息提取</p>
+<p></p>
+<p>连续波多普勒雷达的回波多普勒信息提取
+产生发射信号</p>
+<p>收发信号
+差频比较</p>
+<p>差频比较实质：
+求取回波信号和基准信号
+的合成电压，检波输出正
+比于合成信号振幅。</p>
+<p>少量发射信号能量
+耦合作为基准电压
+连续波
+发射机</p>
+<p>f0
+f0</p>
+<p>放大器
+相位检波器</p>
+<p>多卜勒滤波
+器和放大器</p>
+<p>指示器</p>
+<p>f0  fd
+回波信号</p>
+<p>u0  U 0 cos(0t  0 )</p>
+<p>u  u0  u r</p>
+<p>ur  U r cos[0 (t  tr )  0 ]</p>
+<p>U0  Ur</p>
+<p>U   U 0  U r cos </p>
+<p>UΣ</p>
+<p>d</p>
+<p></p>
+<p>固定目标
+4
+  0tr  
+R</p>
+<p></p>
+<p>U   U 0  U r cos  为常数
+fd </p>
+<p>相位差   0tr</p>
+<p>u0</p>
+<p>ur</p>
+<p>uΣ</p>
+<p>2vr</p>
+<p>0
+匀速目标
+
+4
+4
+R (t )  
+
+( R0  vr t )  0  2 f d t  d t  0</p>
+<p></p>
+<p></p>
+<p>U   U 0  U r cos(d t  0 )</p>
+<p>t</p>
+<p> 0 </p>
+<p>4</p>
+<p></p>
+<p>R0</p>
+<p>t</p>
+<p>连续波多普勒雷达信号频谱变化图</p>
+<p>连续波
+发射机</p>
+<p>f0
+ƒ0</p>
+<p>ƒ</p>
+<p>f0
+放大器
+相位检波器</p>
+<p>f0  fd
+ƒ0 ƒ0 +ƒd</p>
+<p>ƒ</p>
+<p>多卜勒滤波
+器和放大器
+ƒd</p>
+<p>2ƒ0+ƒd ƒ</p>
+<p>指示器
+滤波器频率特性
+ƒd</p>
+<p>ƒd max</p>
+<p>ƒ</p>
+<p>脉冲工作时的多普勒信息提取
+发射信号
+——脉冲</p>
+<p>f0</p>
+<p>脉冲
+调制器
+功率
+放大器</p>
+<p>连续
+振荡器</p>
+<p>接收机</p>
+<p>显示系统</p>
+<p>X</p>
+<p></p>
+<p>f0  fd
+回波信号
+——脉冲</p>
+<p>发射脉冲信号时，时延对目标回波的影响
+窄带发射信号</p>
+<p>st (t )  Re  Ku (t ) exp( j0t )</p>
+<p> t  nTr 
+u (t )   rect 
+
+
+
+
+n 
+</p>
+<p></p>
+<p>Tr
+脉冲n</p>
+<p>窄带目标回波</p>
+<p>sr (t )  Re  Ku (t  tr ) exp[ j0 (t  tr )]
+窄带固定目标回波 tr 不变
+窄带运动目标回波</p>
+<p>tr 变化</p>
+<p>脉冲n+1</p>
+<p>发射脉冲信号时，时延对目标回波的影响
+脉冲n</p>
+<p>脉冲n+1</p>
+<p>窄带运动目标回波</p>
+<p>sr (t )  Re  Ku (t  tr ) exp[ j0 (t  tr )]
+脉冲n回波时延</p>
+<p>tr 变化</p>
+<p>2R(t ) 2
+tr 
+ (R0  vrt )
+c
+c</p>
+<p>2R(t) 2
+  R0  vr (t  Tr )
+脉冲n+1回波时延 tr 
+c
+c
+2vr
+tr 变化小
+tr 
+Tr
+相邻重复周期时延差
+c
+vr 远小于 c</p>
+<p>发射脉冲信号时，时延对目标回波的影响
+脉冲n</p>
+<p>脉冲n+1</p>
+<p>相邻重复周期运动目标回波间的相位差</p>
+<p>  d Tr  2 f d Tr </p>
+<p>2 2vr</p>
+<p></p>
+<p>Tr</p>
+<p>0 很大</p>
+<p>2 f 0 2vr
+0 2vr
+
+Tr 
+Tr  0 tr 相邻重复周期
+c
+c
+延迟时间
+高频相位差  变化大</p>
+<p>tr </p>
+<p>2vr
+Tr
+c</p>
+<p>脉冲多普勒雷达相干检波器输入信号
+基准电压：uk  U k sin(0t  0 )
+回波信号：ur  U r sin[0 (t  tr )  0 ]</p>
+<p>nTr  t  nTr  </p>
+<p>2R
+相位差：  0tr  0
+c</p>
+<p>检波器输出
+回波信号幅度相对于基准电压的衰减倍数
+u  uk  ur  kdU k (1  m cos  )  U 0 (1  m cos  )
+回波信号为按一定重复周期出现的脉冲</p>
+<p>U 0 m cos  表现为包络相当于对连续波输出采样的脉冲</p>
+<p>脉冲多普勒雷达相干检波器输出
+u  kdU k (1  m cos  )  U 0 (1  m cos  )</p>
+<p>2R
+相位差   0tr  0
+c
+2R0
+固定目标   0
+c
+u</p>
+<p>Ur</p>
+<p>τ
+Uk</p>
+<p>检波后输出为等幅脉冲串</p>
+<p>Tr</p>
+<p>U∑in</p>
+<p>0</p>
+<p>t</p>
+<p>脉冲多普勒雷达相干检波器输出
+u  kdU k (1  m cos  )  U 0 (1  m cos  )
+运动目标   0 2 R (t ) c  20 ( R0  vr t ) c  4 ( R0  vr t ) 
+检波隔直流输出</p>
+<p>d  2 f d  2</p>
+<p>2vr</p>
+<p></p>
+<p> 20
+
+U 0  m cos   U 0  m cos 
+R0  d t   U 0  m cos d t  0 
+ c
+
+
+d</p>
+<p>u</p>
+<p>cos(ωdt﹣ϕ0)</p>
+<p>  d Tr
+Uk</p>
+<p>U∑in</p>
+<p>0</p>
+<p>检波隔直后输出为
+包络调制频率为多
+普勒频率的脉冲串
+t</p>
+<p>脉冲多普勒雷达的主要波形
+t
+t
+2R0 c</p>
+<p>t
+回波（运动）</p>
+<p>2( R0  R ) c</p>
+<p>u (t )</p>
+<p>脉冲工作时各主要点信号频谱</p>
+<p>ut (t )</p>
+<p>连续波信号u0 (t )  U 0 sin(0t  0 )</p>
+<p>ur (t )</p>
+<p>简单脉冲波形的复调制函数</p>
+<p>u0 (t )</p>
+<p>ut  U t sin(0t  0 )</p>
+<p> t  nTr 
+u (t )   rect 
+
+  
+n 
+</p>
+<p>U( f )</p>
+<p>nTr  t  nTr  </p>
+<p>fr</p>
+<p>U0 ( f )</p>
+<p> f0</p>
+<p>0</p>
+<p>f0</p>
+<p>f</p>
+<p>1</p>
+<p></p>
+<p> f0</p>
+<p> f0 </p>
+<p>1</p>
+<p></p>
+<p>0</p>
+<p>f</p>
+<p>1</p>
+<p>Ut ( f )</p>
+<p>fr</p>
+<p> f0 </p>
+<p>0</p>
+<p>1 </p>
+<p>fr</p>
+<p>f0 </p>
+<p>1</p>
+<p></p>
+<p>f0</p>
+<p>f0 </p>
+<p>1</p>
+<p></p>
+<p>f</p>
+<p>发射信号 ut  U t sin(0t  0 ) nTr  t  nTr  
+回波信号 ur  U r sin[0 (t  tr )  0 ]</p>
+<p>nTr  t  nTr  </p>
+<p>窄带固定目标回波</p>
+<p>20 R0
+
+0  0 
+c</p>
+<p>  2 R0 
+
+ur  U r sin 0  t 
+  0   U r sin 0t  0 
+c 
+ 
+
+nTr  t  nTr  
+Ur ( f )</p>
+<p>fr</p>
+<p> f0 </p>
+<p>1</p>
+<p></p>
+<p> f0</p>
+<p> f0 </p>
+<p>1</p>
+<p></p>
+<p>0</p>
+<p>fr</p>
+<p>f0 </p>
+<p>1</p>
+<p></p>
+<p>f0</p>
+<p>f0 </p>
+<p>1</p>
+<p>f</p>
+<p></p>
+<p>固定目标回波信号频谱与发射信号一致</p>
+<p>发射信号 ut  U t sin(0t  0 ) nTr  t  nTr  </p>
+<p>nTr  t  nTr  </p>
+<p>回波信号 ur  U r sin[0 (t  tr )  0 ]
+窄带运动目标回波</p>
+<p>20 R0
+
+0  0 
+c</p>
+<p>  2  R0  vr t  
+
+ur  U r sin 0  t 
+  0   U r sin 0t  d t  0 
+c
+ 
+
+</p>
+<p>nTr  t  nTr  </p>
+<p>Ur ( f )</p>
+<p>fr</p>
+<p> f0  f d </p>
+<p>1</p>
+<p></p>
+<p> f0  f d</p>
+<p> f0  f d </p>
+<p>1</p>
+<p></p>
+<p>0</p>
+<p>fr</p>
+<p>f0  f d </p>
+<p>1</p>
+<p></p>
+<p>f0  fd</p>
+<p>f0  f d </p>
+<p>1</p>
+<p></p>
+<p>f</p>
+<p>基准信号谱</p>
+<p>*</p>
+<p>运动目标回波谱</p>
+<p>基准信号 uk  U k sin(0t  0 )
+ f0</p>
+<p>1</p>
+<p></p>
+<p> f0  fd</p>
+<p>f0</p>
+<p>f</p>
+<p>f0  fd</p>
+<p>f0  f d </p>
+<p>Ur ( f )</p>
+<p> f0  fd </p>
+<p>相干检波输出电压谱</p>
+<p> f0  fd</p>
+<p>Uk ( f )</p>
+<p>0</p>
+<p>运动目标回波谱</p>
+<p> f0  fd </p>
+<p>= 相干检波输出电压谱</p>
+<p>1</p>
+<p></p>
+<p> fd 0 fd</p>
+<p>f0  fd </p>
+<p>1</p>
+<p></p>
+<p>1</p>
+<p>f</p>
+<p></p>
+<p>Ur ( f )</p>
+<p> fd 0 fd</p>
+<p>f0  fd</p>
+<p>f</p>
+<p>MTI雷达工作原理及组成
+脉冲多普勒雷达</p>
+<p>关键：
+相参电压获取
+固定杂波消除</p>
+<p>获得相参振荡电压的方法
+ 中频全相参动目标显示</p>
+<p>uI  U I cos  (0  c )t  0  c </p>
+<p>ur  U r cos 0 (t  tr )  0 
+u0  U 0 cos 0t  0 </p>
+<p>  0 t r   c t   c</p>
+<p>uc  U c cos c t  c </p>
+<p>  0tr </p>
+<p>4</p>
+<p></p>
+<p>R (t ) </p>
+<p>4</p>
+<p></p>
+<p>( R0  vr t )  0  2 f d t  0  d t</p>
+<p> 锁相相参动目标显示</p>
+<p>每一重复周期的发射
+脉冲高频起始相位是
+脉冲
+磁控管
+收发开关
+发射机
+随机的，不是全相干。 调制器
+高频锁相脉冲
+高频回波脉冲
+为得到与发射脉冲起
+始相位保持严格关系
+稳定本振
+的基准电压，可用高
+混频器
+混频器
+频锁相或中频锁相
+中频锁相脉冲
+中频回波
+（对应于高频相检和
+f ( f  f )  f  f
+中频相检），即在发
+中频相参 相参电压 相位 中频回波 中频
+振荡器
+射脉冲中取出很少一
+检波器
+放大器
+部分能量用以控制高
+频或中频相干振荡的
+对消视频
+相位，使其与发射脉
+对消器
+冲相位同步。
+L</p>
+<p>0</p>
+<p>d</p>
+<p>c</p>
+<p>d</p>
+<p>消除固定目标回波
+ 相位检波器的输出</p>
+<p>固定目标回波和运动目
+标回波均会形成输出</p>
+<p> 消除固定回波的方法</p>
+<p>对消法</p>
+<p>相邻重复周期信号相减，固定目标由于振
+幅不变而相互抵消；动目标相减后剩下相
+邻重复周期振幅变化的部分作为输出。</p>
+<p>频谱抑制法</p>
+<p>滤波器组，每个滤波单元抑制其中一个nfr</p>
+<p>u  u</p>
+<p> 相消设备特性</p>
+<p>时域观点</p>
+<p>Tr  t  Tr  </p>
+<p>ur</p>
+<p>ur  U r cos 0 (t  tr )  0 </p>
+<p>uI  U I cos (0  c )t  0   c </p>
+<p>urI  U rI cos(0tr  c t  c )
+uc  U c cos ct   c </p>
+<p>u  U 0 cos   U 0 cos(0tr )</p>
+<p>2( R0  vr t )
+tr 
+c
+u  U 0 cos d t  0 </p>
+<p>延时Tr</p>
+<p>d
+ur2</p>
+<p>uc</p>
+<p>ur1</p>
+<p>△ϕ</p>
+<p>u</p>
+<p>u  U 0 cos d (t  Tr )  0 </p>
+<p>u  u</p>
+<p>u  U 0 cos d t  0 
+u  U 0 cos d (t  Tr )  0 </p>
+<p>u</p>
+<p>包络振幅</p>
+<p>d Tr
+ d Tr  
+
+
+u  u  u  2U 0 sin 
+ 0 
+ sin  d t 
+2
+ 2  
+
+d Tr
+ k , k  0, 1, 2
+u  0
+2
+d Tr 
+  2k  1 , k  0, 1, 2
+2
+2</p>
+<p>相消设备输出速度响应</p>
+<p>u 最大
+对动目标具有最佳响应</p>
+<p>频域观点</p>
+<p>对消器频响</p>
+<p> 数字相消器</p>
+<p>相干视频</p>
+<p>采样保持电路</p>
+<p>模数转换电路</p>
+<p>数字延迟线
+延迟
+数字信号
+相减器</p>
+<p>数模转换电路</p>
+<p>相消视频
+输出</p>
+<p>盲速盲相的影响及其解决途径
+ 频闪与测速模糊
+ 盲速及消除盲速的方法
+ 盲相与消除盲相</p>
+<p>频闪与盲速
+频闪 测频模糊</p>
+<p>速度测量有多值性 d</p>
+<p>原因： 脉冲工作状态是对连续波工作的采样</p>
+<p>Ur2</p>
+<p>频闪时采样率不满足Nyquist定理</p>
+<p>2 R (t ) 4
+( R0  vr t )
+  0 t r   0
+
+c
+</p>
+<p> </p>
+<p>4</p>
+<p></p>
+<p>vrTr  2 fdTr  </p>
+<p>Ur1</p>
+<p>△ϕ</p>
+<p>Uk</p>
+<p>U∑</p>
+<p>频闪</p>
+<p>完全没有多值的测量为：  d Tr  </p>
+<p>fd  fr 2</p>
+<p>频闪的矢量图及波形图分析</p>
+<p>fd</p>
+<p>d</p>
+<p></p>
+<p>Uk</p>
+<p>  d Tr  2   
+U∑1
+U∑2</p>
+<p>Fd  f r  f d</p>
+<p>Fd</p>
+<p>盲速 目标具有径向速度 vr ，其回波经过相位检波器后
+输出为等幅脉冲串，vr 为盲速。</p>
+<p>2 R (t ) 4
+( R0  vr t )
+
+原因：   0tr  0
+c
+
+4
+ 
+vrTr  2 f d Tr  d Tr  2k</p>
+<p>d
+</p>
+<p></p>
+<p>此时： f d </p>
+<p>2vr</p>
+<p></p>
+<p>Ur1
+Ur2</p>
+<p>U∑</p>
+<p> k f r , k  0, 1, 2</p>
+<p>Uk</p>
+<p>1
+vr 0  k  f r , k  0, 1, 2
+2
+从采样上看，所有采样都发生在正弦波的同一相位点上；
+从频谱上看，即回波频谱线与发射频谱线重合。</p>
+<p>盲速的矢量图及波形图分析
+fd</p>
+<p>ωd</p>
+<p>Ur1
+Ur2
+2π</p>
+<p>Fd</p>
+<p>τ
+t</p>
+<p>Tr
+Uk UΣ</p>
+<p>  d Tr  2 , f d  f r , Fd  0
+2vrTr
+ 2n , Fd  0
+  d Tr  2 f d Tr  2</p>
+<p></p>
+<p>n
+vr 0   f r , n  0, 1, 2 此时 f d 0  nf r
+2
+n = 1时为第一盲速
+第一盲速：重复周期内目标走过的距离为半个波长</p>
+<p> 测速模糊和测距模糊的关系</p>
+<p>最大单值不模糊距离</p>
+<p>1
+vr 0  n f r
+2</p>
+<p>cTr
+c
+
+Rmax 
+2
+2 fr</p>
+<p>例：  3cm, Rmax  30km
+1
+vr 0   f r
+2</p>
+<p>R0 max vr 0 </p>
+<p>c
+
+4</p>
+<p>c
+fr 
+ 5kHz
+2 Rmax
+vr 0 </p>
+<p>
+2</p>
+<p>?</p>
+<p>f r  75 m s</p>
+<p>首先保证测距无模糊，再解决测速模糊问题。</p>
+<p> 参差重复频率对动目标显示性能的影响</p>
+<p>1
+vr 0  n  f r , n  0, 1, 2
+2
+1
+1
+2vr 0
+n
+f d0  , vr 0   f r
+fd 0 
+ nf r 
+Tr
+2
+Tr
+
+采用参差重频时， 同时盲速称为等效第一盲速 vr0'</p>
+<p>n1 n2
+
+f d0Tr1  n1 , f d0Tr 2  n2 , f d0 
+Tr1 Tr 2
+取 n1、 n2互为质数</p>
+<p>2vr 0</p>
+<p>n1 n2
+1
+f d0 
+
+
+
+
+Tr1 Tr 2 Tr</p>
+<p>Tr1  n1Tr , Tr 2  n2Tr
+第一盲速显著提高</p>
+<p></p>
+<p>点盲相和连续盲相</p>
+<p>盲相及其解决方法
+ 点盲相</p>
+<p>点盲相</p>
+<p>d
+u 2</p>
+<p>u1</p>
+<p>对消输出</p>
+<p>uk
+相检器输出</p>
+<p> 连续盲相</p>
+<p>差矢量</p>
+<p>连续盲相后果：可能使得在某次天线扫描时丢失在强杂波
+背景下的运动目标。
+一定相位的固定杂波
+解决办法：改进相位检波器的特性解决盲相问题（早期）
+使用矢量对消器解决盲相问题(现代)</p>
+<p> 中频对消</p>
+<p>d</p>
+<p>u 2</p>
+<p>u1</p>
+<p>思路：直接取出反射回波的差矢量，
+避免盲相和回波振幅的多普勒调制.</p>
+<p>uk
+相参中频信号，相邻重复周期的动目标回波可分别写为
+uri  U r cos  (i  d )t  0 </p>
+<p>uri 1  U r cos  (i  d )(t  Tr )  0 </p>
+<p>iTr d Tr
+ iTr d Tr  
+
+
+u  uri  uri 1  2U r sin 
+
+
+
+
+
+sin
+(
+
+
+)
+
+t
+0
+d
+  i
+2
+2
+2
+2
+
+ 
+
+T  T
+
+
+ 2U r sin   f iTr  f d Tr  sin  (i  d )t  i r  d r  0 
+2
+2
+
+
+u  2U r sin   f iTr  f d Tr  中频对消器输出电压振幅</p>
+<p>零中频处理
+ 正交双通道处理</p>
+<p>数字式对消系统</p>
+<p></p>
+<p>零中频处理的理论分析
+中频实信号s(t )  a(t ) cos i t   (t )</p>
+<p>复调制函数
+u (t )  a (t )e</p>
+<p>1
+ a (t ) exp  j (i t   (t )   exp   j (i t   (t ) 
+2
+1
+ a (t )e ji t e j (t )  a (t )e  jit e  j (t )
+2
+j ( t )</p>
+<p></p>
+<p>1
+ u (t )e jit  u * (t )e  jit
+2</p>
+<p></p>
+<p>单路相位检波
+相参电压cos i t</p>
+<p></p>
+<p></p>
+<p></p>
+<p></p>
+<p>1
+s (t )  cos i t  u (t )  u <em> (t )   u (t )e j 2it  u </em> (t )e  j 2i t 
+4
+1
+低通滤波
+ u (t )  u * (t ) 
+4</p>
+<p>单路相位检波
+s (t ) cos i t</p>
+<p>1
+u (t )  u * (t ) 
+4</p>
+<p>若u (t )  a (t )e j ( t )  a (t )e  jd t</p>
+<p>正交双通道处理
+uI  s (t ) cos i t
+uQ  js (t ) sin i t</p>
+<p>1
+1
+*
+u (t )  u (t )   a (t ) cos d t
+4
+2</p>
+<p>1
+u (t )  u <em> (t ) 
+4
+1
+u (t )  u </em> (t ) 
+4</p>
+<p>fd正负无法判断</p>
+<p>1
+u   u I  uQ  u (t )
+2
+1
+ a (t )e j (t )
+2</p>
+<p>回波和杂波的频谱及目标显示滤波器</p>
+<p>作用：了解运动目标回波和杂波在频谱结构上的
+区别，以达到抑制固定杂波、显示运动目标回波
+的目的。</p>
+<p> 目标回波的频谱特性</p>
+<p>雷达发射相参脉冲串，脉宽为τ，重复频率为 f r 。
+天线不扫描时，目标回波为等幅无限脉冲串。
+U( f )</p>
+<p>fr</p>
+<p>U0 ( f )</p>
+<p> f0</p>
+<p>0</p>
+<p>f0</p>
+<p>f</p>
+<p>1 </p>
+<p>Ut ( f )</p>
+<p>fr</p>
+<p> f0 </p>
+<p>1</p>
+<p></p>
+<p> f0</p>
+<p> f0 </p>
+<p>0</p>
+<p>1</p>
+<p></p>
+<p>0</p>
+<p>1</p>
+<p>f</p>
+<p>1</p>
+<p>f</p>
+<p>fr</p>
+<p>f0 </p>
+<p>1</p>
+<p></p>
+<p>f0</p>
+<p>f0 </p>
+<p></p>
+<p>扫描时，设天线方向图可用高斯函数来表示
+收到回波脉冲串的包络函数频谱
+天线不扫描时运动目标回波谱
+Ur ( f )</p>
+<p>fr</p>
+<p> f0  fd </p>
+<p>1</p>
+<p></p>
+<p> f0  f d</p>
+<p> f0  f d </p>
+<p>1</p>
+<p></p>
+<p>0</p>
+<p>fr</p>
+<p>f0  fd </p>
+<p>1</p>
+<p></p>
+<p>f0  fd</p>
+<p>f0  f d </p>
+<p>天线扫描时运动目标回波谱</p>
+<p>f r  f d f r  fd</p>
+<p>1</p>
+<p></p>
+<p>f</p>
+<p> 杂波频谱</p>
+<p>除固定建筑物外，杂波均属于分布杂波，包含内部
+运动。天线不扫描时，固定杂波频谱位于nf r 处，用
+对消器可以全部滤去。
+天线扫描时，杂波谱也会相应展宽。
+ 杂波对动目标显示的影响</p>
+<p>杂波平均速度为零而只有内部起伏时，杂波的频谱位
+置在 n fr 上，但每根谱线均展宽。如果杂波有平均速度，
+则会产生多卜勒频移。
+展宽使得对消器不能很好地滤去杂波，有多卜勒频移
+时，应使滤波器凹口对准杂波谱的平均多卜勒位置。
+展宽影响MTI 的质量。
+调整对消器的频响特性</p>
+<p>动目标显示滤波器
+ 一次相消器</p>
+<p>H ( z)  1  z</p>
+<p>1</p>
+<p> 递归型一次相消器</p>
+<p>1  z 1
+H ( z) 
+1  K1 z 1</p>
+<p> 二次相消器
+1</p>
+<p>H ( z )  1  Kz  z</p>
+<p>2</p>
+<p> 递归型二次相消滤波器</p>
+<p>(1  z 1 ) 2
+H ( z) 
+1  K1 z 1  K 2 z 2</p>
+<p>K=2</p>
+<p>K=+2～-2</p>
+<p> 多次相消器</p>
+<p> 抑制运动杂波滤波器</p>
+<p>动目标显示雷达的质量指标
+ 改善因子（I）</p>
+<p>MTI系统输出端信杂比（功率比）和输入端信杂比之比。
+S o Co
+Ci
+I
+G
+S i Ci
+Co</p>
+<p>G ：系统对信号的平均功率增益</p>
+<p> 信杂比改善（ISCR）</p>
+<p>多普勒滤波器输出端信杂比和输入端信杂比之比。
+ 杂波中的可见度SCV</p>
+<p>在给定检测概率和虚警概率条件下，检测到重叠于杂波
+上的运动目标时，杂波功率和目标回波功率的比值。</p>
+<p>动目标检测（MTD）
+为弥补MTI的缺陷，由最佳滤波器理论发展起来。
+优点：
+采用线性MTI，增大信号处理的线性动态范围
+ 增加一组多普勒滤波器，使之更接近最佳滤波
+ 能抑制地杂波，且能同时抑制运动杂波
+ 增加一个或多个杂波图，帮助检测切向飞行大目标
+</p>
+<p> 线性MTI的实现框图</p>
+<p>高中频线性化：通过AGC 实现大的动态范围； 增益控制
+要求快速且电压与杂波强度成比例；为保障对消运算，相
+继周期的增益变化是准确、已知的。
+方法：储存杂波图来控制各个距离单元的中放增益。</p>
+<p> 多卜勒滤波器组
+相参脉冲串</p>
+<p>H ( f )  H1 ( f ) H 2 ( f )</p>
+<p>H1 ( f ) H 21 ( f ) H 22 ( f )</p>
+<p>H1 ( f ) ：抑制杂波</p>
+<p>H 21 ( f ) ：单个脉冲的匹配滤波器</p>
+<p>H 2 ( f ) ：对脉冲串信号匹配</p>
+<p>H 22 ( f ) ：对相参脉冲串作匹配滤波</p>
+<p> 具体实现</p>
+<p>N个输出的横向滤波器（N 个脉冲和 N-1 个延迟线），经
+过N个脉冲的不同加权并求和，可做成N 个相邻的窄带滤
+波器组。覆盖范围0 ～ fr 。</p>
+<p>Wik  e  j 2 ( i 1) k / N</p>
+<p>i  1,2,  N 第i个抽头
+k  0,1, N  1 第k组加权值</p>
+<p> 窄带滤波器组信号处理的优点</p>
+<p>白噪声时输出信噪比提高近N 倍；
+有色杂波时，各个滤波器输出端 I 均有提高：
+越靠近杂波中心的滤波器，改善程度越差；杂波谱越宽，
+改善程度越差。</p>
+<p>通过改变特定滤波器的检测门限，对运动杂波
+亦可抑制。</p>
+<p>速度测量
+v</p>
+<p>vr</p>
+<p> 连续波雷达测速
+ 脉冲雷达测速</p>
+<p>fd </p>
+<p>2vr</p>
+<p></p>
+<p>vr  v  cos</p>
+<p> 连续波雷达测速</p>
+<p>二次检波后，提取多普勒频率，测出目标速度。</p>
+      
+      <section class="related-pages"><h3 class="related-pages__title">相关页面</h3><div class="related-pages__grid"><a href="../concepts/2026-10-脉冲多普勒雷达.html" class="related-pages__card"><span class="type-badge concept">concept</span><div class="related-pages__card-title">2026-10-脉冲多普勒雷达</div></a>
+<a href="../concepts/2026-8-模糊函数及雷达波形设计.html" class="related-pages__card"><span class="type-badge concept">concept</span><div class="related-pages__card-title">2026-8-模糊函数及雷达波形设计</div></a>
+<a href="../concepts/2026-9-雷达信号处理.html" class="related-pages__card"><span class="type-badge concept">concept</span><div class="related-pages__card-title">2026-9-雷达信号处理</div></a>
+<a href="../concepts/2026-9-雷达信号检测.html" class="related-pages__card"><span class="type-badge concept">concept</span><div class="related-pages__card-title">2026-9-雷达信号检测</div></a></div></section>
+      <nav class="page-pager">
+        <div class="page-pager__cell"><a href="../concepts/2026相控阵雷达.html" class="page-pager__link"><span class="page-pager__arr">←</span><span class="page-pager__text">2026相控阵雷达</span></a></div>
+        <div class="page-pager__cell page-pager__cell--next"><a href="../concepts/2026雷达作用距离.html" class="page-pager__link"><span class="page-pager__text">2026雷达作用距离</span><span class="page-pager__arr">→</span></a></div>
+      </nav>
+
+    </main>
+
+    <aside class="sidebar">
+      <section>
+        <h4>页面信息</h4>
+        <ul>
+          <li>类型：概念</li>
+          <li>状态：draft</li>
+          <li>置信度：<span class="confidence-badge" style="display:inline-flex;align-items:center;gap:4px;font-size:0.8rem;color:#f59e0b;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;"></span>50%</span></li>
+          <li>创建：2026-06-01</li>
+          <li>更新：2026-06-01</li>
+        </ul>
+      </section>
+      <section>
+        <h4>相关页面</h4>
+        <ul>
+          <li><a href="../concepts/2026-10-脉冲多普勒雷达.html">2026-10-脉冲多普勒雷达</a></li>
+          <li><a href="../concepts/2026-8-模糊函数及雷达波形设计.html">2026-8-模糊函数及雷达波形设计</a></li>
+          <li><a href="../concepts/2026-9-雷达信号处理.html">2026-9-雷达信号处理</a></li>
+          <li><a href="../concepts/2026-9-雷达信号检测.html">2026-9-雷达信号检测</a></li>
+        </ul>
+      </section>
+      
+    </aside>
+  </div>
+
+  <footer>
+    <p>Radar 2026 — 编译预览 · 源文件: wiki/2026运动目标检测及测速.md · 重编译: 2026-06-01</p>
+  </footer>
+
+  <script>window.__KNOWLEVER_BASE="../";window.__KNOWLEVER_SITE_NAME="Radar 2026";</script>
+  <script src="../assets/js/site-common.js"></script>
+  <script src="../assets/data/site-page-data.js"></script>
+  <script src="../assets/js/site-nav.js" defer></script>
+  <script src="../assets/js/site-page.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true, theme: document.documentElement.dataset.theme==='dark' ? 'dark' : 'default', securityLevel:'loose', flowchart:{nodeSpacing:20, rankSpacing:40, padding:12}, themeVariables:{fontSize:'16px'}});</script>
+  <script src="../assets/js/tooltips.js"></script>
+  
+  
+  
+</body>
+</html>

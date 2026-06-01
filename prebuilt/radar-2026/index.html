@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Radar 2026 — KnowLever 知识系统</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    .entry-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin: 2rem 0; }
+    .entry-card { background: var(--bg-secondary, #f8f9fa); border: 1px solid var(--border, #e2e8f0); border-radius: 16px; padding: 2rem; text-decoration: none; color: inherit; transition: all 0.2s ease; position: relative; overflow: hidden; }
+    .entry-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); border-color: var(--accent, #3b82f6); }
+    .entry-icon { font-size: 2.5rem; margin-bottom: 1rem; display: block; }
+    .entry-card h3 { font-size: 1.3rem; margin-bottom: 0.5rem; color: var(--text, #1a1a1a); }
+    .entry-card p { color: var(--text-muted, #666); font-size: 0.95rem; line-height: 1.5; margin-bottom: 1rem; }
+    .entry-sub { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .entry-sub span { background: var(--bg, #fff); border: 1px solid var(--border, #e2e8f0); border-radius: 6px; padding: 2px 8px; font-size: 0.75rem; color: var(--text-muted, #888); }
+  </style>
+</head>
+<body>
+  <header class="site-header" data-site-nav></header>
+
+  <div style="max-width: var(--max-width); margin: 0 auto; padding: 2rem 1.5rem;">
+
+    <div class="hero">
+      <h1>Radar 2026</h1>
+      <p>持久化知识编译系统 — 将原始资料编译为互链、可演化的知识网络</p>
+      <div class="hero-stats" id="hero-stats" aria-live="polite">
+        <div class="hero-stat">
+          <div class="hero-stat-ring"><span class="hero-stat-number" data-hero-stat="knowledgePages">50</span></div>
+          <div class="hero-stat-label">知识页面</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-ring"><span class="hero-stat-number" data-hero-stat="crossReferences">251</span></div>
+          <div class="hero-stat-label">交叉引用</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-ring"><span class="hero-stat-number" data-hero-stat="pageTypes">5</span></div>
+          <div class="hero-stat-label">知识领域</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-ring"><span class="hero-stat-number" data-hero-stat="totalTags">54</span></div>
+          <div class="hero-stat-label">总页面数</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="position:relative;max-width:500px;margin:0 auto 2rem;">
+      <input id="search-input" type="text" placeholder="搜索知识页面..." style="width:100%;padding:0.8rem 1rem 0.8rem 2.5rem;border:1px solid var(--border,#e2e8f0);border-radius:10px;font-size:1rem;background:var(--bg-secondary,#f8f9fa);color:var(--text,#333);outline:none;">
+      <span style="position:absolute;left:0.8rem;top:50%;transform:translateY(-50%);font-size:1.1rem;color:var(--text-muted,#888);">🔍</span>
+      <div id="search-results" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--bg,#fff);border:1px solid var(--border,#e2e8f0);border-radius:10px;margin-top:4px;max-height:400px;overflow-y:auto;z-index:100;box-shadow:0 8px 24px rgba(0,0,0,0.12);"></div>
+    </div>
+
+    <h2 class="section-header" style="margin-top:1rem;"><span class="section-icon" style="background:#dbeafe;">🧠</span> 知识全景</h2>
+    <div id="markmap-wrap" style="width:100%;height:480px;border:1px solid var(--border,#e2e8f0);border-radius:12px;overflow:hidden;background:var(--bg-secondary,#f8f9fa);margin-bottom:2rem;"></div>
+
+    <div class="entry-grid">
+      <a class="entry-card" href="domain-synthesis-雷达信号处理总览.html">
+        <span class="entry-icon">🎯</span>
+        <h3>雷达信号处理总览（5）</h3>
+        <p>探索 5 个知识页面</p>
+        <div class="entry-sub"><span>雷达信号处理</span></div>
+      </a>
+<a class="entry-card" href="domain-concept-matched-filter.html">
+        <span class="entry-icon">📊</span>
+        <h3>Concept Matched Filter（3）</h3>
+        <p>探索 3 个知识页面</p>
+        <div class="entry-sub"><span>模糊函数</span></div>
+      </a>
+<a class="entry-card" href="domain-concept-pulse-doppler-radar.html">
+        <span class="entry-icon">⚡</span>
+        <h3>Concept Pulse Doppler Radar（3）</h3>
+        <p>探索 3 个知识页面</p>
+        <div class="entry-sub"><span>距离-多普勒空间</span><span>多普勒滤波器组</span><span>无杂波区</span></div>
+      </a>
+<a class="entry-card" href="domain-concept-phase-angle-measurement.html">
+        <span class="entry-icon">🔬</span>
+        <h3>Concept Phase Angle Measurement（2）</h3>
+        <p>探索 2 个知识页面</p>
+        <div class="entry-sub"><span>测角原理</span><span>多值性问题</span></div>
+      </a>
+<a class="entry-card" href="domain-concept-optimal-filtering.html">
+        <span class="entry-icon">🛡️</span>
+        <h3>Concept Optimal Filtering（1）</h3>
+        <p>探索 1 个知识页面</p>
+        <div class="entry-sub"><span>信噪比最大化</span></div>
+      </a>
+    </div>
+
+    
+    <div style="margin: 2.5rem 0;">
+      <h2 style="font-size: 1.2rem; color: var(--text-muted, #888); margin-bottom: 1rem; font-weight: 500;">知识网络拓扑 <span style="font-size:0.75rem;font-weight:400;color:var(--text-muted,#666);">拖拽 · 缩放 · 悬浮高亮 · 双击跳转</span></h2>
+      <div id="graph-container" style="background:#0d1117; border-radius: 12px; overflow: hidden; position: relative; height: 560px;">
+        <svg id="knowledge-graph" style="width:100%;height:100%;"></svg>
+        <div id="graph-tooltip" style="position:absolute;display:none;background:rgba(0,0,0,0.85);color:#e6edf3;padding:6px 12px;border-radius:6px;font-size:13px;pointer-events:none;white-space:nowrap;z-index:10;"></div>
+      </div>
+      <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:0.5rem;font-size:12px;color:var(--text-muted,#888);"><span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#10b981;margin-right:4px;vertical-align:middle;"></span>雷达信号处理总览 (5)</span><span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#3b82f6;margin-right:4px;vertical-align:middle;"></span>Concept Matched Filter (3)</span><span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#f59e0b;margin-right:4px;vertical-align:middle;"></span>Concept Pulse Doppler Radar (3)</span><span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#8b5cf6;margin-right:4px;vertical-align:middle;"></span>Concept Phase Angle Measurement (2)</span><span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#ec4899;margin-right:4px;vertical-align:middle;"></span>Concept Optimal Filtering (1)</span></div>
+    </div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function(){
+      var data = {"nodes":[{"id":"entity-pulse-doppler-radar","name":"脉冲多普勒雷达","domain":"其他","color":"#999","href":"entities/entity-pulse-doppler-radar.html","r":3,"lc":5},{"id":"entity-mtd-processing","name":"MTD处理","domain":"其他","color":"#999","href":"entities/entity-mtd-processing.html","r":4,"lc":6},{"id":"entity-prf","name":"PRF参数详解","domain":"其他","color":"#999","href":"entities/entity-prf.html","r":4,"lc":8},{"id":"synthesis-雷达信号处理总览","name":"雷达信号处理总览","domain":"雷达信号处理总览","color":"#10b981","href":"syntheses/synthesis-雷达信号处理总览.html","r":4,"lc":8},{"id":"concept-ambiguity-function-properties","name":"模糊函数性质","domain":"Concept Matched Filter","color":"#3b82f6","href":"concepts/concept-ambiguity-function-properties.html","r":4,"lc":8},{"id":"concept-radar-signal-processing","name":"雷达信号处理","domain":"雷达信号处理总览","color":"#10b981","href":"concepts/concept-radar-signal-processing.html","r":5,"lc":10},{"id":"concept-radar-waveform-design","name":"雷达波形设计","domain":"Concept Matched Filter","color":"#3b82f6","href":"concepts/concept-radar-waveform-design.html","r":3,"lc":3},{"id":"concept-snr-maximization","name":"信噪比最大化","domain":"Concept Optimal Filtering","color":"#ec4899","href":"concepts/concept-snr-maximization.html","r":3,"lc":4},{"id":"entity-ambiguity-function","name":"模糊函数","domain":"其他","color":"#999","href":"entities/entity-ambiguity-function.html","r":3,"lc":4},{"id":"entity-auto-angle-tracking","name":"自动测角系统","domain":"其他","color":"#999","href":"entities/entity-auto-angle-tracking.html","r":3,"lc":5},{"id":"entity-baseband-signal","name":"基带信号","domain":"其他","color":"#999","href":"entities/entity-baseband-signal.html","r":3,"lc":5},{"id":"entity-cfar-processing","name":"CFAR处理","domain":"其他","color":"#999","href":"entities/entity-cfar-processing.html","r":5,"lc":10},{"id":"entity-mti-processing","name":"MTI处理","domain":"其他","color":"#999","href":"entities/entity-mti-processing.html","r":3,"lc":5},{"id":"entity-optimal-filtering","name":"最佳滤波理论","domain":"其他","color":"#999","href":"entities/entity-optimal-filtering.html","r":3,"lc":4},{"id":"entity-quadrature-demodulation","name":"正交解调","domain":"其他","color":"#999","href":"entities/entity-quadrature-demodulation.html","r":4,"lc":6},{"id":"entity-radar-waveform","name":"雷达波形","domain":"其他","color":"#999","href":"entities/entity-radar-waveform.html","r":3,"lc":4},{"id":"entity-range-resolution","name":"距离分辨力","domain":"其他","color":"#999","href":"entities/entity-range-resolution.html","r":3,"lc":4},{"id":"entity-rf-signal","name":"射频信号","domain":"其他","color":"#999","href":"entities/entity-rf-signal.html","r":4,"lc":7},{"id":"concept-ambiguity-function","name":"模糊函数","domain":"Concept Matched Filter","color":"#3b82f6","href":"concepts/concept-ambiguity-function.html","r":4,"lc":8},{"id":"concept-angle-measurement-principle","name":"测角原理","domain":"Concept Phase Angle Measurement","color":"#8b5cf6","href":"concepts/concept-angle-measurement-principle.html","r":3,"lc":3},{"id":"concept-baseband-signal-processing","name":"基带信号处理","domain":"雷达信号处理总览","color":"#10b981","href":"concepts/concept-baseband-signal-processing.html","r":4,"lc":8},{"id":"concept-distance-doppler-space","name":"距离-多普勒空间","domain":"Concept Pulse Doppler Radar","color":"#f59e0b","href":"concepts/concept-distance-doppler-space.html","r":3,"lc":5},{"id":"concept-doppler-filter-bank","name":"多普勒滤波器组","domain":"Concept Pulse Doppler Radar","color":"#f59e0b","href":"concepts/concept-doppler-filter-bank.html","r":5,"lc":9},{"id":"concept-doppler-spectrum-analysis","name":"多普勒频谱分析","domain":"雷达信号处理总览","color":"#10b981","href":"concepts/concept-doppler-spectrum-analysis.html","r":5,"lc":11},{"id":"concept-multi-valued-problem","name":"多值性问题","domain":"Concept Phase Angle Measurement","color":"#8b5cf6","href":"concepts/concept-multi-valued-problem.html","r":2,"lc":2},{"id":"concept-no-clutter-zone","name":"无杂波区","domain":"Concept Pulse Doppler Radar","color":"#f59e0b","href":"concepts/concept-no-clutter-zone.html","r":3,"lc":5},{"id":"constant-false-alarm-rate","name":"恒虚警检测","domain":"雷达信号处理总览","color":"#10b981","href":"concepts/constant-false-alarm-rate.html","r":3,"lc":4},{"id":"entity-amplitude-angle-measurement","name":"振幅法测角","domain":"其他","color":"#999","href":"entities/entity-amplitude-angle-measurement.html","r":3,"lc":3},{"id":"entity-cross-correlation","name":"相关接收技术","domain":"其他","color":"#999","href":"entities/entity-cross-correlation.html","r":3,"lc":4},{"id":"entity-doppler-shift","name":"多普勒频移","domain":"其他","color":"#999","href":"entities/entity-doppler-shift.html","r":4,"lc":8},{"id":"entity-matched-filter","name":"匹配滤波器","domain":"其他","color":"#999","href":"entities/entity-matched-filter.html","r":3,"lc":4},{"id":"entity-phase-angle-measurement","name":"相位法测角","domain":"其他","color":"#999","href":"entities/entity-phase-angle-measurement.html","r":3,"lc":4},{"id":"comparison-脉冲多普勒雷达-vs-相控阵雷达","name":"脉冲多普勒雷达与相控阵雷达对比分析","domain":"其他","color":"#999","href":"comparisons/comparison-脉冲多普勒雷达-vs-相控阵雷达.html","r":2,"lc":1},{"id":"entity-antenna-pattern","name":"天线方向图","domain":"其他","color":"#999","href":"entities/entity-antenna-pattern.html","r":2,"lc":1},{"id":"2026-10-脉冲多普勒雷达","name":"2026-10-脉冲多普勒雷达","domain":"其他","color":"#999","href":"concepts/2026-10-脉冲多普勒雷达.html","r":2,"lc":0},{"id":"2026-8-模糊函数及雷达波形设计","name":"2026-8-模糊函数及雷达波形设计","domain":"其他","color":"#999","href":"concepts/2026-8-模糊函数及雷达波形设计.html","r":2,"lc":0},{"id":"2026-9-雷达信号处理","name":"2026-9-雷达信号处理","domain":"其他","color":"#999","href":"concepts/2026-9-雷达信号处理.html","r":2,"lc":0},{"id":"2026-9-雷达信号检测","name":"2026-9-雷达信号检测","domain":"其他","color":"#999","href":"concepts/2026-9-雷达信号检测.html","r":2,"lc":0},{"id":"2026目标角度测量","name":"2026目标角度测量","domain":"其他","color":"#999","href":"concepts/2026目标角度测量.html","r":2,"lc":0},{"id":"2026目标距离测量","name":"2026目标距离测量","domain":"其他","color":"#999","href":"concepts/2026目标距离测量.html","r":2,"lc":0},{"id":"2026相控阵雷达","name":"2026相控阵雷达","domain":"其他","color":"#999","href":"concepts/2026相控阵雷达.html","r":2,"lc":0},{"id":"2026运动目标检测及测速","name":"2026运动目标检测及测速","domain":"其他","color":"#999","href":"concepts/2026运动目标检测及测速.html","r":2,"lc":0},{"id":"2026雷达作用距离","name":"2026雷达作用距离","domain":"其他","color":"#999","href":"concepts/2026雷达作用距离.html","r":2,"lc":0},{"id":"2026雷达原理及系统绪论-1","name":"2026雷达原理及系统绪论-1","domain":"其他","color":"#999","href":"concepts/2026雷达原理及系统绪论-1.html","r":2,"lc":0},{"id":"2026雷达原理及系统绪论-2","name":"2026雷达原理及系统绪论-2","domain":"其他","color":"#999","href":"concepts/2026雷达原理及系统绪论-2.html","r":2,"lc":0},{"id":"2026雷达发射机","name":"2026雷达发射机","domain":"其他","color":"#999","href":"concepts/2026雷达发射机.html","r":2,"lc":0},{"id":"2026雷达接收机与显示器","name":"2026雷达接收机与显示器","domain":"其他","color":"#999","href":"concepts/2026雷达接收机与显示器.html","r":2,"lc":0},{"id":"contradictions","name":"矛盾记录","domain":"其他","color":"#999","href":"contradictions.html","r":2,"lc":0},{"id":"open_questions","name":"待解答问题","domain":"其他","color":"#999","href":"open_questions.html","r":2,"lc":0}],"links":[{"source":0,"target":22},{"source":0,"target":2},{"source":0,"target":25},{"source":1,"target":5},{"source":1,"target":17},{"source":1,"target":20},{"source":1,"target":11},{"source":1,"target":23},{"source":1,"target":2},{"source":2,"target":25},{"source":2,"target":22},{"source":3,"target":22},{"source":3,"target":21},{"source":3,"target":25},{"source":3,"target":2},{"source":4,"target":18},{"source":4,"target":22},{"source":4,"target":29},{"source":4,"target":3},{"source":5,"target":20},{"source":5,"target":14},{"source":5,"target":23},{"source":5,"target":11},{"source":5,"target":4},{"source":6,"target":18},{"source":6,"target":29},{"source":6,"target":3},{"source":7,"target":30},{"source":7,"target":18},{"source":8,"target":21},{"source":8,"target":29},{"source":8,"target":3},{"source":9,"target":31},{"source":9,"target":27},{"source":9,"target":24},{"source":10,"target":17},{"source":10,"target":20},{"source":10,"target":23},{"source":10,"target":11},{"source":11,"target":17},{"source":11,"target":23},{"source":11,"target":20},{"source":11,"target":0},{"source":12,"target":5},{"source":12,"target":10},{"source":12,"target":23},{"source":12,"target":11},{"source":12,"target":4},{"source":13,"target":7},{"source":13,"target":30},{"source":13,"target":28},{"source":13,"target":18},{"source":14,"target":17},{"source":14,"target":20},{"source":14,"target":23},{"source":14,"target":11},{"source":14,"target":4},{"source":15,"target":5},{"source":15,"target":18},{"source":15,"target":22},{"source":15,"target":29},{"source":16,"target":18},{"source":16,"target":22},{"source":16,"target":29},{"source":16,"target":3},{"source":17,"target":5},{"source":17,"target":20},{"source":17,"target":23},{"source":18,"target":29},{"source":19,"target":31},{"source":19,"target":9},{"source":20,"target":23},{"source":21,"target":2},{"source":21,"target":22},{"source":22,"target":25},{"source":23,"target":4},{"source":23,"target":2},{"source":25,"target":21},{"source":26,"target":5},{"source":26,"target":11},{"source":26,"target":23},{"source":26,"target":20},{"source":27,"target":19},{"source":27,"target":31},{"source":28,"target":7},{"source":28,"target":30},{"source":28,"target":18},{"source":29,"target":2},{"source":29,"target":22},{"source":30,"target":8},{"source":31,"target":24},{"source":32,"target":0},{"source":33,"target":9}]};
+      if (!data.nodes.length || typeof d3 === 'undefined') return;
+      var container = document.getElementById('graph-container');
+      var svg = d3.select('#knowledge-graph');
+      var W = container.clientWidth, H = container.clientHeight;
+      var g = svg.append('g');
+
+      var zoomBehavior = d3.zoom().scaleExtent([0.15, 6]).wheelDelta(function(e){return -e.deltaY*(e.deltaMode===1?0.03:e.deltaMode?1:0.0008);}).on('zoom', function(e){ g.attr('transform', e.transform); });
+      svg.call(zoomBehavior);
+
+      function fitView(){
+        var pad=40;
+        var xMin=Infinity,xMax=-Infinity,yMin=Infinity,yMax=-Infinity;
+        data.nodes.forEach(function(d){
+          if(d.x-d.r<xMin)xMin=d.x-d.r; if(d.x+d.r>xMax)xMax=d.x+d.r;
+          if(d.y-d.r<yMin)yMin=d.y-d.r; if(d.y+d.r>yMax)yMax=d.y+d.r;
+        });
+        var bw=xMax-xMin+pad*2, bh=yMax-yMin+pad*2;
+        if(bw<1||bh<1)return;
+        var scale=Math.min(W/bw, H/bh, 2);
+        var tx=W/2-scale*(xMin+xMax)/2, ty=H/2-scale*(yMin+yMax)/2;
+        svg.transition().duration(600).call(zoomBehavior.transform, d3.zoomIdentity.translate(tx,ty).scale(scale));
+      }
+      var fitted=false;
+
+      var sim = d3.forceSimulation(data.nodes)
+        .force('link', d3.forceLink(data.links).id(function(d,i){return i;}).distance(function(l){
+          var sr=l.source.r||4, tr=l.target.r||4; return 30 + sr + tr;
+        }).strength(0.2))
+        .force('charge', d3.forceManyBody().strength(function(d){return -30 - d.r * 5;}).distanceMax(400))
+        .force('collision', d3.forceCollide().radius(function(d){return d.r + 2;}).strength(0.9))
+        .force('center', d3.forceCenter(W/2, H/2))
+        .force('x', d3.forceX(W/2).strength(0.03))
+        .force('y', d3.forceY(H/2).strength(0.03))
+        .alphaDecay(0.015).velocityDecay(0.4);
+
+      var link = g.append('g').selectAll('line').data(data.links).join('line')
+        .attr('stroke','#30363d').attr('stroke-width',0.4).attr('stroke-opacity',0.25);
+
+      var node = g.append('g').selectAll('circle').data(data.nodes).join('circle')
+        .attr('r', function(d){return d.r;})
+        .attr('fill', function(d){return d.color;})
+        .attr('fill-opacity', function(d){return 0.4 + 0.6*(d.r/24);})
+        .attr('stroke','#0d1117').attr('stroke-width',function(d){return d.r>12?1.5:0.5;})
+        .style('cursor','pointer')
+        .on('dblclick', function(e,d){ window.location.href = d.href; })
+        .call(d3.drag()
+          .on('start',function(e,d){if(!e.active)sim.alphaTarget(0.08).restart();d.fx=d.x;d.fy=d.y;})
+          .on('drag',function(e,d){d.fx=e.x;d.fy=e.y;})
+          .on('end',function(e,d){if(!e.active)sim.alphaTarget(0);d.fx=null;d.fy=null;})
+        );
+
+      var labelG = g.append('g');
+
+      var hoverLabel = labelG.append('text').attr('fill','#e6edf3').attr('font-size',12)
+        .style('pointer-events','none').style('user-select','none').style('display','none');
+
+      var tooltip = document.getElementById('graph-tooltip');
+      var adjIdx = {};
+      data.links.forEach(function(l,i){
+        var si=typeof l.source==='object'?l.source.index:l.source;
+        var ti=typeof l.target==='object'?l.target.index:l.target;
+        if(!adjIdx[si])adjIdx[si]=[];if(!adjIdx[ti])adjIdx[ti]=[];
+        adjIdx[si].push(ti);adjIdx[ti].push(si);
+      });
+
+      node.on('mouseover', function(e,d){
+        tooltip.textContent=d.name+' · '+d.domain+' ('+d.lc+'个链接)';
+        tooltip.style.display='block';tooltip.style.left=(e.offsetX+12)+'px';tooltip.style.top=(e.offsetY-20)+'px';
+        d3.select(this).attr('stroke','#58a6ff').attr('stroke-width',2.5);
+        hoverLabel.text(d.name).attr('x',d.x+d.r+4).attr('y',d.y+4).style('display',null);
+        var adj=new Set();adj.add(d.index);(adjIdx[d.index]||[]).forEach(function(i){adj.add(i);});
+        node.attr('opacity',function(n){return adj.has(n.index)?1:0.08;});
+        adjNodes=adj;
+        link.attr('stroke',function(l){return(l.source===d||l.target===d)?d.color:'#30363d';})
+            .attr('stroke-opacity',function(l){return(l.source===d||l.target===d)?0.7:0.03;})
+            .attr('stroke-width',function(l){return(l.source===d||l.target===d)?1.2:0.4;});
+      }).on('mousemove',function(e){
+        tooltip.style.left=(e.offsetX+12)+'px';tooltip.style.top=(e.offsetY-20)+'px';
+      }).on('mouseout',function(){
+        tooltip.style.display='none';
+        d3.select(this).attr('stroke','#0d1117').attr('stroke-width',function(d){return d.r>12?1.5:0.5;});
+        node.attr('opacity',1);
+        hoverLabel.style('display','none');
+        link.attr('stroke','#30363d').attr('stroke-opacity',0.25).attr('stroke-width',0.4);
+      });
+      var adjNodes=null;
+
+      sim.on('tick',function(){
+        link.attr('x1',function(d){return d.source.x;}).attr('y1',function(d){return d.source.y;})
+            .attr('x2',function(d){return d.target.x;}).attr('y2',function(d){return d.target.y;});
+        node.attr('cx',function(d){return d.x;}).attr('cy',function(d){return d.y;});
+        if(!fitted && sim.alpha()<0.05){ fitted=true; fitView(); }
+      });
+    });
+    </script>
+
+    
+    <h2 class="section-header" style="margin-top: 2.5rem;"><span class="section-icon" style="background: #e8eaf6;">📅</span> 最近活动</h2>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-date">2026-06-01</div>
+        <div class="timeline-title">52 个页面更新</div>
+        <div class="timeline-desc">概念、对比、实体、来源、总览、综合 · 2026-10-脉冲多普勒雷达、2026-8-模糊函数及雷达波形设计、2026-9-雷达信号处理、2026-9-雷达信号检测等共 52 个页面</div>
+        <button class="timeline-toggle" onclick="this.parentElement.classList.toggle('expanded')">展开详情</button>
+        <div class="timeline-details"><ul><li>2026-10-脉冲多普勒雷达 <span class="type-badge concept" style="font-size:0.7rem;">concept</span></li><li>2026-8-模糊函数及雷达波形设计 <span class="type-badge concept" style="font-size:0.7rem;">concept</span></li><li>2026-9-雷达信号处理 <span class="type-badge concept" style="font-size:0.7rem;">concept</span></li><li>2026-9-雷达信号检测 <span class="type-badge concept" style="font-size:0.7rem;">concept</span></li><li>2026目标角度测量 <span class="type-badge concept" style="font-size:0.7rem;">concept</span></li><li>2026目标距离测量 <span class="type-badge concept" style="font-size:0.7rem;">concept</span></li><li>2026相控阵雷达 <span class="type-badge concept" style="font-size:0.7rem;">concept</span></li><li>2026运动目标检测及测速 <span class="type-badge concept" style="font-size:0.7rem;">concept</span></li><li>2026雷达作用距离 <span class="type-badge concept" style="font-size:0.7rem;">concept</span></li><li>2026雷达原理及系统绪论-1 <span class="type-badge concept" style="font-size:0.7rem;">concept</span></li><li>2026雷达原理及系统绪论-2 <span class="type-badge concept" style="font-size:0.7rem;">concept</span></li><li>2026雷达发射机 <span class="type-badge concept" style="font-size:0.7rem;">concept</span></li><li>2026雷达接收机与显示器 <span class="type-badge concept" style="font-size:0.7rem;">concept</span></li><li>脉冲多普勒雷达与相控阵雷达对比分析 <span class="type-badge comparison" style="font-size:0.7rem;">comparison</span></li><li>模糊函数性质 <span class="type-badge concept" style="font-size:0.7rem;">concept</span></li><li>模糊函数 <span class="type-badge concept" style="font-size:0.7rem;">concept</span></li><li>测角原理 <span class="type-badge concept" style="font-size:0.7rem;">concept</span></li><li>基带信号处理 <span class="type-badge concept" style="font-size:0.7rem;">concept</span></li><li>距离-多普勒空间 <span class="type-badge concept" style="font-size:0.7rem;">concept</span></li><li>多普勒滤波器组 <span class="type-badge concept" style="font-size:0.7rem;">concept</span></li><li>多普勒频谱分析 <span class="type-badge concept" style="font-size:0.7rem;">concept</span></li><li>多值性问题 <span class="type-badge concept" style="font-size:0.7rem;">concept</span></li><li>无杂波区 <span class="type-badge concept" style="font-size:0.7rem;">concept</span></li><li>雷达信号处理 <span class="type-badge concept" style="font-size:0.7rem;">concept</span></li><li>雷达波形设计 <span class="type-badge concept" style="font-size:0.7rem;">concept</span></li><li>信噪比最大化 <span class="type-badge concept" style="font-size:0.7rem;">concept</span></li><li>恒虚警检测 <span class="type-badge concept" style="font-size:0.7rem;">concept</span></li><li>模糊函数 <span class="type-badge entity" style="font-size:0.7rem;">entity</span></li><li>振幅法测角 <span class="type-badge entity" style="font-size:0.7rem;">entity</span></li><li>天线方向图 <span class="type-badge entity" style="font-size:0.7rem;">entity</span></li><li>自动测角系统 <span class="type-badge entity" style="font-size:0.7rem;">entity</span></li><li>基带信号 <span class="type-badge entity" style="font-size:0.7rem;">entity</span></li><li>CFAR处理 <span class="type-badge entity" style="font-size:0.7rem;">entity</span></li><li>相关接收技术 <span class="type-badge entity" style="font-size:0.7rem;">entity</span></li><li>多普勒频移 <span class="type-badge entity" style="font-size:0.7rem;">entity</span></li><li>匹配滤波器 <span class="type-badge entity" style="font-size:0.7rem;">entity</span></li><li>MTD处理 <span class="type-badge entity" style="font-size:0.7rem;">entity</span></li><li>MTI处理 <span class="type-badge entity" style="font-size:0.7rem;">entity</span></li><li>最佳滤波理论 <span class="type-badge entity" style="font-size:0.7rem;">entity</span></li><li>相位法测角 <span class="type-badge entity" style="font-size:0.7rem;">entity</span></li><li>PRF参数详解 <span class="type-badge entity" style="font-size:0.7rem;">entity</span></li><li>脉冲多普勒雷达 <span class="type-badge entity" style="font-size:0.7rem;">entity</span></li><li>正交解调 <span class="type-badge entity" style="font-size:0.7rem;">entity</span></li><li>雷达波形 <span class="type-badge entity" style="font-size:0.7rem;">entity</span></li><li>距离分辨力 <span class="type-badge entity" style="font-size:0.7rem;">entity</span></li><li>射频信号 <span class="type-badge entity" style="font-size:0.7rem;">entity</span></li><li>脉冲多普勒雷达技术详解 <span class="type-badge source" style="font-size:0.7rem;">source</span></li><li>雷达信号处理核心技术流程 <span class="type-badge source" style="font-size:0.7rem;">source</span></li><li>雷达信号检测理论与技术 <span class="type-badge source" style="font-size:0.7rem;">source</span></li><li>雷达角度测量技术 <span class="type-badge source" style="font-size:0.7rem;">source</span></li><li>雷达系统知识总览 <span class="type-badge topic_overview" style="font-size:0.7rem;">topic_overview</span></li><li>雷达信号处理总览 <span class="type-badge synthesis" style="font-size:0.7rem;">synthesis</span></li></ul></div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <p id="site-footer-line">Radar 2026 — 编译预览 · 更新: 2026-06-01</p>
+  </footer>
+
+  <script>window.__KNOWLEVER_BASE="";window.__KNOWLEVER_SITE_NAME="Radar 2026";</script>
+  <script src="assets/js/site-common.js"></script>
+  <script src="assets/data/site-page-data.js"></script>
+  <script src="assets/js/site-nav.js" defer></script>
+  <script src="assets/js/site-page.js" defer></script>
+  <script src="assets/js/search.js"></script>
+  <script>initSearch('search-input','search-results','');</script>
+  <script src="assets/js/tooltips.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-view@0.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-lib@0.17"></script>
+  <script>
+  (function(){
+    var md = "# Radar 2026\n## [雷达信号处理总览（5）](domain-synthesis-雷达信号处理总览.html)\n### [雷达信号处理（4）](concepts/concept-radar-signal-processing.html)\n#### [雷达信号处理](concepts/concept-radar-signal-processing.html)\n#### [基带信号处理](concepts/concept-baseband-signal-processing.html)\n#### [多普勒频谱分析](concepts/concept-doppler-spectrum-analysis.html)\n#### [恒虚警检测](concepts/constant-false-alarm-rate.html)\n### [雷达信号处理总览](syntheses/synthesis-雷达信号处理总览.html)\n## [Concept Matched Filter（3）](domain-concept-matched-filter.html)\n### [模糊函数（3）](concepts/concept-ambiguity-function.html)\n#### [模糊函数](concepts/concept-ambiguity-function.html)\n#### [模糊函数性质](concepts/concept-ambiguity-function-properties.html)\n#### [雷达波形设计](concepts/concept-radar-waveform-design.html)\n## [Concept Pulse Doppler Radar（3）](domain-concept-pulse-doppler-radar.html)\n### [距离-多普勒空间](concepts/concept-distance-doppler-space.html)\n### [多普勒滤波器组](concepts/concept-doppler-filter-bank.html)\n### [无杂波区](concepts/concept-no-clutter-zone.html)\n## [Concept Phase Angle Measurement（2）](domain-concept-phase-angle-measurement.html)\n### [测角原理](concepts/concept-angle-measurement-principle.html)\n### [多值性问题](concepts/concept-multi-valued-problem.html)\n## [Concept Optimal Filtering（1）](domain-concept-optimal-filtering.html)\n### [信噪比最大化](concepts/concept-snr-maximization.html)";
+    var wrap = document.getElementById('markmap-wrap');
+    if (!wrap || !window.markmap) return;
+    var svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+    svg.setAttribute('style','width:100%;height:100%');
+    wrap.appendChild(svg);
+    var transformer = new markmap.Transformer();
+    var result = transformer.transform(md);
+    var mm = markmap.Markmap.create(svg, {duration:300, maxWidth:260, initialExpandLevel:1, autoFit:true}, result.root);
+    setTimeout(function(){ mm.fit(); }, 400);
+    setTimeout(function(){
+      svg.querySelectorAll('a[href]').forEach(function(a){
+        a.style.cursor='pointer';
+        a.setAttribute('target','_self');
+      });
+      svg.addEventListener('click', function(e){
+        var link = e.target.closest('a[href]');
+        if(link){
+          e.preventDefault(); e.stopPropagation();
+          window.location.href = link.getAttribute('href');
+        }
+      });
+    }, 800);
+  })();
+  </script>
+</body>
+</html>

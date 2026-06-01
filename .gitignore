@@ -3,19 +3,16 @@ node_modules/
 .env
 .env.*
 
-# 运行期产物（可本地重建；演示站用 prebuilt/ 提交）
+# 本地运行期（源文件、raw、normalized 不进 git）
 data/
-!data/.gitkeep
 
-# 私人 topic（雷达课件等）永不提交
-data/topics/radar-2026/
-
-# 私人学习资料（勿提交）
+# 私人原始资料
 示例/
 samples-private/*
 !samples-private/README.md
 *.pdf
 !docs/**/*.pdf
 
-# 本地配置覆盖
 config.local.json
+
+# 提交：examples/、wiki/<topic>/、prebuilt/<topic>/、site/

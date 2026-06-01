@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="last-modified" content="2026-06-01">
+  <title>2026相控阵雷达 — Radar 2026</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  
+  <style>.page-summary{color:var(--text-muted,#666);font-size:1.05rem;line-height:1.6;margin:-0.5rem 0 1.5rem;padding:0.75rem 1rem;background:var(--bg-secondary,#f8f9fa);border-radius:8px;border-left:3px solid var(--accent,#3b82f6);}</style>
+</head>
+<body>
+  <header class="site-header" data-site-nav></header>
+
+  <div class="breadcrumb">
+    <a href="../index.html">首页</a><span>›</span>
+    <a href="../concepts-hub.html">概念</a><span>›</span>
+    2026相控阵雷达
+  </div>
+
+  <div class="page-layout">
+    <main class="page-content">
+
+      <div class="page-meta">
+        <span class="type-badge concept">💡 Concept</span>
+        <span class="status-badge draft">draft</span>
+        <span class="confidence-badge" style="display:inline-flex;align-items:center;gap:4px;font-size:0.8rem;color:#f59e0b;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;"></span>50%</span>
+        <span class="date-info">更新: 2026-06-01</span>
+      </div>
+      <div style="margin-bottom: 1rem;">
+        <span class="tag">radar-2026</span>
+      </div>
+
+      <h1>2026相控阵雷达</h1>
+      
+
+      <blockquote><p>来源：<code>2026相控阵雷达.pdf</code>（AutoOffice to-markdown）</p></blockquote>
+<p>相控阵雷达</p>
+<p>相控阵雷达特点
+相控阵雷达的组成
+相控阵天线的扫描原理
+相控阵天线的基本特性
+平面阵简介
+DBF技术简介
+相控阵的通道校正技术
+相控阵的发展趋势</p>
+<p>相控阵雷达概述
+ 雷达分类（</p>
+<p>按波束扫描方式分）</p>
+<p>机械扫描雷达
+波束与天线位置关系固定，用天线的机械转动实现
+波束的扫描</p>
+<p>电扫描雷达</p>
+<p>相控阵雷达
+频扫雷达</p>
+<p>有源相控阵雷达
+无源相控阵雷达</p>
+<p>相控阵雷达的波束与天线位置关系不固定，波束扫
+描时，天线本身不动</p>
+<p> 相控阵雷达的特点</p>
+<p>以发射波束扫描为例</p>
+<p></p>
+<p>相控阵雷达的天线为天线阵，由按一定方式排列的多个
+小天线（阵元）组成
+常见阵形：线性阵、矩形阵、圆形阵、多边形阵等
+阵元数目：数个 ~ 数十万个不等</p>
+<p></p>
+<p>波束扫描时，天线不动 控制各阵元信号相位即可实现扫描</p>
+<p></p>
+<p>波束扫描无惯性，波束可空间跳跃</p>
+<p></p>
+<p>可实现多波束扫描</p>
+<p>相控阵雷达的组成
+ 相控阵雷达分类</p>
+<p>有源相控阵</p>
+<p>有源相控阵</p>
+<p>每个阵元有功放（有源）</p>
+<p>无源相控阵</p>
+<p>每个阵元无功放</p>
+<p>无源相控阵</p>
+<p> 有源相控阵雷达的基本组成</p>
+<p>T/R组件的简化原理框图
+限幅器
+驱动放大器</p>
+<p>衰减器</p>
+<p>滤波器</p>
+<p> 有源相控阵的优点</p>
+<p>目前相控阵的主流</p>
+<p></p>
+<p>全固态，无需电真空器件</p>
+<p></p>
+<p>高可靠性，部分T/R损坏时，雷达可照常工作</p>
+<p></p>
+<p>无功率分配损失</p>
+<p></p>
+<p>波束控制更灵活，实现多波束更容易</p>
+<p>有源相控阵比无源相控阵更先进</p>
+<p>相控阵天线的扫描原理与方向图
+以均匀水平线阵为例
+</p>
+<p>以发射天线为例介绍相控阵天线扫描原理与方向图。
+接收天线与发射天线相类似。</p>
+<p></p>
+<p>天线方向图是对单频正弦波而言的，是频率的函数。
+雷达信号虽然不是单频正弦波，但通常为窄带信号，
+近似认为是单频信号</p>
+<p></p>
+<p>为方便介绍，单频正弦波用其复包络信号表示
+单频信号</p>
+<p>S ' (t )  A cos(2 f 0t   0 )</p>
+<p>其复包络信号可表示为 S (t )  Ae j 2 f0t , A  A e j0</p>
+<p> 相位扫描原理
+</p>
+<p>N元线阵不移相的方向图（  0不扫描的情况）
+辐射单元间距为 d
+各辐射单元均相同，
+并以等幅、无方向
+性辐射</p>
+<p>正前方</p>
+<p>设0号单元在正前方产生的场强为E，
+则每个单元在正前方产生的场强也为E，
+E  0  N E
+总场强为 E(0)  NE</p>
+<p>目标</p>
+<p>N元线阵不移相的方向图（  0不扫描的情况）
+2
+
+
+
+d sin  波程差引入相位差
+
+非正前方（ 方向）</p>
+<p></p>
+<p></p>
+<p>设0号单元在  方向远场产生的场强为E，则第 i 个单元
+在该方向产生的场强为 Ee
+N 1</p>
+<p>ji</p>
+<p>N
+
+ji
+E
+(
+
+)
+
+Ee
+
+E
+sin
+
+
+总场强
+
+ 2
+  e
+i 0</p>
+<p> N 1 
+j
+ 
+ 2
+</p>
+<p>1 
+sin   
+2 
+E ( )  N E</p>
+<p></p>
+<p>N元线阵移相的方向图（扫描的情况）
+波程差引入相位差</p>
+<p> 0 </p>
+<p>2</p>
+<p></p>
+<p>d sin  0</p>
+<p>相邻阵元激励
+电流相位差0</p>
+<p>0</p>
+<p>1</p>
+<p>2</p>
+<p>N 1</p>
+<p> 0 方向 设0号单元在 0 方向远场产生的场强为E，
+ji  ji
+则第 i 个单元在该方向产生的场强为 Ei  Ee 0 e 0
+若 0  0 ，则有 Ei =E
+E ( 0 )  N E
+总场强为 E (0 )  NE</p>
+<p>而在其他 方向</p>
+<p>波程差引入相位差  </p>
+<p>2</p>
+<p></p>
+<p>ji
+i
+第 个单元在该方向产生的场强为 Ee e</p>
+<p>该方向总场强为 E ( ) </p>
+<p>d sin </p>
+<p> ji0</p>
+<p> Ee</p>
+<p>ji (  0 )</p>
+<p>N 1</p>
+<p>ji (  0 )
+Ee
+
+i 0</p>
+<p>改变移相器的移相值
+可以改变天线方向图
+的主瓣位置，从而实
+现波束扫描
+要想波束对准  0 方向，各阵元移相值分别应为
+2
+0, 0 ,20 ,..., ( N  1)0
+d sin  0
+其中 0 </p>
+<p></p>
+<p>均匀水平线阵</p>
+<p> 改变</p>
+<p> 改变
+在阵列天线元采用控制移相器相移量的方法改变激励
+相位，从而实现电扫描。</p>
+<p>目标</p>
+<p></p>
+<p>相控阵天线方向图推导</p>
+<p>0 </p>
+<p>2</p>
+<p></p>
+<p>d sin  0</p>
+<p>设N元线阵的移相值分别为 0, 0 ,20 ,..., ( N  1)0</p>
+<p> 方向的总场强 E ( )  E0  E1    Ei    EN 1
+N 1</p>
+<p>  Ee
+i 0</p>
+<p> 
+波程差</p>
+<p>2</p>
+<p></p>
+<p>ji (  0 )</p>
+<p>    0 N 1</p>
+<p>ji
+Ee
+
+i 0</p>
+<p>d sin </p>
+<p>等比级数</p>
+<p>相位差</p>
+<p>N
+
+sin
+
+
+
+ j N 1
+e jN   1
+2
+
+e 2
+E ( )  E j
+E
+e 1
+1
+
+sin   
+2
+
+场强幅度值</p>
+<p>N
+
+sin   
+2
+
+E
+(
+
+)
+
+E
+场强的幅度值
+1
+
+    0
+sin   
+2
+
+2
+2
+</p>
+<p>d sin  </p>
+<p>d sin  0</p>
+<p>
+
+2
+
+d  sin   sin  0 
+</p>
+<p>E( ) max</p>
+<p> N d
+sin 
+ sin   sin 0  
+
+
+
+E
+(
+
+)
+
+E
+得
+ d
+
+sin 
+ sin   sin 0 
+ 
+
+ E ( )
+ N |E|
+ 0</p>
+<p> N d
+
+sin
+sin
+
+
+sin
+
+2
+
+0 
+
+E ( )
+1
+
+
+
+F ( ) 
+
+2
+2
+E ( ) max N sin   d  sin   sin   
+0 
+ 
+
+注意：此处假定每个阵元是全向天线
+阵列方向图函数</p>
+<p>2</p>
+<p>当每个阵元的方向图函数相同且为 Fe ( ) 时，则相控阵
+天线的方向图 F ( ) 为阵列方向图 Fa ( ) 与阵元方向图
+Fe ( ) 之积，即：</p>
+<p>F ( )  Fa ( )  Fe ( )
+该结论适用于所有阵元方向图相同的情况</p>
+<p>线阵天线阵列的基本特性
+只讨论最简单的线阵天线波束特性，其结论对其他阵列同样适用，
+或可作参考
+</p>
+<p>线阵方向图形状、主瓣、零点与副瓣位置
+设线阵的第 0 1
+、、
+2 ......、N  1 个阵元移相值分别为
+2
+20 、……、
+0、0 、
+( N  1)0
+d sin  0
+令 0 </p>
+<p></p>
+<p>天线的阵列方向图函数
+2</p>
+<p>2
+ N d
+
+N
+sin 
+sin   sin  0  
+
+sin 
+1
+1
+
+
+
+2
+Fa ( )  2
+ 2
+N
+N sin 1 
+ d
+
+sin 
+ sin   sin 0  
+2
+ 
+</p>
+<p>当以 为横轴时，Fa ( ) 形状近似于辛克函数，因此天线
+方向图（以  为横坐标）是辛克函数的横向拉伸变形
+1</p>
+<p>天线主瓣位置  0 为满足右式的  ： </p>
+<p>0可由 0 </p>
+<p>2 d</p>
+<p></p>
+<p>N
+sin 
+1
+2
+Fa ( )  2
+N sin 1 
+2</p>
+<p>2 d</p>
+<p></p>
+<p>2</p>
+<p> sin   sin 0   0</p>
+<p>sin  0 直接求出，从而得到主瓣位置</p>
+<p>N
+sin 
+1
+2
+F
+(
+
+)
+
+方向图零点位置为满足下式的 
+a
+2
+N sin 1 
+2
+N d
+N  
+ sin   sin  0   2 k = ±1, ±2 ⋯</p>
+<p>
+0
+解得第k个零点  k</p>
+<p>   2 k
+
+
+
+0 
+
+2
+
+d
+N
+
+
+</p>
+<p> k0  sin 1 </p>
+<p>方向图副瓣位置为满足下式的 
+N d
+N  
+ sin   sin  0   2 k   = ±1, ±2 ⋯
+
+s
+同理第k个副瓣最大值位置  k
+   2 k  
+
+注： k  0 不是副瓣
+ ks  sin 1 
+
+
+0 
+
+
+ 2 d  N</p>
+<p>2</p>
+<p>天线方向图副瓣电平
+即    k 时，Fa ( ) 的取值
+s</p>
+<p>也即 N   2 k  
+sin</p>
+<p>= ±1, ±2 ⋯ 时</p>
+<p>N
+1
+ sin 的取值，记为 Sk
+2
+2</p>
+<p>N
+sin 
+1
+2
+Fa ( )  2
+N sin 1 
+2
+1</p>
+<p>S1  13.4dB
+S 2  17.9dB</p>
+<p>与阵元数N无关</p>
+<p>副瓣电平
+影响何在？</p>
+<p>2</p>
+<p>改善天线副瓣电平的方法
+幅度加权
+天线方向图副瓣电平
+S1  13.4dB 与阵元数N无关</p>
+<p>降低副瓣电平</p>
+<p>幅度加权系数关于中心对称
+常用幅度加权函数：
+海明加权
+三角窗加权等
+加权效果
+副瓣电平：-30~-40dB
+主瓣展宽：1~2倍
+增益下降：1~2dB</p>
+<p>天线主瓣3dB宽度  0.5
+2</p>
+<p>N
+
+
+sin  
+1 
+2
+ 0.5 时， 取值的2倍
+即 2
+
+N  sin 1  
+
+2
+</p>
+<p>1</p>
+<p>0.886 1
+50.8
+1
+(rad )
+0.5 
+
+() 
+Nd cos  0
+Nd cos 0</p>
+<p>天线增益G 天线增益  阵列增益  阵元增益
+2</p>
+<p>N E  1
+N
+阵列增益 G  
+
+ E  N
+阵元增益 Ge</p>
+<p>N E 为阵列天线主瓣总场强
+E 为阵元天线主瓣场强</p>
+<p>2
+4
+
+
+2
+
+• 阵元面阵为 A  d ，在 d  时，有Ge  2 
+2
+ 4
+此时 G  N 
+2
+
+• 当天线指向  0 方向，其有效面积变为 A    cos  0
+2
+此时 Ge   cos  0</p>
+<p></p>
+<p>最后得天线增益 G  N  cos  0</p>
+<p>天线方向图与栅瓣</p>
+<p>何为栅瓣？</p>
+<p> N d
+
+sin 
+sin
+
+
+sin
+
+
+0 
+1
+ 
+
+Fa ( )  2
+N
+ d
+sin 
+ sin   sin 0 
+ 
+</p>
+<p>  0</p>
+<p>当</p>
+<p>N d</p>
+<p></p>
+<p>F ( )max  1</p>
+<p>  0</p>
+<p>2</p>
+<p>？</p>
+<p>F ( )  1</p>
+<p>出现栅瓣</p>
+<p> sin   sin  0   0,  ,  n</p>
+<p> N d
+
+sin 
+sin
+
+
+sin
+
+
+0 
+1
+
+
+
+N2
+ d
+sin 
+ sin   sin 0  
+ 
+</p>
+<p>2</p>
+<p>分母不为零 Fa ( )  0
+分母为零</p>
+<p>Fa ( )  1</p>
+<p>  0</p>
+<p>设 d  2 ，以主瓣  0  0为例，要在 0  0 方向上产生主瓣，
+2
+2 2
+d sin  0 
+sin  0  4 sin  0
+则相移增量 0 </p>
+<p></p>
+<p></p>
+<p>
+
+
+
+0
+除了在 0
+方向上，在其它方向 0 上也会形成主瓣</p>
+<p> </p>
+<p>2 d sin 0</p>
+<p>
+1  k  </p>
+<p> 2 k 即 d sin  0  k 
+k</p>
+<p>(k  0, 1, 2,)</p>
+<p>0'  sin    sin 1   解得  0'  0 , 30 , 90 处都有主瓣
+ d 
+2</p>
+<p>若</p>
+<p>N d</p>
+<p></p>
+<p> sin   sin 0   0,  ,  n</p>
+<p> N d
+
+sin 
+sin
+
+
+sin
+
+
+0 
+1
+
+
+
+N2
+ d
+sin 
+ sin   sin 0  
+ 
+</p>
+<p>d
+ sin   sin 0   
+
+d</p>
+<p></p>
+<p></p>
+<p>1
+1  sin  0</p>
+<p>2</p>
+<p>出现栅瓣</p>
+<p>Fa ( )  0</p>
+<p>分母为零</p>
+<p>分母不为零</p>
+<p>Fa ( )  1</p>
+<p>  0
+为主波束指向</p>
+<p>无栅瓣出现</p>
+<p>d   2 时，不会出现栅瓣</p>
+<p>例如，指向60o 时不出现栅瓣的条件为d<</p>
+<p>.</p>
+<p>不大，一般相控阵天线的扫描角不超过±60</p>
+<p>,与 相差</p>
+<p>平面阵简介
+面阵相控阵雷达有矩形阵、圆形阵、多边形阵、异形阵
+（包括共形阵）等
+矩形面阵
+若要在方位  0 方向，
+俯仰  0 方向产生主瓣，
+则需设置水平和俯仰
+相移增量
+N行，M列的矩形相控阵天线</p>
+<p> 相移计算</p>
+<p>若要在方位  0 方向，俯仰  0 方向产生主瓣，则
+2 d h
+0 
+sin  0
+水平相移增量为
+垂直相移增量为</p>
+<p>
+2 d v
+0 
+sin  0
+</p>
+<p>相移矩阵</p>
+<p>0  2 0</p>
+<p>0
+0  0
+0  2 0</p>
+<p>..........</p>
+<p>......</p>
+<p>0
+0  0</p>
+<p>0  ( M  1) 0 0  ( M  1) 0</p>
+<p>20 ......</p>
+<p>( N  1)0</p>
+<p>20   0 ......</p>
+<p>( N  1)0   0</p>
+<p>20  2 0 ......</p>
+<p>( N  1)0  2 0</p>
+<p>20  ( M  1) 0 ......( N  1)0  ( M  1) 0</p>
+<p>即第i 行，第j 列单元移相值为 ij 0  (i  1)0  ( j  1) 0</p>
+<p> 天线阵列方向图</p>
+<p>即第i 行第j 列在远区  、 方向产生的场强为
+j (  </p>
+<p>)</p>
+<p>Eij  Ee ij ij 0 ij 0
+ 方向时相对于
+其中，ij 为第i 行第j 列单元指向 、
+第00号单元的相移</p>
+<p>ij  (i  1)   ( j  1)
+ </p>
+<p>2 d h</p>
+<p></p>
+<p>sin </p>
+<p> </p>
+<p>2 d v</p>
+<p></p>
+<p>sin </p>
+<p>ij  ij 0  (i  1)  ( j  1)  (i  1)0  ( j  1) 0
+ (i  1)(  0 )  ( j  1)(  0 )
+ (i  1)   ( j  1)  
+其中      0 </p>
+<p>      0 </p>
+<p>2 d h</p>
+<p> sin   sin 0 </p>
+<p>2 d v</p>
+<p> sin   sin  0 </p>
+<p></p>
+<p></p>
+<p> 、 方向远区总场强 E ( ,  ) 为
+N 1 M 1</p>
+<p>E ( ,  )    Eij
+i  0 j 1</p>
+<p>N 1 M 1</p>
+<p>   Ee </p>
+<p>j  ( i 1)    ( j 1)   </p>
+<p>i  0 j 1</p>
+<p>N 1</p>
+<p>  Ee
+i 0</p>
+<p>j ( i 1)  </p>
+<p>M 1</p>
+<p>e</p>
+<p>j ( j 1)  </p>
+<p>j 1</p>
+<p> M   
+ N   
+sin 
+ j N 1   sin  2  m 1  
+ 2 e 2
+e 2
+E
+ 
+   
+   
+sin 
+sin 
+
+
+2
+ 2 
+
+</p>
+<p>天线的阵列方向图</p>
+<p>Fa ( ,  ) </p>
+<p>E ( ,  )</p>
+<p>2</p>
+<p>2</p>
+<p>E ( ,  ) max
+2</p>
+<p> N    sin  M   
+sin 
+
+
+
+2
+1
+ 2  
+
+
+
+
+( MN ) 2
+   
+   
+sin 
+sin 
+
+
+2
+ 2 
+
+
+ Fa ( )  Fa (  ) 行阵列方向图乘以列阵列方向图
+2</p>
+<p>天线总的方向图</p>
+<p>F ( ,  )  Fa ( ,  )  Fe ( ,  )  Fa ( )  Fa (  )  Fe ( ,  )</p>
+<p>数字波束形成(DBF)技术简介
+以接收波束形成为例介绍
+常规的波束形成：在射频上通过移相和功率合成形成波束</p>
+<p>…</p>
+<p>功率合成
+模拟波束输出</p>
+<p>下变频
+A/D
+数字波束输出</p>
+<p>DBF：在数字上通过加权求和形成波束
+...
+下
+变
+频</p>
+<p>下
+变
+频</p>
+<p>下
+变
+频</p>
+<p>A/D</p>
+<p>A/D</p>
+<p>A/D</p>
+<p>数字波束输出</p>
+<p>优点：多波束形成更方便
+缺点：系统更复杂</p>
+<p>相控阵雷达的通道校正技术
+两种校正方法
+外校正
+内校正
+ 外校正方法</p>
+<p>发射通道校正流程
+接收通道校正流程</p>
+<p>外校正原理框图</p>
+<p> 内校正方法</p>
+<p>发射通道校正
+接收通道校正</p>
+<p>内校正原理框图</p>
+<p>相控阵雷达的发展趋势
+ 共形阵</p>
+<p>波束控制方式：扫描方向同相叠加
+实现方法：查表方法进行移相值计算
+可行性：波束离散扫描
+智能蒙皮的一种：在飞机蒙皮下植入智能、控制元件</p>
+<p> 数字阵（数字化相控阵）</p>
+<p>以数字化T/R组件为基础
+采用发射DBF技术
+采用接收DBF技术
+收发通道尽量采用数字化技术</p>
+<p> 数字T/R组件的结构</p>
+<p>发射：T/R组件独立产生波形
+且直接完成数字移相
+接收： A/D以后在数字上移相
+该结构可以方便地完成发射DBF
+和接收DBF</p>
+<p> 宽带相控阵雷达</p>
+<p>窄带：用移相代替延迟（本质是延迟）
+宽带：要真正地实现延迟
+以消除孔径渡越效应
+宽窄带衡量标准：
+孔径渡越效应与距离分辨率可以比拟</p>
+<p> 相控阵雷达的波束扫描方式</p>
+<p>相控阵雷达可同时进行搜索和多目标跟踪
+多波束相控阵的扫描比较复杂，以单波束相控阵扫描
+为例，介绍相控阵雷达典型扫描方式
+搜索扫描
+波束按一定规律进行作用空域的扫描，扫描周期为 T0</p>
+<p>搜索加跟踪扫描
+波束搜索过程中，每 t0时间中断一次搜索，然后对 M
+个跟踪目标一一进行照射，时序如下图所示</p>
+<p>图中 t 是跟踪照射M 个不同目标的时间，目标个数M
+是动态变化的</p>
+      
+      <section class="related-pages"><h3 class="related-pages__title">相关页面</h3><div class="related-pages__grid"><a href="../concepts/2026-10-脉冲多普勒雷达.html" class="related-pages__card"><span class="type-badge concept">concept</span><div class="related-pages__card-title">2026-10-脉冲多普勒雷达</div></a>
+<a href="../concepts/2026-8-模糊函数及雷达波形设计.html" class="related-pages__card"><span class="type-badge concept">concept</span><div class="related-pages__card-title">2026-8-模糊函数及雷达波形设计</div></a>
+<a href="../concepts/2026-9-雷达信号处理.html" class="related-pages__card"><span class="type-badge concept">concept</span><div class="related-pages__card-title">2026-9-雷达信号处理</div></a>
+<a href="../concepts/2026-9-雷达信号检测.html" class="related-pages__card"><span class="type-badge concept">concept</span><div class="related-pages__card-title">2026-9-雷达信号检测</div></a></div></section>
+      <nav class="page-pager">
+        <div class="page-pager__cell"><a href="../concepts/2026目标距离测量.html" class="page-pager__link"><span class="page-pager__arr">←</span><span class="page-pager__text">2026目标距离测量</span></a></div>
+        <div class="page-pager__cell page-pager__cell--next"><a href="../concepts/2026运动目标检测及测速.html" class="page-pager__link"><span class="page-pager__text">2026运动目标检测及测速</span><span class="page-pager__arr">→</span></a></div>
+      </nav>
+
+    </main>
+
+    <aside class="sidebar">
+      <section>
+        <h4>页面信息</h4>
+        <ul>
+          <li>类型：概念</li>
+          <li>状态：draft</li>
+          <li>置信度：<span class="confidence-badge" style="display:inline-flex;align-items:center;gap:4px;font-size:0.8rem;color:#f59e0b;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;"></span>50%</span></li>
+          <li>创建：2026-06-01</li>
+          <li>更新：2026-06-01</li>
+        </ul>
+      </section>
+      <section>
+        <h4>相关页面</h4>
+        <ul>
+          <li><a href="../concepts/2026-10-脉冲多普勒雷达.html">2026-10-脉冲多普勒雷达</a></li>
+          <li><a href="../concepts/2026-8-模糊函数及雷达波形设计.html">2026-8-模糊函数及雷达波形设计</a></li>
+          <li><a href="../concepts/2026-9-雷达信号处理.html">2026-9-雷达信号处理</a></li>
+          <li><a href="../concepts/2026-9-雷达信号检测.html">2026-9-雷达信号检测</a></li>
+        </ul>
+      </section>
+      
+    </aside>
+  </div>
+
+  <footer>
+    <p>Radar 2026 — 编译预览 · 源文件: wiki/2026相控阵雷达.md · 重编译: 2026-06-01</p>
+  </footer>
+
+  <script>window.__KNOWLEVER_BASE="../";window.__KNOWLEVER_SITE_NAME="Radar 2026";</script>
+  <script src="../assets/js/site-common.js"></script>
+  <script src="../assets/data/site-page-data.js"></script>
+  <script src="../assets/js/site-nav.js" defer></script>
+  <script src="../assets/js/site-page.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true, theme: document.documentElement.dataset.theme==='dark' ? 'dark' : 'default', securityLevel:'loose', flowchart:{nodeSpacing:20, rankSpacing:40, padding:12}, themeVariables:{fontSize:'16px'}});</script>
+  <script src="../assets/js/tooltips.js"></script>
+  
+  
+  
+</body>
+</html>

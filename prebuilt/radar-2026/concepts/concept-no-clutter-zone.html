@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="通过PRF选择实现的杂波与目标信号分离的频域区域，是PD雷达在强杂波环境中实现动目标检测的关键技术">
+  <meta name="last-modified" content="2026-06-01">
+  <title>无杂波区 — Radar 2026</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <style>.page-summary{color:var(--text-muted,#666);font-size:1.05rem;line-height:1.6;margin:-0.5rem 0 1.5rem;padding:0.75rem 1rem;background:var(--bg-secondary,#f8f9fa);border-radius:8px;border-left:3px solid var(--accent,#3b82f6);}</style>
+</head>
+<body>
+  <header class="site-header" data-site-nav></header>
+
+  <div class="breadcrumb">
+    <a href="../index.html">首页</a><span>›</span>
+    <a href="../concepts-hub.html">概念</a><span>›</span>
+    无杂波区
+  </div>
+
+  <div class="page-layout">
+    <main class="page-content">
+
+      <div class="page-meta">
+        <span class="type-badge concept">💡 Concept</span>
+        <span class="status-badge draft">draft</span>
+        <span class="confidence-badge" style="display:inline-flex;align-items:center;gap:4px;font-size:0.8rem;color:#f59e0b;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;"></span>60%</span>
+        <span class="date-info">更新: 2026-06-01</span>
+      </div>
+      
+
+      <h1>无杂波区</h1>
+      <p class="page-summary">通过PRF选择实现的杂波与目标信号分离的频域区域，是PD雷达在强杂波环境中实现动目标检测的关键技术</p>
+
+      <div class="nav-mermaid" style="margin-bottom:1.5rem;overflow-x:auto;"><pre class="mermaid" style="font-size:15px;min-height:80px;">
+graph LR
+  current["无杂波区"]:::current
+  current -.- r0["多普勒滤波器组"]:::related
+  click r0 "../concepts/concept-doppler-filter-bank.html"
+  current -.- r1["PRF参数详解"]:::related
+  click r1 "../entities/entity-prf.html"
+  current -.- r2["脉冲多普勒雷达"]:::related
+  click r2 "../entities/entity-pulse-doppler-radar.html"
+  current -.- r3["脉冲多普勒雷达技术详解"]:::related
+  click r3 "../sources/src-20260601-2026-10-脉冲多普勒雷达.html"
+  classDef current fill:#3b82f6,stroke:#1e40af,color:#fff,font-weight:bold
+  classDef parent fill:#e0f2fe,stroke:#38bdf8,color:#0c4a6e
+  classDef child fill:#f0fdf4,stroke:#86efac,color:#14532d
+  classDef related fill:#fef3c7,stroke:#f59e0b,color:#78350f
+</pre></div><h2 id="定义">定义</h2>
+<p>无杂波区（No-Clutter Zone）是指在脉冲多普勒雷达系统中，通过优化脉冲重复频率（PRF）参数，使目标信号与杂波谱在频域上实现有效分离的特定区域。该区域内的信号功率谱密度显著低于杂波功率谱密度，为动目标检测提供了理想的信噪比环境。</p>
+<p>在PD雷达中，无杂波区的形成依赖于PRF与杂波谱的频率分布关系。当PRF选择满足特定条件时，目标信号会落入该区域，而杂波谱则被限制在其他频段，从而实现信号与杂波的分离。这种频域分离机制是PD雷达克服传统雷达速度模糊和杂波干扰的核心技术之一。</p>
+<h2 id="解决什么问题">解决什么问题</h2>
+<p>传统雷达在强杂波环境下（如地面或空中目标回波）难以区分有效信号与杂波，导致检测性能下降。无杂波区技术通过以下方式解决这一问题：</p>
+<ol><li>通过PRF选择实现杂波谱与目标信号谱的频域分离</li><li>为动目标检测提供纯净的信号环境</li><li>提高雷达在复杂电磁环境下的目标识别能力</li><li>降低虚假报警率，提升检测可靠性</li></ol>
+<h2 id="工作原理">工作原理</h2>
+<h3 id="频域分离机制">频域分离机制</h3>
+<p>无杂波区的形成基于PRF与杂波谱的频率分布关系。当PRF选择满足以下条件时，目标信号会落入无杂波区：
+$<span class="math-inline">$ f_r > f_{c,max} $</span>$
+其中：</p>
+<ul><li><span class="math-inline">$ f_r $</span>：脉冲重复频率（PRF）</li><li><span class="math-inline">$ f_{c,max} $</span>：主瓣杂波最大展宽频率</li></ul>
+<p>该条件确保目标信号的多普勒频率位于无杂波区，而杂波谱被限制在其他频段。具体实现过程如下：</p>
+<ol><li>通过PRF选择控制杂波谱的分布范围</li><li>利用窄带滤波器组提取特定频段信号</li><li>在无杂波区进行目标信号检测</li></ol>
+<h3 id="距离-多普勒空间特性">距离-多普勒空间特性</h3>
+<p>在距离-多普勒空间中，无杂波区表现为特定的频域区域。当PRF选择合适时，目标信号会出现在该区域，而杂波谱则被限制在其他频段。这种频域分离机制使得PD雷达能够在强杂波背景下实现动目标检测。</p>
+<h2 id="关键公式-方法">关键公式/方法</h2>
+<ol><li><strong>无杂波区条件</strong>： $<span class="math-inline">$ f_r > f_{c,max} $</span><span class="math-inline">$ 其中： - $</span> f_r <span class="math-inline">$：脉冲重复频率（PRF） - $</span> f_{c,max} $：主瓣杂波最大展宽频率</li></ol>
+<ol><li><strong>主瓣杂波最大展宽频率</strong>： $<span class="math-inline">$ f_{c,max} = \frac{2v_R}{\lambda} \cdot \frac{\theta_B}{2\sin \phi_0} $</span><span class="math-inline">$ 其中： - $</span> v_R <span class="math-inline">$：载机速度 - $</span> \lambda <span class="math-inline">$：雷达波长 - $</span> \theta_B <span class="math-inline">$：波束主瓣宽度 - $</span> \phi_0 $：主波束轴线与地面夹角</li><li><strong>PRF选择原则</strong>： - 高PRF模式（>200kHz）：形成较宽无杂波区，适合远距离目标检测 - 中PRF模式（45-200kHz）：平衡距离与速度分辨率 - 低PRF模式（<45kHz）：形成较窄无杂波区，适合近距离目标检测</li></ol>
+<h2 id="典型应用">典型应用</h2>
+<h3 id="高prf模式下的无杂波区应用">高PRF模式下的无杂波区应用</h3>
+<p>当PRF选择为200kHz时，主瓣杂波最大展宽频率<span class="math-inline">$ f_{c,max} $</span>约为45kHz。此时，若目标多普勒频率<span class="math-inline">$ f_d $</span>大于45kHz，则目标信号会落入无杂波区。例如：</p>
+<ul><li>载机速度<span class="math-inline">$ v_R = 680m/s $</span>，波长<span class="math-inline">$ \lambda = 3cm $</span>，主波束轴线与地面夹角<span class="math-inline">$ \phi_0 = 45^\circ $</span>，波束主瓣宽度<span class="math-inline">$ \theta_B = 3^\circ $</span>，则： $<span class="math-inline">$ f_{c,max} = \frac{2\times 680}{0.03} \cdot \frac{3}{2\sin 45^\circ} \approx 45kHz $</span>$</li><li>当目标速度<span class="math-inline">$ v_T = 500m/s $</span>，则多普勒频率<span class="math-inline">$ f_d = \frac{2(v_R + v_T)}{\lambda} \cos \phi = \frac{2(680+500)}{0.03} \cos 45^\circ \approx 150kHz $</span>，明显大于<span class="math-inline">$ f_{c,max} $</span>，目标信号落入无杂波区。</li></ul>
+<h2 id="与其他概念的对比">与其他概念的对比</h2>
+<table>
+<thead><tr><th>比较维度</th><th>无杂波区</th><th>距离门选通</th><th>多普勒滤波器组</th></tr></thead>
+<tbody>
+<tr><td>工作原理</td><td>频域分离</td><td>时域选择</td><td>频域滤波</td></tr>
+<tr><td>适用场景</td><td>强杂波环境下的目标检测</td><td>距离分辨率优化</td><td>多普勒频率分辨</td></tr>
+<tr><td>关键参数</td><td>PRF选择</td><td>距离门宽度</td><td>滤波器带宽</td></tr>
+<tr><td>与杂波关系</td><td>信号与杂波频域分离</td><td>信号与杂波时间分离</td><td>信号与杂波频域分离</td></tr>
+<tr><td>优势</td><td>提高信噪比，降低虚警率</td><td>提高距离分辨率</td><td>提高速度分辨率</td></tr>
+</tbody>
+</table>
+<h2 id="常见误区">常见误区</h2>
+<ol><li><strong>误认为所有PRF模式都能形成无杂波区</strong>：实际上只有当PRF > <span class="math-inline">$ f_{c,max} $</span> 时才能形成无杂波区，不同PRF模式对应不同的无杂波区范围。</li><li><strong>忽略天线参数影响</strong>：波束主瓣宽度和方向角会影响<span class="math-inline">$ f_{c,max} $</span>的计算结果，进而影响无杂波区的形成条件。</li><li><strong>混淆无杂波区与距离门选通</strong>：两者虽然都用于信号处理，但无杂波区是频域分离技术，而距离门选通是时域选择技术。</li></ol>
+<h2 id="关联知识">关联知识</h2>
+<ul><li><span style="color:var(--text-muted,#888);border-bottom:1px dashed var(--text-muted,#ccc)" title="concept-pulse-doppler-radar">concept-pulse-doppler-radar</span>：PD雷达系统架构与工作原理</li><li><a href="../concepts/concept-distance-doppler-space.html" class="wiki-link">距离-多普勒空间</a>：距离-多普勒空间特性分析</li><li><a href="../concepts/concept-doppler-filter-bank.html" class="wiki-link">多普勒滤波器组</a>：多普勒滤波器组设计与应用</li><li><a href="../entities/entity-prf.html" class="wiki-link">PRF参数详解</a>：PRF参数对雷达性能的影响</li></ul>
+<h2 id="来源">来源</h2>
+<p>来源：<code>2026-10-脉冲多普勒雷达.pdf</code>（AutoOffice to-markdown）</p>
+<div align="right" style="opacity: 0.5; font-size: 0.8em;">✨ <i>Compiled by MiniMax-M2.7-highspeed</i></div>
+<h2 id="图示">图示</h2>
+<pre class="mermaid">
+mindmap
+  root((无杂波区形成条件))
+    PRF选择 --> f_r > f_c,max
+    杂波分布 --> 主瓣杂波
+    杂波分布 --> 旁瓣杂波
+    杂波分布 --> 高度线杂波
+    信号特征 --> 目标多普勒频率
+    信号特征 --> 距离门选通
+</pre>
+<blockquote><p>无杂波区形成条件思维导图：展示PRF选择与杂波分布的关系</p></blockquote>
+      
+      
+      <nav class="page-pager">
+        <div class="page-pager__cell"><a href="../concepts/concept-multi-valued-problem.html" class="page-pager__link"><span class="page-pager__arr">←</span><span class="page-pager__text">多值性问题</span></a></div>
+        <div class="page-pager__cell page-pager__cell--next"><a href="../concepts/concept-radar-signal-processing.html" class="page-pager__link"><span class="page-pager__text">雷达信号处理</span><span class="page-pager__arr">→</span></a></div>
+      </nav>
+
+    </main>
+
+    <aside class="sidebar">
+      <section>
+        <h4>页面信息</h4>
+        <ul>
+          <li>类型：概念</li>
+          <li>状态：draft</li>
+          <li>置信度：<span class="confidence-badge" style="display:inline-flex;align-items:center;gap:4px;font-size:0.8rem;color:#f59e0b;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;"></span>60%</span></li>
+          <li>创建：2026-06-01</li>
+          <li>更新：2026-06-01</li>
+        </ul>
+      </section>
+      
+      <section>
+        <h4>目录</h4>
+        <ul>
+          <li><a href="#定义">定义</a></li>
+          <li><a href="#解决什么问题">解决什么问题</a></li>
+          <li><a href="#工作原理">工作原理</a></li>
+          <li class="toc-sub"><a href="#频域分离机制">频域分离机制</a></li>
+          <li class="toc-sub"><a href="#距离-多普勒空间特性">距离-多普勒空间特性</a></li>
+          <li><a href="#关键公式-方法">关键公式/方法</a></li>
+          <li><a href="#典型应用">典型应用</a></li>
+          <li class="toc-sub"><a href="#高prf模式下的无杂波区应用">高PRF模式下的无杂波区应用</a></li>
+          <li><a href="#与其他概念的对比">与其他概念的对比</a></li>
+          <li><a href="#常见误区">常见误区</a></li>
+          <li><a href="#关联知识">关联知识</a></li>
+          <li><a href="#来源">来源</a></li>
+          <li><a href="#图示">图示</a></li>
+        </ul>
+      </section>
+    </aside>
+  </div>
+
+  <footer>
+    <p>Radar 2026 — 编译预览 · 源文件: wiki/concept-no-clutter-zone.md · 重编译: 2026-06-01</p>
+  </footer>
+
+  <script>window.__KNOWLEVER_BASE="../";window.__KNOWLEVER_SITE_NAME="Radar 2026";</script>
+  <script src="../assets/js/site-common.js"></script>
+  <script src="../assets/data/site-page-data.js"></script>
+  <script src="../assets/js/site-nav.js" defer></script>
+  <script src="../assets/js/site-page.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true, theme: document.documentElement.dataset.theme==='dark' ? 'dark' : 'default', securityLevel:'loose', flowchart:{nodeSpacing:20, rankSpacing:40, padding:12}, themeVariables:{fontSize:'16px'}});</script>
+  <script src="../assets/js/tooltips.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement !== 'function') return;
+      document.querySelectorAll('.page-content').forEach(function (node) {
+        renderMathInElement(node, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '$', right: '$', display: false }
+          ],
+          throwOnError: false
+        });
+      });
+    });
+  </script>
+</body>
+</html>

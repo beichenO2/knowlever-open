@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="高频载波信号，包含幅度调制和相位调制信息，是雷达、通信导航系统的核心传输载体">
+  <meta name="last-modified" content="2026-06-01">
+  <title>射频信号 — Radar 2026</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  
+  <style>.page-summary{color:var(--text-muted,#666);font-size:1.05rem;line-height:1.6;margin:-0.5rem 0 1.5rem;padding:0.75rem 1rem;background:var(--bg-secondary,#f8f9fa);border-radius:8px;border-left:3px solid var(--accent,#3b82f6);}</style>
+</head>
+<body>
+  <header class="site-header" data-site-nav></header>
+
+  <div class="breadcrumb">
+    <a href="../index.html">首页</a><span>›</span>
+    <a href="../knowledge-hub.html">实体</a><span>›</span>
+    射频信号
+  </div>
+
+  <div class="page-layout">
+    <main class="page-content">
+
+      <div class="page-meta">
+        <span class="type-badge entity">📦 Entity</span>
+        <span class="status-badge draft">draft</span>
+        <span class="confidence-badge" style="display:inline-flex;align-items:center;gap:4px;font-size:0.8rem;color:#f59e0b;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;"></span>60%</span>
+        <span class="date-info">更新: 2026-06-01</span>
+      </div>
+      
+
+      <h1>射频信号</h1>
+      <p class="page-summary">高频载波信号，包含幅度调制和相位调制信息，是雷达、通信导航系统的核心传输载体</p>
+
+      <div class="nav-mermaid" style="margin-bottom:1.5rem;overflow-x:auto;"><pre class="mermaid" style="font-size:15px;min-height:80px;">
+graph LR
+  current["射频信号"]:::current
+  current -.- r0["基带信号"]:::related
+  click r0 "../entities/entity-baseband-signal.html"
+  current -.- r1["CFAR处理"]:::related
+  click r1 "../entities/entity-cfar-processing.html"
+  current -.- r2["MTD处理"]:::related
+  click r2 "../entities/entity-mtd-processing.html"
+  current -.- r3["正交解调"]:::related
+  click r3 "../entities/entity-quadrature-demodulation.html"
+  classDef current fill:#3b82f6,stroke:#1e40af,color:#fff,font-weight:bold
+  classDef parent fill:#e0f2fe,stroke:#38bdf8,color:#0c4a6e
+  classDef child fill:#f0fdf4,stroke:#86efac,color:#14532d
+  classDef related fill:#fef3c7,stroke:#f59e0b,color:#78350f
+</pre></div><h2 id="定义">定义</h2>
+<p>射频信号是频率在3kHz以上（通常指100kHz以上）的电磁波信号，属于高频载波信号范畴。在雷达系统中，射频信号通过幅度调制（AM）和相位调制（PM）承载目标信息，是雷达、通信导航等系统的核心传输载体，属于<a href="../concepts/concept-radar-signal-processing.html" class="wiki-link">雷达信号处理</a>概念体系中的基础信号类型。</p>
+<h2 id="详细属性">详细属性</h2>
+<table>
+<thead><tr><th>参数</th><th>规格</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td>频率范围</td><td>220MHz～35GHz</td><td>常用雷达工作频段</td></tr>
+<tr><td>车载毫米波雷达</td><td>24GHz/60GHz/77GHz/79GHz</td><td>主要频段分布</td></tr>
+<tr><td>GSM频段</td><td>900MHz</td><td>移动通信标准</td></tr>
+<tr><td>4G LTE频段</td><td>1.9GHz</td><td>移动通信标准</td></tr>
+<tr><td>5G频段</td><td>3.5GHz</td><td>新一代通信标准</td></tr>
+<tr><td>时域表达式</td><td>x(t) = a(t)cos[2πf0t + φ(t)]</td><td>标准射频信号形式</td></tr>
+<tr><td>频谱特性</td><td>带通实信号</td><td>具有对称频谱分布</td></tr>
+</tbody>
+</table>
+<h2 id="工作原理">工作原理</h2>
+<p>射频信号通过调制技术将目标信息加载到高频载波上，其核心特征是：</p>
+<ol><li><strong>带通特性</strong>：信号能量集中在载频f0附近，具有对称的频谱分布</li><li><strong>调制方式</strong>：采用幅度调制（AM）和相位调制（PM）承载目标信息</li><li><strong>解调过程</strong>：通过正交解调（IQ解调）将射频信号转换为复基带信号，提取幅度和相位信息</li><li><strong>采样要求</strong>：需满足奈奎斯特采样定理，采样频率至少为信号带宽的两倍</li></ol>
+<h2 id="使用场景与特性">使用场景与特性</h2>
+<h3 id="应用场景">应用场景</h3>
+<ul><li>雷达系统：用于目标探测与跟踪</li><li>通信导航：实现远距离信息传输</li><li>无线定位：通过多普勒效应测量速度</li></ul>
+<h3 id="优势">优势</h3>
+<ul><li>传输距离远（可达数百公里）</li><li>抗干扰能力强（可通过编码提升）</li><li>适合高速数据传输</li></ul>
+<h3 id="注意事项">注意事项</h3>
+<ul><li>高频信号易受大气衰减影响</li><li>需要精密的天线系统</li><li>采样处理复杂度高</li></ul>
+<h2 id="原文证据">原文证据</h2>
+<blockquote><p>射频信号的一般时域表达式：x(t) = a(t)cos[2πf0t + φ(t)]</p></blockquote>
+<blockquote><p>常用雷达工作频率范围：220MHz～35GHz</p></blockquote>
+<blockquote><p>车载毫米波雷达主要有24GHz、60GHz、77GHz、79GHz四个频段</p></blockquote>
+<blockquote><p>射频信号均为带通实信号</p></blockquote>
+<h2 id="关联知识">关联知识</h2>
+<ul><li><a href="../concepts/concept-radar-signal-processing.html" class="wiki-link">雷达信号处理</a> 雷达信号处理全流程</li><li><a href="../concepts/concept-baseband-signal-processing.html" class="wiki-link">基带信号处理</a> 基带信号处理技术</li><li><a href="../entities/entity-cfar-processing.html" class="wiki-link">CFAR处理</a> 恒虚警处理算法</li><li><a href="../concepts/concept-doppler-spectrum-analysis.html" class="wiki-link">多普勒频谱分析</a> 多普勒频谱分析方法</li></ul>
+<p>来源：<code>src-20260601-2026-9-雷达信号处理</code></p>
+<div align="right" style="opacity: 0.5; font-size: 0.8em;">✨ <i>Compiled by MiniMax-M2.7-highspeed</i></div>
+      
+      
+      <nav class="page-pager">
+        <div class="page-pager__cell"><a href="../entities/entity-range-resolution.html" class="page-pager__link"><span class="page-pager__arr">←</span><span class="page-pager__text">距离分辨力</span></a></div>
+        <div class="page-pager__cell page-pager__cell--next"><span class="page-pager__placeholder"></span></div>
+      </nav>
+
+    </main>
+
+    <aside class="sidebar">
+      <section>
+        <h4>页面信息</h4>
+        <ul>
+          <li>类型：实体</li>
+          <li>状态：draft</li>
+          <li>置信度：<span class="confidence-badge" style="display:inline-flex;align-items:center;gap:4px;font-size:0.8rem;color:#f59e0b;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;"></span>60%</span></li>
+          <li>创建：2026-06-01</li>
+          <li>更新：2026-06-01</li>
+        </ul>
+      </section>
+      
+      <section>
+        <h4>目录</h4>
+        <ul>
+          <li><a href="#定义">定义</a></li>
+          <li><a href="#详细属性">详细属性</a></li>
+          <li><a href="#工作原理">工作原理</a></li>
+          <li><a href="#使用场景与特性">使用场景与特性</a></li>
+          <li class="toc-sub"><a href="#应用场景">应用场景</a></li>
+          <li class="toc-sub"><a href="#优势">优势</a></li>
+          <li class="toc-sub"><a href="#注意事项">注意事项</a></li>
+          <li><a href="#原文证据">原文证据</a></li>
+          <li><a href="#关联知识">关联知识</a></li>
+        </ul>
+      </section>
+    </aside>
+  </div>
+
+  <footer>
+    <p>Radar 2026 — 编译预览 · 源文件: wiki/entity-rf-signal.md · 重编译: 2026-06-01</p>
+  </footer>
+
+  <script>window.__KNOWLEVER_BASE="../";window.__KNOWLEVER_SITE_NAME="Radar 2026";</script>
+  <script src="../assets/js/site-common.js"></script>
+  <script src="../assets/data/site-page-data.js"></script>
+  <script src="../assets/js/site-nav.js" defer></script>
+  <script src="../assets/js/site-page.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true, theme: document.documentElement.dataset.theme==='dark' ? 'dark' : 'default', securityLevel:'loose', flowchart:{nodeSpacing:20, rankSpacing:40, padding:12}, themeVariables:{fontSize:'16px'}});</script>
+  <script src="../assets/js/tooltips.js"></script>
+  
+  
+  
+</body>
+</html>

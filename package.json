@@ -11,6 +11,7 @@
     "pipeline": "node scripts/pipeline.js",
     "check-deps": "node scripts/check-deps.js",
     "office-import": "node scripts/office-import.js",
+    "sync-published": "node scripts/sync-published-topic.js",
     "home": "node scripts/serve-home.js",
     "start": "node scripts/serve-home.js"
   },

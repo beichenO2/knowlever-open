@@ -9,10 +9,10 @@
   },
   {
     "id": "radar-2026",
-    "title": "雷达原理与系统（本地）",
-    "description": "需自行 office-import + pipeline；私人 PDF 不会上传到 GitHub。",
-    "href": "#",
-    "status": "soon",
-    "pages": 0
+    "title": "雷达原理与系统（2026）",
+    "description": "仓库含 wiki + 预构建站点；PDF 源文件仅本地。",
+    "href": "/library/radar-2026/",
+    "status": "ready",
+    "pages": 54
   }
 ]
