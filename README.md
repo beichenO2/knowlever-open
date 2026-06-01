@@ -61,26 +61,36 @@ node "$AUTOOFFICE_DIR/dist/cli.js" tools
 
 ---
 
-## Quick start (5 minutes)
+## Quick start — open the box (30 seconds)
+
+**No LLM, no engine clones required** — a demo site is already in `prebuilt/`:
 
 ```bash
 git clone https://github.com/beichenO2/knowlever-open.git
 cd knowlever-open
+npm run home
+```
 
-# Clone partners next to this repo (adjust paths if needed)
-git clone <your-open-source-KnowLever-url> ../KnowLever
+Open **http://127.0.0.1:4180/** → click **Agent Wiki 演示库** → browse ~20 pages (Chinese titles, knowledge graph).
+
+## Full pipeline (compile your own notes)
+
+```bash
+git clone https://github.com/beichenO2/knowlever-open.git
+cd knowlever-open
+git clone <your-KnowLever-url> ../KnowLever
 git clone https://github.com/beichenO2/AutoOffice.git ../AutoOffice
 
 export ECOSYSTEM_ROOT="$(cd .. && pwd)"
 export KNOWLEVER_ROOT="$ECOSYSTEM_ROOT/KnowLever"
 export AUTOOFFICE_DIR="$ECOSYSTEM_ROOT/AutoOffice"
 
-bash scripts/setup.sh          # check deps, build AutoOffice, init demo raw files
+bash scripts/setup.sh
 npm run pipeline -- --topic demo-parity
-npm run home                   # open http://127.0.0.1:4180/
+npm run home
 ```
 
-Open **Agent Wiki 演示库** on the home page → compiled site with ~20 pages.
+Private PDFs stay local (`samples-private/`, `示例/`) — **never committed** to GitHub.
 
 ---
 

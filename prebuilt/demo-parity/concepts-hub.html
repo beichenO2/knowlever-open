@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>核心理念 — Demo Parity</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    .hub-intro { max-width: 680px; margin: 0 auto 2rem; text-align: center; }
+    .hub-intro h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+    .hub-intro p { color: var(--text-muted, #666); font-size: 1.05rem; line-height: 1.6; }
+    .concept-feature { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin: 2rem 0; }
+    .feature-card { background: var(--bg-secondary, #f8f9fa); border: 1px solid var(--border, #e2e8f0); border-radius: 16px; padding: 2rem; text-decoration: none; color: inherit; transition: all 0.2s ease; }
+    .feature-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); border-color: #10b981; }
+    .feature-card h3 { font-size: 1.2rem; margin-bottom: 0.5rem; }
+    .feature-card p { color: var(--text-muted, #666); font-size: 0.95rem; line-height: 1.5; margin-bottom: 1rem; }
+    .feature-card .highlights { list-style: none; padding: 0; margin: 0; }
+    .feature-card .highlights li { padding: 0.3rem 0; font-size: 0.9rem; color: var(--text, #333); }
+    .feature-card .highlights li::before { content: '→ '; color: #10b981; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <header class="site-header" data-site-nav></header>
+  <div class="breadcrumb"><a href="index.html">首页</a><span>›</span>核心理念</div>
+  <div style="max-width: var(--max-width); margin: 0 auto; padding: 2rem 1.5rem;">
+    <div class="hub-intro"><h1>💡 核心理念</h1><p>知识编译系统的核心概念。共 7 个概念页面。</p></div>
+    <div class="concept-feature"><a class="feature-card" href="concepts/concept-short-phrase-expression.html">
+        <div class="page-meta" style="margin-bottom: 1rem;">
+          <span class="type-badge concept">💡 Concept</span>
+          
+        </div>
+        <h3>短句表达</h3>
+        <p>通过限定句长提升信息颗粒度的表达方式，是知识组织中的基础性实践</p>
+        
+      </a>
+<a class="feature-card" href="concepts/02-compile-pipeline.html">
+        <div class="page-meta" style="margin-bottom: 1rem;">
+          <span class="type-badge concept">💡 Concept</span>
+          
+        </div>
+        <h3>命令行编译</h3>
+        <p>命令行编译  开源版 KnowLever 使用单用户目录 data/topics/{topic}/，通过 npm run compile 触发编译。  默认模型：MiniMax-M2.7-highspeed。 ...</p>
+        <ul class="highlights"><li>demo-parity</li></ul>
+      </a>
+<a class="feature-card" href="concepts/concept-system-architecture.html">
+        <div class="page-meta" style="margin-bottom: 1rem;">
+          <span class="type-badge concept">💡 Concept</span>
+          
+        </div>
+        <h3>系统架构</h3>
+        <p>定义系统组件组织方式和交互规则的框架，通过分层设计实现复杂系统的模块化管理</p>
+        
+      </a>
+<a class="feature-card" href="concepts/03-zettelkasten.html">
+        <div class="page-meta" style="margin-bottom: 1rem;">
+          <span class="type-badge concept">💡 Concept</span>
+          
+        </div>
+        <h3>原子化笔记</h3>
+        <p>原子化笔记  每条 claim 只表达一个想法，长度控制在短句级别，便于后续聚类与建站。  这是公开技术示例，不包含任何个人申请或面试材料。 ...</p>
+        <ul class="highlights"><li>demo-parity</li></ul>
+      </a>
+<a class="feature-card" href="concepts/concept-knowledge-compilation.html">
+        <div class="page-meta" style="margin-bottom: 1rem;">
+          <span class="type-badge concept">💡 Concept</span>
+          
+        </div>
+        <h3>知识编译</h3>
+        <p>将原始资料转化为结构化知识页的核心过程，通过分层架构实现知识的持久化存储与互链性</p>
+        
+      </a>
+<a class="feature-card" href="concepts/01-agent-wiki.html">
+        <div class="page-meta" style="margin-bottom: 1rem;">
+          <span class="type-badge concept">💡 Concept</span>
+          
+        </div>
+        <h3>Agent Wiki 概念</h3>
+        <p>Agent Wiki 概念  Agent Wiki 将源码与文档编译为可互链的持久化知识页，而不是一次性导出。  - 三层：原始素材 / Wiki 页 / 模式约束 - 目标读者：需要理解系统架构的开发者 ...</p>
+        <ul class="highlights"><li>demo-parity</li></ul>
+      </a>
+<a class="feature-card" href="concepts/concept-agent-architecture.html">
+        <div class="page-meta" style="margin-bottom: 1rem;">
+          <span class="type-badge concept">💡 Concept</span>
+          
+        </div>
+        <h3>Agent架构</h3>
+        <p>通过知识页互链实现系统架构可追溯性的设计范式</p>
+        
+      </a></div>
+  </div>
+  <footer><p>Demo Parity — 编译预览 · <a href="index.html">返回首页</a></p></footer>
+  <script>window.__KNOWLEVER_BASE="";window.__KNOWLEVER_SITE_NAME="Demo Parity";</script>
+  <script src="assets/js/site-common.js"></script>
+  <script src="assets/data/site-page-data.js"></script>
+  <script src="assets/js/site-nav.js" defer></script>
+  <script src="assets/js/site-page.js" defer></script>
+  <script src="assets/js/tooltips.js"></script>
+</body>
+</html>

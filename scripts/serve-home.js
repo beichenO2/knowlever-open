@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 /**
- * 本地开源主页 + 已编译知识库静态站
- * http://127.0.0.1:4180/           — 入口
- * http://127.0.0.1:4180/library/<topic>/ — data/topics/<topic>/output/
+ * 本地开源主页 + 知识库静态站（开盖即食：优先本地 output，否则 prebuilt/）
+ * http://127.0.0.1:4180/
+ * http://127.0.0.1:4180/library/demo-parity/
  */
 const http = require('http');
 const fs = require('fs');
@@ -11,6 +11,7 @@ const path = require('path');
 const PROJECT = path.join(__dirname, '..');
 const SITE_ROOT = path.join(PROJECT, 'site');
 const DATA_ROOT = path.join(PROJECT, 'data', 'topics');
+const PREBUILT_ROOT = path.join(PROJECT, 'prebuilt');
 const PORT = Number(process.env.KL_HOME_PORT || 4180);
 
 const MIME = {
@@ -31,8 +32,16 @@ function safeJoin(root, rel) {
   return file;
 }
 
+function libraryOutputRoot(topic) {
+  const live = path.join(DATA_ROOT, topic, 'output');
+  if (fs.existsSync(path.join(live, 'index.html'))) return live;
+  const pre = path.join(PREBUILT_ROOT, topic);
+  if (fs.existsSync(path.join(pre, 'index.html'))) return pre;
+  return null;
+}
+
 function sendFile(res, file) {
-  if (!fs.existsSync(file) || fs.statSync(file).isDirectory()) {
+  if (!file || !fs.existsSync(file) || fs.statSync(file).isDirectory()) {
     res.writeHead(404);
     res.end('Not found');
     return;
@@ -49,10 +58,9 @@ function resolve(reqPath) {
   if (libMatch) {
     const topic = libMatch[1];
     const rest = libMatch[2] || 'index.html';
-    const outRoot = path.join(DATA_ROOT, topic, 'output');
-    const file = safeJoin(outRoot, rest === '' ? 'index.html' : rest);
-    if (file) return file;
-    return null;
+    const outRoot = libraryOutputRoot(topic);
+    if (!outRoot) return null;
+    return safeJoin(outRoot, rest === '' ? 'index.html' : rest);
   }
 
   const sitePath = url === '/' ? '/index.html' : url;
@@ -62,15 +70,10 @@ function resolve(reqPath) {
 http
   .createServer((req, res) => {
     const file = resolve(req.url || '/');
-    if (!file) {
-      res.writeHead(404);
-      res.end('Not found');
-      return;
-    }
     sendFile(res, file);
   })
   .listen(PORT, '127.0.0.1', () => {
     console.log(`[home] http://127.0.0.1:${PORT}/`);
-    console.log('[home] 知识库: /library/<topic>/  (例: /library/demo-parity/)');
+    console.log('[home] demo: /library/demo-parity/ (prebuilt 或本地 output)');
     console.log('[home] Ctrl+C 停止');
   });

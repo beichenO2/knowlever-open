@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="采用`data/topics/{topic}/`的单用户目录组织编译数据">
+  <meta name="last-modified" content="2026-06-01">
+  <title>目录结构配置 — Demo Parity</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  
+  <style>.page-summary{color:var(--text-muted,#666);font-size:1.05rem;line-height:1.6;margin:-0.5rem 0 1.5rem;padding:0.75rem 1rem;background:var(--bg-secondary,#f8f9fa);border-radius:8px;border-left:3px solid var(--accent,#3b82f6);}</style>
+</head>
+<body>
+  <header class="site-header" data-site-nav></header>
+
+  <div class="breadcrumb">
+    <a href="../index.html">首页</a><span>›</span>
+    <a href="../knowledge-hub.html">实体</a><span>›</span>
+    目录结构配置
+  </div>
+
+  <div class="page-layout">
+    <main class="page-content">
+
+      <div class="page-meta">
+        <span class="type-badge entity">📦 Entity</span>
+        <span class="status-badge draft">draft</span>
+        <span class="confidence-badge" style="display:inline-flex;align-items:center;gap:4px;font-size:0.8rem;color:#f59e0b;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;"></span>60%</span>
+        <span class="date-info">更新: 2026-06-01</span>
+      </div>
+      
+
+      <h1>目录结构配置</h1>
+      <p class="page-summary">采用`data/topics/{topic}/`的单用户目录组织编译数据</p>
+
+      <div class="nav-mermaid" style="margin-bottom:1.5rem;overflow-x:auto;"><pre class="mermaid" style="font-size:15px;min-height:80px;">
+graph LR
+  current["目录结构配置"]:::current
+  current -.- r0["编译命令"]:::related
+  click r0 "../entities/entity-compile-command.html"
+  current -.- r1["默认模型"]:::related
+  click r1 "../entities/entity-default-model.html"
+  current -.- r2["命令行编译配置"]:::related
+  click r2 "../sources/src-20260601-02-compile-pipeline.html"
+  classDef current fill:#3b82f6,stroke:#1e40af,color:#fff,font-weight:bold
+  classDef parent fill:#e0f2fe,stroke:#38bdf8,color:#0c4a6e
+  classDef child fill:#f0fdf4,stroke:#86efac,color:#14532d
+  classDef related fill:#fef3c7,stroke:#f59e0b,color:#78350f
+</pre></div><h2 id="定义">定义</h2>
+<p>目录结构是知识编译系统的核心组织方式，采用<code>data/topics/{topic}/</code>的单用户目录模式，用于存储和管理编译过程中产生的所有数据文件。该配置属于编译流程的基础设施层，是实现知识体系标准化管理的基础架构（所属概念：<span style="color:var(--text-muted,#888);border-bottom:1px dashed var(--text-muted,#ccc)" title="concept-compilation-process">concept-compilation-process</span>）。</p>
+<h2 id="详细属性">详细属性</h2>
+<table>
+<thead><tr><th>参数</th><th>规格</th><th>工作条件</th><th>适用范围</th></tr></thead>
+<tbody>
+<tr><td>目录路径</td><td><code>data/topics/{topic}/</code></td><td>需要预先创建目录结构</td><td>支持单用户独立知识管理</td></tr>
+<tr><td>主题标识</td><td><code>{topic}</code></td><td>必须符合命名规范</td><td>多主题并行处理</td></tr>
+<tr><td>文件层级</td><td>三级目录结构</td><td>需要保持路径一致性</td><td>知识模块化存储</td></tr>
+<tr><td>权限控制</td><td>仅限当前用户</td><td>需要配合系统权限设置</td><td>安全性要求高的场景</td></tr>
+</tbody>
+</table>
+<h2 id="工作原理">工作原理</h2>
+<p>该目录结构通过以下机制实现知识管理：</p>
+<ol><li><strong>路径解析</strong>：系统自动解析<code>{topic}</code>参数，生成唯一的用户目录</li><li><strong>数据隔离</strong>：每个主题拥有独立存储空间，避免数据冲突</li><li><strong>模块组织</strong>：通过层级目录实现知识模块的物理隔离与逻辑关联</li><li><strong>编译衔接</strong>：与编译命令<a href="../entities/entity-compile-command.html" class="wiki-link">编译命令</a>形成闭环，确保数据流向可控</li></ol>
+<h2 id="使用场景与优缺点">使用场景与优缺点</h2>
+<h3 id="适用场景">适用场景</h3>
+<ul><li>单用户知识体系构建</li><li>需要独立数据隔离的编译任务</li><li>多主题并行处理场景</li></ul>
+<h3 id="优点">优点</h3>
+<ul><li>简化目录管理复杂度</li><li>提升知识模块的可追溯性</li><li>保证编译数据的独立性</li></ul>
+<h3 id="缺点">缺点</h3>
+<ul><li>不支持多用户并发操作</li><li>需要手动创建目录结构</li><li>无法满足分布式存储需求</li></ul>
+<h3 id="注意事项">注意事项</h3>
+<ol><li>需要确保目录路径的可写权限</li><li>避免在目录中存储非编译数据</li><li>定期清理冗余目录以保持系统整洁</li></ol>
+<h2 id="原文证据">原文证据</h2>
+<blockquote><p>采用<code>data/topics/{topic}/</code>的单用户目录组织编译数据</p></blockquote>
+<h2 id="关联知识">关联知识</h2>
+<ul><li><span style="color:var(--text-muted,#888);border-bottom:1px dashed var(--text-muted,#ccc)" title="concept-compilation-process">concept-compilation-process</span>：编译流程的实现原理</li><li><a href="../entities/entity-compile-command.html" class="wiki-link">编译命令</a>：触发编译的命令机制</li><li><a href="../entities/entity-default-model.html" class="wiki-link">默认模型</a>：模型配置的选型依据</li></ul>
+<p>来源：src-20260601-02-compile-pipeline</p>
+<div align="right" style="opacity: 0.5; font-size: 0.8em;">✨ <i>Compiled by MiniMax-M2.7-highspeed</i></div>
+      
+      
+      <nav class="page-pager">
+        <div class="page-pager__cell"><a href="../entities/entity-default-model.html" class="page-pager__link"><span class="page-pager__arr">←</span><span class="page-pager__text">默认模型</span></a></div>
+        <div class="page-pager__cell page-pager__cell--next"><a href="../entities/entity-three-layer-architecture.html" class="page-pager__link"><span class="page-pager__text">三层架构</span><span class="page-pager__arr">→</span></a></div>
+      </nav>
+
+    </main>
+
+    <aside class="sidebar">
+      <section>
+        <h4>页面信息</h4>
+        <ul>
+          <li>类型：实体</li>
+          <li>状态：draft</li>
+          <li>置信度：<span class="confidence-badge" style="display:inline-flex;align-items:center;gap:4px;font-size:0.8rem;color:#f59e0b;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;"></span>60%</span></li>
+          <li>创建：2026-06-01</li>
+          <li>更新：2026-06-01</li>
+        </ul>
+      </section>
+      
+      <section>
+        <h4>目录</h4>
+        <ul>
+          <li><a href="#定义">定义</a></li>
+          <li><a href="#详细属性">详细属性</a></li>
+          <li><a href="#工作原理">工作原理</a></li>
+          <li><a href="#使用场景与优缺点">使用场景与优缺点</a></li>
+          <li class="toc-sub"><a href="#适用场景">适用场景</a></li>
+          <li class="toc-sub"><a href="#优点">优点</a></li>
+          <li class="toc-sub"><a href="#缺点">缺点</a></li>
+          <li class="toc-sub"><a href="#注意事项">注意事项</a></li>
+          <li><a href="#原文证据">原文证据</a></li>
+          <li><a href="#关联知识">关联知识</a></li>
+        </ul>
+      </section>
+    </aside>
+  </div>
+
+  <footer>
+    <p>Demo Parity — 编译预览 · 源文件: wiki/entity-directory-structure.md · 重编译: 2026-06-01</p>
+  </footer>
+
+  <script>window.__KNOWLEVER_BASE="../";window.__KNOWLEVER_SITE_NAME="Demo Parity";</script>
+  <script src="../assets/js/site-common.js"></script>
+  <script src="../assets/data/site-page-data.js"></script>
+  <script src="../assets/js/site-nav.js" defer></script>
+  <script src="../assets/js/site-page.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true, theme: document.documentElement.dataset.theme==='dark' ? 'dark' : 'default', securityLevel:'loose', flowchart:{nodeSpacing:20, rankSpacing:40, padding:12}, themeVariables:{fontSize:'16px'}});</script>
+  <script src="../assets/js/tooltips.js"></script>
+  
+  
+  
+</body>
+</html>

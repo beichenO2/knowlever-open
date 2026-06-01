@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="通过知识页互链实现系统架构可追溯性的设计范式">
+  <meta name="last-modified" content="2026-06-01">
+  <title>Agent架构 — Demo Parity</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  
+  <style>.page-summary{color:var(--text-muted,#666);font-size:1.05rem;line-height:1.6;margin:-0.5rem 0 1.5rem;padding:0.75rem 1rem;background:var(--bg-secondary,#f8f9fa);border-radius:8px;border-left:3px solid var(--accent,#3b82f6);}</style>
+</head>
+<body>
+  <header class="site-header" data-site-nav></header>
+
+  <div class="breadcrumb">
+    <a href="../index.html">首页</a><span>›</span>
+    <a href="../concepts-hub.html">概念</a><span>›</span>
+    Agent架构
+  </div>
+
+  <div class="page-layout">
+    <main class="page-content">
+
+      <div class="page-meta">
+        <span class="type-badge concept">💡 Concept</span>
+        <span class="status-badge draft">draft</span>
+        <span class="confidence-badge" style="display:inline-flex;align-items:center;gap:4px;font-size:0.8rem;color:#f59e0b;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;"></span>60%</span>
+        <span class="date-info">更新: 2026-06-01</span>
+      </div>
+      
+
+      <h1>Agent架构</h1>
+      <p class="page-summary">通过知识页互链实现系统架构可追溯性的设计范式</p>
+
+      <div class="nav-mermaid" style="margin-bottom:1.5rem;overflow-x:auto;"><pre class="mermaid" style="font-size:15px;min-height:80px;">
+graph LR
+  current["Agent架构"]:::current
+  current -.- r0["系统架构"]:::related
+  click r0 "../concepts/concept-system-architecture.html"
+  current -.- r1["三层架构"]:::related
+  click r1 "../entities/entity-three-layer-architecture.html"
+  current -.- r2["Agent架构知识编译模式"]:::related
+  click r2 "../sources/src-20260601-01-agent-wiki.html"
+  classDef current fill:#3b82f6,stroke:#1e40af,color:#fff,font-weight:bold
+  classDef parent fill:#e0f2fe,stroke:#38bdf8,color:#0c4a6e
+  classDef child fill:#f0fdf4,stroke:#86efac,color:#14532d
+  classDef related fill:#fef3c7,stroke:#f59e0b,color:#78350f
+</pre></div><h2 id="定义">定义</h2>
+<p>Agent架构是一种通过知识页互链实现系统架构可追溯性的设计范式，其核心在于将源码与文档编译为可持久化、可互链的知识页。该架构采用三层结构：原始素材层（源码与文档）、Wiki页层（结构化知识节点）、模式约束层（知识编译规则），通过分层编译实现系统架构的双向映射。这种设计使开发者能够通过知识页的关联关系，追踪系统架构的完整设计逻辑，形成从代码到文档的闭环知识体系。</p>
+<p>Agent架构本质上是知识管理与系统架构设计的融合体，其价值在于消除信息孤岛，通过结构化知识节点建立系统组件间的语义关联。该架构特别适用于复杂系统开发场景，如分布式微服务架构、大型企业级应用等，能够显著提升架构文档的可维护性与可追溯性。</p>
+<h2 id="解决什么问题">解决什么问题</h2>
+<p>Agent架构主要解决开发者在理解复杂系统架构时面临的三大困难：</p>
+<ol><li><strong>信息孤岛</strong>：源码与文档分离导致的知识断层</li><li><strong>追踪困难</strong>：系统组件间关系难以可视化呈现</li><li><strong>维护成本</strong>：架构文档与实际代码不同步导致的更新困难</li></ol>
+<p>通过三层结构编译模式，Agent架构实现了源码与文档的双向映射，使架构师能够通过知识页的互链关系，快速定位系统组件的实现细节与设计文档，显著提升系统架构的可理解性与可维护性。</p>
+<h2 id="工作原理">工作原理</h2>
+<p>Agent架构的工作原理基于三层结构编译模型：</p>
+<pre><code>原始素材层
+│
+├── 源码文件（.java/.py/.js）
+├── 技术文档（Markdown/Word/PDF）
+└── 需求规格说明书
+
+Wiki页层
+│
+├── 知识节点（概念/类/接口/模块）
+├── 关系图谱（继承/依赖/调用）
+└── 语义关联（设计模式/架构风格）
+
+模式约束层
+│
+├── 编译规则（语法/语义/格式）
+├── 知识约束（互链规则/版本控制）
+└── 验证机制（一致性校验/冲突检测）</code></pre>
+<p>三层结构通过模式约束层建立动态互链关系：原始素材层提供基础数据，Wiki页层建立知识节点，模式约束层确保编译过程的规范性。这种分层设计使架构师能够通过知识页的关联关系，实现从代码到文档的双向追溯。</p>
+<h2 id="关键公式-方法">关键公式/方法</h2>
+<p>Agent架构无直接数学公式，但其核心方法包括：</p>
+<ol><li><strong>知识编译规则</strong>：定义原始素材到知识节点的转换逻辑</li><li><strong>互链约束条件</strong>：确保知识节点间的语义关联性</li><li><strong>版本控制机制</strong>：维护知识页与源码的同步更新</li></ol>
+<p>这些方法通过模式约束层实现，确保架构文档与实际代码的同步性，形成可追溯的知识体系。</p>
+<h2 id="典型应用">典型应用</h2>
+<p>在微服务架构设计中，Agent架构可实现以下应用：</p>
+<ol><li><strong>服务注册发现</strong>：通过知识页互链，自动关联服务注册信息与实现代码</li><li><strong>API文档生成</strong>：将接口定义文档与实现代码进行双向映射</li><li><strong>架构演化追踪</strong>：通过版本控制机制记录架构变更历史</li></ol>
+<p>例如，在Spring Cloud微服务项目中，Agent架构可将服务注册配置文件、API接口定义文档与实际实现代码进行编译，形成可追溯的知识图谱，使架构师能够快速定位服务依赖关系与实现细节。</p>
+<h2 id="与其他概念的对比">与其他概念的对比</h2>
+<table>
+<thead><tr><th>维度</th><th>Agent架构</th><th>传统架构设计</th><th>知识编译系统</th></tr></thead>
+<tbody>
+<tr><td>核心价值</td><td>知识页互链与可追溯性</td><td>文档与代码分离</td><td>知识结构化</td></tr>
+<tr><td>实现方式</td><td>三层结构编译模型</td><td>手动文档编写</td><td>编译流水线</td></tr>
+<tr><td>应用场景</td><td>复杂系统架构管理</td><td>简单系统文档编写</td><td>知识管理</td></tr>
+<tr><td>优势</td><td>自动化追踪与双向映射</td><td>人工维护，易过时</td><td>结构化知识存储</td></tr>
+<tr><td>局限</td><td>需要模式约束规范</td><td>维护成本高</td><td>知识碎片化</td></tr>
+</tbody>
+</table>
+<p>Agent架构在传统架构设计基础上引入知识编译机制，既保持了架构文档的可追溯性，又通过模式约束层解决了传统文档维护困难的问题。</p>
+<h2 id="常见误区">常见误区</h2>
+<ol><li><strong>将Agent架构等同于知识编译系统</strong>：Agent架构是知识编译系统的具体应用，而非独立系统</li><li><strong>忽视模式约束规范</strong>：缺乏约束条件会导致知识页互链失效</li><li><strong>过度依赖自动化</strong>：需结合人工审核确保知识准确性</li><li><strong>忽略版本控制</strong>：未同步更新会导致知识页与源码脱节</li></ol>
+<p>正确实践应建立模式约束规范，结合人工审核与自动化编译，确保知识页的准确性与时效性。</p>
+<h2 id="关联知识">关联知识</h2>
+<ul><li><span style="color:var(--text-muted,#888);border-bottom:1px dashed var(--text-muted,#ccc)" title="concept-agent-wiki">concept-agent-wiki</span>：Agent Wiki 知识编译系统</li><li><a href="../concepts/concept-system-architecture.html" class="wiki-link">系统架构</a>：系统架构设计范式</li><li><span style="color:var(--text-muted,#888);border-bottom:1px dashed var(--text-muted,#ccc)" title="concept-compile-pipeline">concept-compile-pipeline</span>：知识编译流水线</li><li><a href="../entities/entity-three-layer-architecture.html" class="wiki-link">三层架构</a>：三层架构模型</li></ul>
+<h2 id="待探讨">待探讨</h2>
+<ol><li>如何具体实现三层结构的动态互链？</li><li>模式约束的具体实现规范未明确</li><li>知识编译过程中的冲突解决机制</li><li>多源数据整合时的语义对齐问题</li></ol>
+<p>来源：<a href="../sources/src-20260601-01-agent-wiki.html" class="wiki-link">Agent架构知识编译模式</a></p>
+<div align="right" style="opacity: 0.5; font-size: 0.8em;">✨ <i>Compiled by MiniMax-M2.7-highspeed</i></div>
+<h2 id="图示">图示</h2>
+<pre class="mermaid">
+mindmap
+  root((智能体架构))
+    基础层
+      感知模块
+      决策引擎
+      执行单元
+    知识层
+      知识图谱
+      语义解析
+      模式约束
+    交互层
+      用户接口
+      系统集成
+      互链协议
+    运行时
+      状态管理
+      异常处理
+      自适应优化
+</pre>
+<blockquote><p>智能体架构分层思维导图：展示感知、知识、交互和运行时四个核心层级的组件关系</p></blockquote>
+      
+      
+      <nav class="page-pager">
+        <div class="page-pager__cell"><a href="../concepts/03-zettelkasten.html" class="page-pager__link"><span class="page-pager__arr">←</span><span class="page-pager__text">原子化笔记</span></a></div>
+        <div class="page-pager__cell page-pager__cell--next"><a href="../concepts/concept-knowledge-compilation.html" class="page-pager__link"><span class="page-pager__text">知识编译</span><span class="page-pager__arr">→</span></a></div>
+      </nav>
+
+    </main>
+
+    <aside class="sidebar">
+      <section>
+        <h4>页面信息</h4>
+        <ul>
+          <li>类型：概念</li>
+          <li>状态：draft</li>
+          <li>置信度：<span class="confidence-badge" style="display:inline-flex;align-items:center;gap:4px;font-size:0.8rem;color:#f59e0b;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;"></span>60%</span></li>
+          <li>创建：2026-06-01</li>
+          <li>更新：2026-06-01</li>
+        </ul>
+      </section>
+      
+      <section>
+        <h4>目录</h4>
+        <ul>
+          <li><a href="#定义">定义</a></li>
+          <li><a href="#解决什么问题">解决什么问题</a></li>
+          <li><a href="#工作原理">工作原理</a></li>
+          <li><a href="#关键公式-方法">关键公式/方法</a></li>
+          <li><a href="#典型应用">典型应用</a></li>
+          <li><a href="#与其他概念的对比">与其他概念的对比</a></li>
+          <li><a href="#常见误区">常见误区</a></li>
+          <li><a href="#关联知识">关联知识</a></li>
+          <li><a href="#待探讨">待探讨</a></li>
+          <li><a href="#图示">图示</a></li>
+        </ul>
+      </section>
+    </aside>
+  </div>
+
+  <footer>
+    <p>Demo Parity — 编译预览 · 源文件: wiki/concept-agent-architecture.md · 重编译: 2026-06-01</p>
+  </footer>
+
+  <script>window.__KNOWLEVER_BASE="../";window.__KNOWLEVER_SITE_NAME="Demo Parity";</script>
+  <script src="../assets/js/site-common.js"></script>
+  <script src="../assets/data/site-page-data.js"></script>
+  <script src="../assets/js/site-nav.js" defer></script>
+  <script src="../assets/js/site-page.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true, theme: document.documentElement.dataset.theme==='dark' ? 'dark' : 'default', securityLevel:'loose', flowchart:{nodeSpacing:20, rankSpacing:40, padding:12}, themeVariables:{fontSize:'16px'}});</script>
+  <script src="../assets/js/tooltips.js"></script>
+  
+  
+  
+</body>
+</html>

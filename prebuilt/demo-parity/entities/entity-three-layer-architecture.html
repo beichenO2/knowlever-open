@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="包含原始素材、知识页、模式约束的系统架构，用于实现知识的结构化编译与互链">
+  <meta name="last-modified" content="2026-06-01">
+  <title>三层架构 — Demo Parity</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  
+  <style>.page-summary{color:var(--text-muted,#666);font-size:1.05rem;line-height:1.6;margin:-0.5rem 0 1.5rem;padding:0.75rem 1rem;background:var(--bg-secondary,#f8f9fa);border-radius:8px;border-left:3px solid var(--accent,#3b82f6);}</style>
+</head>
+<body>
+  <header class="site-header" data-site-nav></header>
+
+  <div class="breadcrumb">
+    <a href="../index.html">首页</a><span>›</span>
+    <a href="../knowledge-hub.html">实体</a><span>›</span>
+    三层架构
+  </div>
+
+  <div class="page-layout">
+    <main class="page-content">
+
+      <div class="page-meta">
+        <span class="type-badge entity">📦 Entity</span>
+        <span class="status-badge draft">draft</span>
+        <span class="confidence-badge" style="display:inline-flex;align-items:center;gap:4px;font-size:0.8rem;color:#f59e0b;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;"></span>60%</span>
+        <span class="date-info">更新: 2026-06-01</span>
+      </div>
+      
+
+      <h1>三层架构</h1>
+      <p class="page-summary">包含原始素材、知识页、模式约束的系统架构，用于实现知识的结构化编译与互链</p>
+
+      <div class="nav-mermaid" style="margin-bottom:1.5rem;overflow-x:auto;"><pre class="mermaid" style="font-size:15px;min-height:80px;">
+graph LR
+  current["三层架构"]:::current
+  current -.- r0["Agent架构"]:::related
+  click r0 "../concepts/concept-agent-architecture.html"
+  current -.- r1["知识编译"]:::related
+  click r1 "../concepts/concept-knowledge-compilation.html"
+  current -.- r2["系统架构"]:::related
+  click r2 "../concepts/concept-system-architecture.html"
+  current -.- r3["Agent架构知识编译模式"]:::related
+  click r3 "../sources/src-20260601-01-agent-wiki.html"
+  classDef current fill:#3b82f6,stroke:#1e40af,color:#fff,font-weight:bold
+  classDef parent fill:#e0f2fe,stroke:#38bdf8,color:#0c4a6e
+  classDef child fill:#f0fdf4,stroke:#86efac,color:#14532d
+  classDef related fill:#fef3c7,stroke:#f59e0b,color:#78350f
+</pre></div><h2 id="定义">定义</h2>
+<p>三层架构（Three-Layer Architecture）是一种系统设计模式，包含原始素材层、知识页层和模式约束层，用于实现知识的结构化编译与互链。该架构属于<a href="../concepts/concept-system-architecture.html" class="wiki-link">系统架构</a>系统架构范畴，是<a href="../concepts/concept-knowledge-compilation.html" class="wiki-link">知识编译</a>知识编译过程的核心实现框架。</p>
+<h2 id="详细属性">详细属性</h2>
+<table>
+<thead><tr><th>层级</th><th>功能描述</th><th>存储内容</th><th>技术特性</th></tr></thead>
+<tbody>
+<tr><td>原始素材层</td><td>源数据存储</td><td>源码/文档/笔记</td><td>未结构化数据</td></tr>
+<tr><td>知识页层</td><td>结构化输出</td><td>Wiki页面/知识卡片</td><td>语义化标记</td></tr>
+<tr><td>模式约束层</td><td>规则引擎</td><td>编译规则/模式定义</td><td>元数据控制</td></tr>
+</tbody>
+</table>
+<p>工作条件：需要支持多源数据接入与模式定义的编译引擎
+适用范围：知识管理系统、软件开发文档、技术资料编译</p>
+<h2 id="工作原理">工作原理</h2>
+<p>三层架构通过分层处理实现知识编译：原始素材层存储未结构化的源数据，知识页层通过模式约束层定义的规则将数据转化为可互链的知识页。模式约束层作为控制层，通过元数据定义编译规范，确保不同层级的数据格式兼容性。该架构特别适用于需要持久化存储和跨系统互链的场景。</p>
+<h2 id="使用场景与优缺点">使用场景与优缺点</h2>
+<h3 id="使用场景">使用场景</h3>
+<ul><li>知识管理系统中的文档编译</li><li>软件开发中的架构文档生成</li><li>技术资料的结构化存储</li></ul>
+<h3 id="优点">优点</h3>
+<ul><li>分层设计提升系统可维护性</li><li>模式约束层确保编译规范性</li><li>支持多源数据互链</li></ul>
+<h3 id="缺点">缺点</h3>
+<ul><li>实现复杂度较高</li><li>模式定义需要持续优化</li><li>跨系统兼容性需额外处理</li></ul>
+<h3 id="注意事项">注意事项</h3>
+<ul><li>模式约束层需定期更新维护</li><li>原始素材质量直接影响编译效果</li><li>需要平衡各层级的数据粒度</li></ul>
+<h2 id="原文证据">原文证据</h2>
+<blockquote><p>三层：原始素材 / Wiki 页 / 模式约束
+目标读者：需要理解系统架构的开发者</p></blockquote>
+<h2 id="关联知识">关联知识</h2>
+<p>该架构与<a href="../concepts/concept-knowledge-compilation.html" class="wiki-link">知识编译</a>知识编译概念紧密相关，其模式约束层体现了<a href="../concepts/concept-system-architecture.html" class="wiki-link">系统架构</a>系统架构设计原则。该模式与<a href="../entities/entity-three-layer-architecture.html" class="wiki-link">三层架构</a>的架构思想形成技术关联，但具体实现细节仍需进一步验证。</p>
+<p>来源：<a href="../sources/src-20260601-01-agent-wiki.html" class="wiki-link">Agent架构知识编译模式</a></p>
+<div align="right" style="opacity: 0.5; font-size: 0.8em;">✨ <i>Compiled by MiniMax-M2.7-highspeed</i></div>
+      
+      
+      <nav class="page-pager">
+        <div class="page-pager__cell"><a href="../entities/entity-directory-structure.html" class="page-pager__link"><span class="page-pager__arr">←</span><span class="page-pager__text">目录结构配置</span></a></div>
+        <div class="page-pager__cell page-pager__cell--next"><span class="page-pager__placeholder"></span></div>
+      </nav>
+
+    </main>
+
+    <aside class="sidebar">
+      <section>
+        <h4>页面信息</h4>
+        <ul>
+          <li>类型：实体</li>
+          <li>状态：draft</li>
+          <li>置信度：<span class="confidence-badge" style="display:inline-flex;align-items:center;gap:4px;font-size:0.8rem;color:#f59e0b;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;"></span>60%</span></li>
+          <li>创建：2026-06-01</li>
+          <li>更新：2026-06-01</li>
+        </ul>
+      </section>
+      
+      <section>
+        <h4>目录</h4>
+        <ul>
+          <li><a href="#定义">定义</a></li>
+          <li><a href="#详细属性">详细属性</a></li>
+          <li><a href="#工作原理">工作原理</a></li>
+          <li><a href="#使用场景与优缺点">使用场景与优缺点</a></li>
+          <li class="toc-sub"><a href="#使用场景">使用场景</a></li>
+          <li class="toc-sub"><a href="#优点">优点</a></li>
+          <li class="toc-sub"><a href="#缺点">缺点</a></li>
+          <li class="toc-sub"><a href="#注意事项">注意事项</a></li>
+          <li><a href="#原文证据">原文证据</a></li>
+          <li><a href="#关联知识">关联知识</a></li>
+        </ul>
+      </section>
+    </aside>
+  </div>
+
+  <footer>
+    <p>Demo Parity — 编译预览 · 源文件: wiki/entity-three-layer-architecture.md · 重编译: 2026-06-01</p>
+  </footer>
+
+  <script>window.__KNOWLEVER_BASE="../";window.__KNOWLEVER_SITE_NAME="Demo Parity";</script>
+  <script src="../assets/js/site-common.js"></script>
+  <script src="../assets/data/site-page-data.js"></script>
+  <script src="../assets/js/site-nav.js" defer></script>
+  <script src="../assets/js/site-page.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true, theme: document.documentElement.dataset.theme==='dark' ? 'dark' : 'default', securityLevel:'loose', flowchart:{nodeSpacing:20, rankSpacing:40, padding:12}, themeVariables:{fontSize:'16px'}});</script>
+  <script src="../assets/js/tooltips.js"></script>
+  
+  
+  
+</body>
+</html>

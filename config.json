@@ -8,5 +8,10 @@
   "paths": {
     "data_root": "data/topics",
     "examples_root": "examples"
+  },
+  "compile": {
+    "language": "zh",
+    "graph_title_language": "zh",
+    "note": "知识图谱节点标题与 wiki frontmatter title 须为中文（由 KnowLever compile 提示词保证）"
   }
 }

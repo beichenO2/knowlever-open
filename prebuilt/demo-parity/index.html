@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Demo Parity — KnowLever 知识系统</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    .entry-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin: 2rem 0; }
+    .entry-card { background: var(--bg-secondary, #f8f9fa); border: 1px solid var(--border, #e2e8f0); border-radius: 16px; padding: 2rem; text-decoration: none; color: inherit; transition: all 0.2s ease; position: relative; overflow: hidden; }
+    .entry-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); border-color: var(--accent, #3b82f6); }
+    .entry-icon { font-size: 2.5rem; margin-bottom: 1rem; display: block; }
+    .entry-card h3 { font-size: 1.3rem; margin-bottom: 0.5rem; color: var(--text, #1a1a1a); }
+    .entry-card p { color: var(--text-muted, #666); font-size: 0.95rem; line-height: 1.5; margin-bottom: 1rem; }
+    .entry-sub { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .entry-sub span { background: var(--bg, #fff); border: 1px solid var(--border, #e2e8f0); border-radius: 6px; padding: 2px 8px; font-size: 0.75rem; color: var(--text-muted, #888); }
+  </style>
+</head>
+<body>
+  <header class="site-header" data-site-nav></header>
+
+  <div style="max-width: var(--max-width); margin: 0 auto; padding: 2rem 1.5rem;">
+
+    <div class="hero">
+      <h1>Demo Parity</h1>
+      <p>持久化知识编译系统 — 将原始资料编译为互链、可演化的知识网络</p>
+      <div class="hero-stats" id="hero-stats" aria-live="polite">
+        <div class="hero-stat">
+          <div class="hero-stat-ring"><span class="hero-stat-number" data-hero-stat="knowledgePages">17</span></div>
+          <div class="hero-stat-label">知识页面</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-ring"><span class="hero-stat-number" data-hero-stat="crossReferences">75</span></div>
+          <div class="hero-stat-label">交叉引用</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-ring"><span class="hero-stat-number" data-hero-stat="pageTypes">4</span></div>
+          <div class="hero-stat-label">知识领域</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-ring"><span class="hero-stat-number" data-hero-stat="totalTags">20</span></div>
+          <div class="hero-stat-label">总页面数</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="position:relative;max-width:500px;margin:0 auto 2rem;">
+      <input id="search-input" type="text" placeholder="搜索知识页面..." style="width:100%;padding:0.8rem 1rem 0.8rem 2.5rem;border:1px solid var(--border,#e2e8f0);border-radius:10px;font-size:1rem;background:var(--bg-secondary,#f8f9fa);color:var(--text,#333);outline:none;">
+      <span style="position:absolute;left:0.8rem;top:50%;transform:translateY(-50%);font-size:1.1rem;color:var(--text-muted,#888);">🔍</span>
+      <div id="search-results" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--bg,#fff);border:1px solid var(--border,#e2e8f0);border-radius:10px;margin-top:4px;max-height:400px;overflow-y:auto;z-index:100;box-shadow:0 8px 24px rgba(0,0,0,0.12);"></div>
+    </div>
+
+    <h2 class="section-header" style="margin-top:1rem;"><span class="section-icon" style="background:#dbeafe;">🧠</span> 知识全景</h2>
+    <div id="markmap-wrap" style="width:100%;height:480px;border:1px solid var(--border,#e2e8f0);border-radius:12px;overflow:hidden;background:var(--bg-secondary,#f8f9fa);margin-bottom:2rem;"></div>
+
+    <div class="entry-grid">
+      <a class="entry-card" href="domain-concept-agent-wiki.html">
+        <span class="entry-icon">🎯</span>
+        <h3>Concept Agent Wiki（1）</h3>
+        <p>探索 1 个知识页面</p>
+        <div class="entry-sub"><span>Agent架构</span></div>
+      </a>
+<a class="entry-card" href="domain-concept-knowledge-management.html">
+        <span class="entry-icon">📊</span>
+        <h3>Concept Knowledge Management（1）</h3>
+        <p>探索 1 个知识页面</p>
+        <div class="entry-sub"><span>知识编译</span></div>
+      </a>
+<a class="entry-card" href="domain-concept-knowledge-organization.html">
+        <span class="entry-icon">⚡</span>
+        <h3>Concept Knowledge Organization（1）</h3>
+        <p>探索 1 个知识页面</p>
+        <div class="entry-sub"><span>短句表达</span></div>
+      </a>
+<a class="entry-card" href="domain-concept-software-engineering.html">
+        <span class="entry-icon">🔬</span>
+        <h3>Concept Software Engineering（1）</h3>
+        <p>探索 1 个知识页面</p>
+        <div class="entry-sub"><span>系统架构</span></div>
+      </a>
+    </div>
+
+    
+    <div style="margin: 2.5rem 0;">
+      <h2 style="font-size: 1.2rem; color: var(--text-muted, #888); margin-bottom: 1rem; font-weight: 500;">知识网络拓扑 <span style="font-size:0.75rem;font-weight:400;color:var(--text-muted,#666);">拖拽 · 缩放 · 悬浮高亮 · 双击跳转</span></h2>
+      <div id="graph-container" style="background:#0d1117; border-radius: 12px; overflow: hidden; position: relative; height: 560px;">
+        <svg id="knowledge-graph" style="width:100%;height:100%;"></svg>
+        <div id="graph-tooltip" style="position:absolute;display:none;background:rgba(0,0,0,0.85);color:#e6edf3;padding:6px 12px;border-radius:6px;font-size:13px;pointer-events:none;white-space:nowrap;z-index:10;"></div>
+      </div>
+      <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:0.5rem;font-size:12px;color:var(--text-muted,#888);"><span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#10b981;margin-right:4px;vertical-align:middle;"></span>Concept Agent Wiki (1)</span><span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#3b82f6;margin-right:4px;vertical-align:middle;"></span>Concept Knowledge Management (1)</span><span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#f59e0b;margin-right:4px;vertical-align:middle;"></span>Concept Knowledge Organization (1)</span><span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#8b5cf6;margin-right:4px;vertical-align:middle;"></span>Concept Software Engineering (1)</span></div>
+    </div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function(){
+      var data = {"nodes":[{"id":"entity-three-layer-architecture","name":"三层架构","domain":"其他","color":"#999","href":"entities/entity-three-layer-architecture.html","r":3,"lc":3},{"id":"concept-agent-architecture","name":"Agent架构","domain":"Concept Agent Wiki","color":"#10b981","href":"concepts/concept-agent-architecture.html","r":2,"lc":2},{"id":"concept-system-architecture","name":"系统架构","domain":"Concept Software Engineering","color":"#8b5cf6","href":"concepts/concept-system-architecture.html","r":3,"lc":4},{"id":"entity-agent-wiki","name":"Agent Wiki 知识编译系统","domain":"其他","color":"#999","href":"entities/entity-agent-wiki.html","r":2,"lc":1},{"id":"entity-claim","name":"claim","domain":"其他","color":"#999","href":"entities/entity-claim.html","r":2,"lc":2},{"id":"entity-directory-structure","name":"目录结构配置","domain":"其他","color":"#999","href":"entities/entity-directory-structure.html","r":2,"lc":2},{"id":"concept-knowledge-compilation","name":"知识编译","domain":"Concept Knowledge Management","color":"#3b82f6","href":"concepts/concept-knowledge-compilation.html","r":3,"lc":3},{"id":"concept-short-phrase-expression","name":"短句表达","domain":"Concept Knowledge Organization","color":"#f59e0b","href":"concepts/concept-short-phrase-expression.html","r":3,"lc":4},{"id":"entity-atomic-notes","name":"原子化笔记","domain":"其他","color":"#999","href":"entities/entity-atomic-notes.html","r":3,"lc":3},{"id":"entity-default-model","name":"默认模型","domain":"其他","color":"#999","href":"entities/entity-default-model.html","r":2,"lc":2},{"id":"entity-compile-command","name":"编译命令","domain":"其他","color":"#999","href":"entities/entity-compile-command.html","r":2,"lc":2},{"id":"synthesis-knowledge-organization-overview","name":"知识组织方法总览","domain":"其他","color":"#999","href":"syntheses/synthesis-knowledge-organization-overview.html","r":2,"lc":2},{"id":"comparison-zettelkasten-vs-short-phrase","name":"原子化笔记 vs 短句表达对比","domain":"其他","color":"#999","href":"comparisons/comparison-zettelkasten-vs-short-phrase.html","r":2,"lc":2},{"id":"01-agent-wiki","name":"Agent Wiki 概念","domain":"其他","color":"#999","href":"concepts/01-agent-wiki.html","r":2,"lc":0},{"id":"02-compile-pipeline","name":"命令行编译","domain":"其他","color":"#999","href":"concepts/02-compile-pipeline.html","r":2,"lc":0},{"id":"03-zettelkasten","name":"原子化笔记","domain":"其他","color":"#999","href":"concepts/03-zettelkasten.html","r":2,"lc":0},{"id":"open_questions","name":"待解答问题","domain":"其他","color":"#999","href":"open_questions.html","r":2,"lc":0}],"links":[{"source":0,"target":2},{"source":0,"target":6},{"source":1,"target":2},{"source":1,"target":0},{"source":2,"target":6},{"source":3,"target":2},{"source":4,"target":8},{"source":4,"target":7},{"source":5,"target":10},{"source":5,"target":9},{"source":7,"target":8},{"source":9,"target":10},{"source":11,"target":7},{"source":11,"target":6},{"source":12,"target":8},{"source":12,"target":7}]};
+      if (!data.nodes.length || typeof d3 === 'undefined') return;
+      var container = document.getElementById('graph-container');
+      var svg = d3.select('#knowledge-graph');
+      var W = container.clientWidth, H = container.clientHeight;
+      var g = svg.append('g');
+
+      var zoomBehavior = d3.zoom().scaleExtent([0.15, 6]).wheelDelta(function(e){return -e.deltaY*(e.deltaMode===1?0.03:e.deltaMode?1:0.0008);}).on('zoom', function(e){ g.attr('transform', e.transform); });
+      svg.call(zoomBehavior);
+
+      function fitView(){
+        var pad=40;
+        var xMin=Infinity,xMax=-Infinity,yMin=Infinity,yMax=-Infinity;
+        data.nodes.forEach(function(d){
+          if(d.x-d.r<xMin)xMin=d.x-d.r; if(d.x+d.r>xMax)xMax=d.x+d.r;
+          if(d.y-d.r<yMin)yMin=d.y-d.r; if(d.y+d.r>yMax)yMax=d.y+d.r;
+        });
+        var bw=xMax-xMin+pad*2, bh=yMax-yMin+pad*2;
+        if(bw<1||bh<1)return;
+        var scale=Math.min(W/bw, H/bh, 2);
+        var tx=W/2-scale*(xMin+xMax)/2, ty=H/2-scale*(yMin+yMax)/2;
+        svg.transition().duration(600).call(zoomBehavior.transform, d3.zoomIdentity.translate(tx,ty).scale(scale));
+      }
+      var fitted=false;
+
+      var sim = d3.forceSimulation(data.nodes)
+        .force('link', d3.forceLink(data.links).id(function(d,i){return i;}).distance(function(l){
+          var sr=l.source.r||4, tr=l.target.r||4; return 30 + sr + tr;
+        }).strength(0.2))
+        .force('charge', d3.forceManyBody().strength(function(d){return -30 - d.r * 5;}).distanceMax(400))
+        .force('collision', d3.forceCollide().radius(function(d){return d.r + 2;}).strength(0.9))
+        .force('center', d3.forceCenter(W/2, H/2))
+        .force('x', d3.forceX(W/2).strength(0.03))
+        .force('y', d3.forceY(H/2).strength(0.03))
+        .alphaDecay(0.015).velocityDecay(0.4);
+
+      var link = g.append('g').selectAll('line').data(data.links).join('line')
+        .attr('stroke','#30363d').attr('stroke-width',0.4).attr('stroke-opacity',0.25);
+
+      var node = g.append('g').selectAll('circle').data(data.nodes).join('circle')
+        .attr('r', function(d){return d.r;})
+        .attr('fill', function(d){return d.color;})
+        .attr('fill-opacity', function(d){return 0.4 + 0.6*(d.r/24);})
+        .attr('stroke','#0d1117').attr('stroke-width',function(d){return d.r>12?1.5:0.5;})
+        .style('cursor','pointer')
+        .on('dblclick', function(e,d){ window.location.href = d.href; })
+        .call(d3.drag()
+          .on('start',function(e,d){if(!e.active)sim.alphaTarget(0.08).restart();d.fx=d.x;d.fy=d.y;})
+          .on('drag',function(e,d){d.fx=e.x;d.fy=e.y;})
+          .on('end',function(e,d){if(!e.active)sim.alphaTarget(0);d.fx=null;d.fy=null;})
+        );
+
+      var labelG = g.append('g');
+
+      var hoverLabel = labelG.append('text').attr('fill','#e6edf3').attr('font-size',12)
+        .style('pointer-events','none').style('user-select','none').style('display','none');
+
+      var tooltip = document.getElementById('graph-tooltip');
+      var adjIdx = {};
+      data.links.forEach(function(l,i){
+        var si=typeof l.source==='object'?l.source.index:l.source;
+        var ti=typeof l.target==='object'?l.target.index:l.target;
+        if(!adjIdx[si])adjIdx[si]=[];if(!adjIdx[ti])adjIdx[ti]=[];
+        adjIdx[si].push(ti);adjIdx[ti].push(si);
+      });
+
+      node.on('mouseover', function(e,d){
+        tooltip.textContent=d.name+' · '+d.domain+' ('+d.lc+'个链接)';
+        tooltip.style.display='block';tooltip.style.left=(e.offsetX+12)+'px';tooltip.style.top=(e.offsetY-20)+'px';
+        d3.select(this).attr('stroke','#58a6ff').attr('stroke-width',2.5);
+        hoverLabel.text(d.name).attr('x',d.x+d.r+4).attr('y',d.y+4).style('display',null);
+        var adj=new Set();adj.add(d.index);(adjIdx[d.index]||[]).forEach(function(i){adj.add(i);});
+        node.attr('opacity',function(n){return adj.has(n.index)?1:0.08;});
+        adjNodes=adj;
+        link.attr('stroke',function(l){return(l.source===d||l.target===d)?d.color:'#30363d';})
+            .attr('stroke-opacity',function(l){return(l.source===d||l.target===d)?0.7:0.03;})
+            .attr('stroke-width',function(l){return(l.source===d||l.target===d)?1.2:0.4;});
+      }).on('mousemove',function(e){
+        tooltip.style.left=(e.offsetX+12)+'px';tooltip.style.top=(e.offsetY-20)+'px';
+      }).on('mouseout',function(){
+        tooltip.style.display='none';
+        d3.select(this).attr('stroke','#0d1117').attr('stroke-width',function(d){return d.r>12?1.5:0.5;});
+        node.attr('opacity',1);
+        hoverLabel.style('display','none');
+        link.attr('stroke','#30363d').attr('stroke-opacity',0.25).attr('stroke-width',0.4);
+      });
+      var adjNodes=null;
+
+      sim.on('tick',function(){
+        link.attr('x1',function(d){return d.source.x;}).attr('y1',function(d){return d.source.y;})
+            .attr('x2',function(d){return d.target.x;}).attr('y2',function(d){return d.target.y;});
+        node.attr('cx',function(d){return d.x;}).attr('cy',function(d){return d.y;});
+        if(!fitted && sim.alpha()<0.05){ fitted=true; fitView(); }
+      });
+    });
+    </script>
+
+    
+    <h2 class="section-header" style="margin-top: 2.5rem;"><span class="section-icon" style="background: #e8eaf6;">📅</span> 最近活动</h2>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-date">2026-06-01</div>
+        <div class="timeline-title">18 个页面更新</div>
+        <div class="timeline-desc">概念、对比、实体、来源、综合 · Agent Wiki 概念、命令行编译、原子化笔记、原子化笔记 vs 短句表达对比等共 18 个页面</div>
+        <button class="timeline-toggle" onclick="this.parentElement.classList.toggle('expanded')">展开详情</button>
+        <div class="timeline-details"><ul><li>Agent Wiki 概念 <span class="type-badge concept" style="font-size:0.7rem;">concept</span></li><li>命令行编译 <span class="type-badge concept" style="font-size:0.7rem;">concept</span></li><li>原子化笔记 <span class="type-badge concept" style="font-size:0.7rem;">concept</span></li><li>原子化笔记 vs 短句表达对比 <span class="type-badge comparison" style="font-size:0.7rem;">comparison</span></li><li>Agent架构 <span class="type-badge concept" style="font-size:0.7rem;">concept</span></li><li>知识编译 <span class="type-badge concept" style="font-size:0.7rem;">concept</span></li><li>短句表达 <span class="type-badge concept" style="font-size:0.7rem;">concept</span></li><li>系统架构 <span class="type-badge concept" style="font-size:0.7rem;">concept</span></li><li>Agent Wiki 知识编译系统 <span class="type-badge entity" style="font-size:0.7rem;">entity</span></li><li>原子化笔记 <span class="type-badge entity" style="font-size:0.7rem;">entity</span></li><li>claim <span class="type-badge entity" style="font-size:0.7rem;">entity</span></li><li>默认模型 <span class="type-badge entity" style="font-size:0.7rem;">entity</span></li><li>目录结构配置 <span class="type-badge entity" style="font-size:0.7rem;">entity</span></li><li>三层架构 <span class="type-badge entity" style="font-size:0.7rem;">entity</span></li><li>Agent架构知识编译模式 <span class="type-badge source" style="font-size:0.7rem;">source</span></li><li>命令行编译配置 <span class="type-badge source" style="font-size:0.7rem;">source</span></li><li>原子化笔记方法论 <span class="type-badge source" style="font-size:0.7rem;">source</span></li><li>知识组织方法总览 <span class="type-badge synthesis" style="font-size:0.7rem;">synthesis</span></li></ul></div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <p id="site-footer-line">Demo Parity — 编译预览 · 更新: 2026-06-01</p>
+  </footer>
+
+  <script>window.__KNOWLEVER_BASE="";window.__KNOWLEVER_SITE_NAME="Demo Parity";</script>
+  <script src="assets/js/site-common.js"></script>
+  <script src="assets/data/site-page-data.js"></script>
+  <script src="assets/js/site-nav.js" defer></script>
+  <script src="assets/js/site-page.js" defer></script>
+  <script src="assets/js/search.js"></script>
+  <script>initSearch('search-input','search-results','');</script>
+  <script src="assets/js/tooltips.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-view@0.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-lib@0.17"></script>
+  <script>
+  (function(){
+    var md = "# Demo Parity\n## [Concept Agent Wiki（1）](domain-concept-agent-wiki.html)\n### [Agent架构](concepts/concept-agent-architecture.html)\n## [Concept Knowledge Management（1）](domain-concept-knowledge-management.html)\n### [知识编译](concepts/concept-knowledge-compilation.html)\n## [Concept Knowledge Organization（1）](domain-concept-knowledge-organization.html)\n### [短句表达](concepts/concept-short-phrase-expression.html)\n## [Concept Software Engineering（1）](domain-concept-software-engineering.html)\n### [系统架构](concepts/concept-system-architecture.html)";
+    var wrap = document.getElementById('markmap-wrap');
+    if (!wrap || !window.markmap) return;
+    var svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+    svg.setAttribute('style','width:100%;height:100%');
+    wrap.appendChild(svg);
+    var transformer = new markmap.Transformer();
+    var result = transformer.transform(md);
+    var mm = markmap.Markmap.create(svg, {duration:300, maxWidth:260, initialExpandLevel:1, autoFit:true}, result.root);
+    setTimeout(function(){ mm.fit(); }, 400);
+    setTimeout(function(){
+      svg.querySelectorAll('a[href]').forEach(function(a){
+        a.style.cursor='pointer';
+        a.setAttribute('target','_self');
+      });
+      svg.addEventListener('click', function(e){
+        var link = e.target.closest('a[href]');
+        if(link){
+          e.preventDefault(); e.stopPropagation();
+          window.location.href = link.getAttribute('href');
+        }
+      });
+    }, 800);
+  })();
+  </script>
+</body>
+</html>

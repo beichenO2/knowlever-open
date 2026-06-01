@@ -21,7 +21,12 @@ function run(engineRoot, scriptRel, args, label) {
     process.exit(1);
   }
   console.log(`[compile] ${label}: node ${scriptRel} ${args.join(' ')}`);
-  const r = spawnSync('node', [scriptPath, ...args], { cwd: engineRoot, stdio: 'inherit' });
+  const env = {
+    ...process.env,
+    KNOWLEVER_OUTPUT_LANGUAGE: config.compile?.language || 'zh',
+    KNOWLEVER_GRAPH_TITLE_LANG: config.compile?.graph_title_language || 'zh',
+  };
+  const r = spawnSync('node', [scriptPath, ...args], { cwd: engineRoot, stdio: 'inherit', env });
   if (r.status !== 0) process.exit(r.status ?? 1);
 }
 
@@ -36,10 +41,14 @@ if (!fs.existsSync(path.join(engineRoot, 'wiki-engine', 'ingest.js'))) {
   process.exit(1);
 }
 
-// 1) ingest 从 examples/ 入口（避免 input===rawDir 时「全 unchanged」跳过 normalize）
-const ingestInput = path.join(ROOT, 'examples', topic, 'raw');
+// 1) ingest：优先 data/topics/<topic>/raw（office-import），否则 examples/<topic>/raw
+const topicRaw = path.join(ROOT, 'data', 'topics', topic, 'raw');
+const examplesRaw = path.join(ROOT, 'examples', topic, 'raw');
+const ingestInput = fs.existsSync(topicRaw) && fs.readdirSync(topicRaw).some((f) => !f.startsWith('.'))
+  ? topicRaw
+  : examplesRaw;
 if (!fs.existsSync(ingestInput)) {
-  console.error(`[compile] missing examples/${topic}/raw — run npm run init:demo`);
+  console.error(`[compile] missing raw for topic ${topic} — run office-import or init:demo`);
   process.exit(1);
 }
 run(

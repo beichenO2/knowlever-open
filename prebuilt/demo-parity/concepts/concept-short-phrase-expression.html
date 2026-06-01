@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="通过限定句长提升信息颗粒度的表达方式，是知识组织中的基础性实践">
+  <meta name="last-modified" content="2026-06-01">
+  <title>短句表达 — Demo Parity</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <style>.page-summary{color:var(--text-muted,#666);font-size:1.05rem;line-height:1.6;margin:-0.5rem 0 1.5rem;padding:0.75rem 1rem;background:var(--bg-secondary,#f8f9fa);border-radius:8px;border-left:3px solid var(--accent,#3b82f6);}</style>
+</head>
+<body>
+  <header class="site-header" data-site-nav></header>
+
+  <div class="breadcrumb">
+    <a href="../index.html">首页</a><span>›</span>
+    <a href="../concepts-hub.html">概念</a><span>›</span>
+    短句表达
+  </div>
+
+  <div class="page-layout">
+    <main class="page-content">
+
+      <div class="page-meta">
+        <span class="type-badge concept">💡 Concept</span>
+        <span class="status-badge draft">draft</span>
+        <span class="confidence-badge" style="display:inline-flex;align-items:center;gap:4px;font-size:0.8rem;color:#f59e0b;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;"></span>70%</span>
+        <span class="date-info">更新: 2026-06-01</span>
+      </div>
+      
+
+      <h1>短句表达</h1>
+      <p class="page-summary">通过限定句长提升信息颗粒度的表达方式，是知识组织中的基础性实践</p>
+
+      <div class="nav-mermaid" style="margin-bottom:1.5rem;overflow-x:auto;"><pre class="mermaid" style="font-size:15px;min-height:80px;">
+graph LR
+  current["短句表达"]:::current
+  current -.- r0["原子化笔记 vs 短句表达对比"]:::related
+  click r0 "../comparisons/comparison-zettelkasten-vs-short-phrase.html"
+  current -.- r1["原子化笔记"]:::related
+  click r1 "../entities/entity-atomic-notes.html"
+  current -.- r2["claim"]:::related
+  click r2 "../entities/entity-claim.html"
+  current -.- r3["原子化笔记方法论"]:::related
+  click r3 "../sources/src-20260601-03-zettelkasten.html"
+  classDef current fill:#3b82f6,stroke:#1e40af,color:#fff,font-weight:bold
+  classDef parent fill:#e0f2fe,stroke:#38bdf8,color:#0c4a6e
+  classDef child fill:#f0fdf4,stroke:#86efac,color:#14532d
+  classDef related fill:#fef3c7,stroke:#f59e0b,color:#78350f
+</pre></div><h2 id="定义">定义</h2>
+<p>短句表达是一种将知识拆解为独立短句的标准化表达方式，每个单元聚焦单一核心概念，通过严格限制句长（通常控制在15字以内）实现信息颗粒化。该方法强调内容的独立性与可检索性，是知识管理系统中的基础性实践。其核心特征包括：</p>
+<ol><li><strong>单一焦点</strong>：每个短句仅承载一个独立想法，避免多维度信息混杂</li><li><strong>结构化表达</strong>：通过限定句长提升信息颗粒度，为知识关联分析提供基础数据</li><li><strong>可操作性</strong>：便于后续聚类建站，支持自动化知识系统构建</li></ol>
+<h2 id="解决什么问题">解决什么问题</h2>
+<p>短句表达主要解决传统笔记方法中存在的三个核心问题：</p>
+<ol><li><strong>信息冗余</strong>：长段落中包含多个独立概念，导致信息密度不均</li><li><strong>检索困难</strong>：复杂句式降低关键词匹配效率，影响知识检索</li><li><strong>系统化障碍</strong>：非结构化表达难以支持知识关联分析与系统化建站</li></ol>
+<p>通过将知识分解为可操作的单元，短句表达为知识管理系统提供了标准化的数据基础，是实现知识自动化处理的关键步骤。</p>
+<h2 id="工作原理">工作原理</h2>
+<p>短句表达的运作机制包含三个核心阶段：</p>
+<h3 id="1-内容拆分">1. 内容拆分</h3>
+<p>将原始知识内容按语义单元进行拆分，每个短句需满足以下条件：</p>
+<ul><li>仅包含单一核心概念</li><li>保持语义完整性</li><li>句长控制在15字以内</li></ul>
+<p>示例：
+原始内容："机器学习需要大量数据训练模型"
+拆分结果：</p>
+<ul><li>机器学习需要数据</li><li>数据训练模型</li><li>模型需要训练</li></ul>
+<h3 id="2-结构化编码">2. 结构化编码</h3>
+<p>为每个短句分配唯一标识符，并建立元数据标签体系，包括：</p>
+<ul><li>主题分类</li><li>关键词标签</li><li>语义关系类型</li></ul>
+<h3 id="3-知识关联">3. 知识关联</h3>
+<p>通过自然语言处理技术，自动识别短句间的语义关联，构建知识图谱。典型关联类型包括：</p>
+<ul><li>从属关系（如"数据训练模型"→"模型需要训练"）</li><li>并列关系（如"机器学习需要数据"与"深度学习需要数据"）</li><li>递进关系（如"数据预处理"→"特征提取"→"模型训练"）</li></ul>
+<h2 id="关键公式-方法">关键公式/方法</h2>
+<p>短句表达的量化评估包含以下指标：</p>
+<table>
+<thead><tr><th>指标</th><th>公式</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td>信息密度</td><td><span class="math-inline">$ D = \frac{C}{L} $</span></td><td>C为概念数量，L为句长</td></tr>
+<tr><td>关联强度</td><td><span class="math-inline">$ S = \frac{R}{T} $</span></td><td>R为关联关系数，T为总短句数</td></tr>
+<tr><td>知识颗粒度</td><td><span class="math-inline">$ G = \frac{1}{\sum_{i=1}^{n} w_i} $</span></td><td><span class="math-inline">$ w_i $</span> 为每个短句的权重</td></tr>
+</tbody>
+</table>
+<h2 id="典型应用">典型应用</h2>
+<p>在技术文档知识管理中，短句表达可显著提升信息检索效率。例如：</p>
+<p><strong>原始段落</strong>：
+"深度学习需要大量数据训练模型，数据预处理包括清洗、标准化和特征提取。模型训练过程中需要调整超参数，常用的优化算法包括梯度下降和Adam。"</p>
+<p><strong>短句拆分</strong>：</p>
+<ul><li>深度学习需要数据</li><li>数据训练模型</li><li>数据预处理包括清洗</li><li>数据预处理包括标准化</li><li>数据预处理包括特征提取</li><li>模型训练需要调整超参数</li><li>常用优化算法包括梯度下降</li><li>常用优化算法包括Adam</li></ul>
+<p>拆分后可直接用于构建知识图谱，支持快速检索和语义关联分析。</p>
+<h2 id="与其他概念的对比">与其他概念的对比</h2>
+<table>
+<thead><tr><th>维度</th><th>短句表达</th><th>长段落表达</th><th>信息颗粒度</th><th>知识检索</th><th>系统化构建</th></tr></thead>
+<tbody>
+<tr><td>信息密度</td><td>高</td><td>低</td><td>高</td><td>高</td><td>高</td></tr>
+<tr><td>检索效率</td><td>高</td><td>低</td><td>高</td><td>高</td><td>高</td></tr>
+<tr><td>系统化难度</td><td>低</td><td>高</td><td>低</td><td>低</td><td>高</td></tr>
+<tr><td>适用场景</td><td>知识管理系统</td><td>人工阅读</td><td>知识管理系统</td><td>人工阅读</td><td>知识管理系统</td></tr>
+</tbody>
+</table>
+<h2 id="常见误区">常见误区</h2>
+<ol><li><strong>过度拆分</strong>：将简单概念强行拆分为多个短句，导致信息碎片化</li><li><strong>语义断裂</strong>：拆分后的短句失去原意，影响知识完整性</li><li><strong>标签滥用</strong>：过度使用元数据标签，导致分类体系混乱</li></ol>
+<h2 id="关联知识">关联知识</h2>
+<ul><li><a href="../entities/entity-atomic-notes.html" class="wiki-link">原子化笔记</a>：原子化笔记方法论的核心实践</li><li><span style="color:var(--text-muted,#888);border-bottom:1px dashed var(--text-muted,#ccc)" title="concept-knowledge-organization">concept-knowledge-organization</span>：知识组织的系统化方法</li><li><span style="color:var(--text-muted,#888);border-bottom:1px dashed var(--text-muted,#ccc)" title="concept-clustering-website">concept-clustering-website</span>：基于短句表达的聚类建站技术</li><li><a href="../entities/entity-claim.html" class="wiki-link">claim</a>：承载单一独立想法的笔记单元</li></ul>
+<h2 id="来源">来源</h2>
+<p>src-20260601-03-zettelkasten</p>
+<div align="right" style="opacity: 0.5; font-size: 0.8em;">✨ <i>Compiled by MiniMax-M2.7-highspeed</i></div>
+<h2 id="图示">图示</h2>
+<pre class="mermaid">
+graph TD
+  A[复杂知识体系] --> B[拆解为独立短句]
+  B --> C[标准化表达规范]
+  C --> D[提升信息检索效率]
+  D --> E[支持知识关联分析]
+</pre>
+<blockquote><p>短句表达的实现流程</p></blockquote>
+      
+      
+      <nav class="page-pager">
+        <div class="page-pager__cell"><a href="../concepts/concept-knowledge-compilation.html" class="page-pager__link"><span class="page-pager__arr">←</span><span class="page-pager__text">知识编译</span></a></div>
+        <div class="page-pager__cell page-pager__cell--next"><a href="../concepts/concept-system-architecture.html" class="page-pager__link"><span class="page-pager__text">系统架构</span><span class="page-pager__arr">→</span></a></div>
+      </nav>
+
+    </main>
+
+    <aside class="sidebar">
+      <section>
+        <h4>页面信息</h4>
+        <ul>
+          <li>类型：概念</li>
+          <li>状态：draft</li>
+          <li>置信度：<span class="confidence-badge" style="display:inline-flex;align-items:center;gap:4px;font-size:0.8rem;color:#f59e0b;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;"></span>70%</span></li>
+          <li>创建：2026-06-01</li>
+          <li>更新：2026-06-01</li>
+        </ul>
+      </section>
+      
+      <section>
+        <h4>目录</h4>
+        <ul>
+          <li><a href="#定义">定义</a></li>
+          <li><a href="#解决什么问题">解决什么问题</a></li>
+          <li><a href="#工作原理">工作原理</a></li>
+          <li class="toc-sub"><a href="#1-内容拆分">1. 内容拆分</a></li>
+          <li class="toc-sub"><a href="#2-结构化编码">2. 结构化编码</a></li>
+          <li class="toc-sub"><a href="#3-知识关联">3. 知识关联</a></li>
+          <li><a href="#关键公式-方法">关键公式/方法</a></li>
+          <li><a href="#典型应用">典型应用</a></li>
+          <li><a href="#与其他概念的对比">与其他概念的对比</a></li>
+          <li><a href="#常见误区">常见误区</a></li>
+          <li><a href="#关联知识">关联知识</a></li>
+          <li><a href="#来源">来源</a></li>
+          <li><a href="#图示">图示</a></li>
+        </ul>
+      </section>
+    </aside>
+  </div>
+
+  <footer>
+    <p>Demo Parity — 编译预览 · 源文件: wiki/concept-short-phrase-expression.md · 重编译: 2026-06-01</p>
+  </footer>
+
+  <script>window.__KNOWLEVER_BASE="../";window.__KNOWLEVER_SITE_NAME="Demo Parity";</script>
+  <script src="../assets/js/site-common.js"></script>
+  <script src="../assets/data/site-page-data.js"></script>
+  <script src="../assets/js/site-nav.js" defer></script>
+  <script src="../assets/js/site-page.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true, theme: document.documentElement.dataset.theme==='dark' ? 'dark' : 'default', securityLevel:'loose', flowchart:{nodeSpacing:20, rankSpacing:40, padding:12}, themeVariables:{fontSize:'16px'}});</script>
+  <script src="../assets/js/tooltips.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (typeof renderMathInElement !== 'function') return;
+      document.querySelectorAll('.page-content').forEach(function (node) {
+        renderMathInElement(node, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '$', right: '$', display: false }
+          ],
+          throwOnError: false
+        });
+      });
+    });
+  </script>
+</body>
+</html>

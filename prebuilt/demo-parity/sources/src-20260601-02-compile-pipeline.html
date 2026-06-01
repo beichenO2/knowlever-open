@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="开源版KnowLever通过`npm run compile`命令在`data/topics/{topic}/`目录下触发编译，使用MiniMax-M2.7-highspeed作为默认模型进行知识编译处理">
+  <meta name="last-modified" content="2026-06-01">
+  <title>命令行编译配置 — Demo Parity</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  
+  <style>.page-summary{color:var(--text-muted,#666);font-size:1.05rem;line-height:1.6;margin:-0.5rem 0 1.5rem;padding:0.75rem 1rem;background:var(--bg-secondary,#f8f9fa);border-radius:8px;border-left:3px solid var(--accent,#3b82f6);}</style>
+</head>
+<body>
+  <header class="site-header" data-site-nav></header>
+
+  <div class="breadcrumb">
+    <a href="../index.html">首页</a><span>›</span>
+    <a href="../knowledge-hub.html">来源</a><span>›</span>
+    命令行编译配置
+  </div>
+
+  <div class="page-layout">
+    <main class="page-content">
+
+      <div class="page-meta">
+        <span class="type-badge source">📄 Source</span>
+        <span class="status-badge draft">draft</span>
+        <span class="confidence-badge" style="display:inline-flex;align-items:center;gap:4px;font-size:0.8rem;color:#f59e0b;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;"></span>60%</span>
+        <span class="date-info">更新: 2026-06-01</span>
+      </div>
+      
+
+      <h1>命令行编译配置</h1>
+      <p class="page-summary">开源版KnowLever通过`npm run compile`命令在`data/topics/{topic}/`目录下触发编译，使用MiniMax-M2.7-highspeed作为默认模型进行知识编译处理</p>
+
+      <div class="nav-mermaid" style="margin-bottom:1.5rem;overflow-x:auto;"><pre class="mermaid" style="font-size:15px;min-height:80px;">
+graph LR
+  current["命令行编译配置"]:::current
+  current -.- r0["编译命令"]:::related
+  click r0 "../entities/entity-compile-command.html"
+  current -.- r1["默认模型"]:::related
+  click r1 "../entities/entity-default-model.html"
+  current -.- r2["目录结构配置"]:::related
+  click r2 "../entities/entity-directory-structure.html"
+  classDef current fill:#3b82f6,stroke:#1e40af,color:#fff,font-weight:bold
+  classDef parent fill:#e0f2fe,stroke:#38bdf8,color:#0c4a6e
+  classDef child fill:#f0fdf4,stroke:#86efac,color:#14532d
+  classDef related fill:#fef3c7,stroke:#f59e0b,color:#78350f
+</pre></div><h2 id="概述">概述</h2>
+<p>开源版KnowLever采用单用户目录结构<code>data/topics/{topic}/</code>进行知识编译，通过<code>npm run compile</code>命令触发编译流程。系统默认使用MiniMax-M2.7-highspeed模型处理知识编译任务，该配置确保了编译过程的效率与稳定性。该配置方案简化了用户操作流程，将知识编译与目录管理紧密结合，形成标准化的编译环境。</p>
+<p>编译流程设计遵循模块化原则，将目录结构、<a href="../entities/entity-compile-command.html" class="wiki-link">编译命令</a>和模型配置作为核心要素。这种设计使用户能够快速启动编译任务，同时保持系统对不同知识主题的扩展性。<a href="../entities/entity-default-model.html" class="wiki-link">默认模型</a>的选用平衡了性能与资源消耗，为大多数应用场景提供可靠支持。</p>
+<h2 id="核心要点">核心要点</h2>
+<ul><li><strong><a href="../entities/entity-compile-command.html" class="wiki-link">编译命令</a></strong>：<code>npm run compile</code>是触发知识编译的唯一命令，执行时自动加载<code>data/topics/{topic}/</code>目录下的编译配置</li><li><strong>目录结构</strong>：采用单用户目录<code>data/topics/{topic}/</code>组织编译数据，支持多主题独立管理</li><li><strong><a href="../entities/entity-default-model.html" class="wiki-link">默认模型</a></strong>：预设使用MiniMax-M2.7-highspeed模型进行知识编译，确保处理效率</li><li><strong>配置原则</strong>：通过标准化目录结构和模型配置，实现编译流程的自动化与可扩展性</li></ul>
+<h2 id="知识结构">知识结构</h2>
+<h3 id="目的">目的</h3>
+<p>实现知识编译流程的自动化与标准化，降低用户操作复杂度</p>
+<h3 id="方法">方法</h3>
+<ul><li>使用<code>npm run compile</code>命令触发编译</li><li>在<code>data/topics/{topic}/</code>目录下组织编译数据</li><li>配置<a href="../entities/entity-default-model.html" class="wiki-link">默认模型</a>进行知识处理</li></ul>
+<h3 id="原理">原理</h3>
+<ul><li>目录结构设计支持多主题独立管理</li><li>模型配置确保编译效率与资源优化</li><li>命令行接口实现编译流程的标准化控制</li></ul>
+<h2 id="关联知识">关联知识</h2>
+<ul><li><a href="../entities/entity-compile-command.html" class="wiki-link">编译命令</a>：<a href="../entities/entity-compile-command.html" class="wiki-link">编译命令</a>的执行机制</li><li><a href="../entities/entity-directory-structure.html" class="wiki-link">目录结构配置</a>：目录结构的组织原则</li><li><a href="../entities/entity-default-model.html" class="wiki-link">默认模型</a>：模型配置的选型依据</li><li><span style="color:var(--text-muted,#888);border-bottom:1px dashed var(--text-muted,#ccc)" title="concept-compilation-process">concept-compilation-process</span>：编译流程的实现原理</li></ul>
+<h2 id="待探讨">待探讨</h2>
+<ol><li>是否支持多用户<a href="../entities/entity-directory-structure.html" class="wiki-link">目录结构配置</a>？</li><li>模型切换机制如何实现？</li></ol>
+<p>来源：src-20260601-02-compile-pipeline</p>
+<div align="right" style="opacity: 0.5; font-size: 0.8em;">✨ <i>Compiled by MiniMax-M2.7-highspeed</i></div>
+      
+      
+      <nav class="page-pager">
+        <div class="page-pager__cell"><a href="../sources/src-20260601-01-agent-wiki.html" class="page-pager__link"><span class="page-pager__arr">←</span><span class="page-pager__text">Agent架构知识编译模式</span></a></div>
+        <div class="page-pager__cell page-pager__cell--next"><a href="../sources/src-20260601-03-zettelkasten.html" class="page-pager__link"><span class="page-pager__text">原子化笔记方法论</span><span class="page-pager__arr">→</span></a></div>
+      </nav>
+
+    </main>
+
+    <aside class="sidebar">
+      <section>
+        <h4>页面信息</h4>
+        <ul>
+          <li>类型：来源</li>
+          <li>状态：draft</li>
+          <li>置信度：<span class="confidence-badge" style="display:inline-flex;align-items:center;gap:4px;font-size:0.8rem;color:#f59e0b;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;"></span>60%</span></li>
+          <li>创建：2026-06-01</li>
+          <li>更新：2026-06-01</li>
+        </ul>
+      </section>
+      
+      <section>
+        <h4>目录</h4>
+        <ul>
+          <li><a href="#概述">概述</a></li>
+          <li><a href="#核心要点">核心要点</a></li>
+          <li><a href="#知识结构">知识结构</a></li>
+          <li class="toc-sub"><a href="#目的">目的</a></li>
+          <li class="toc-sub"><a href="#方法">方法</a></li>
+          <li class="toc-sub"><a href="#原理">原理</a></li>
+          <li><a href="#关联知识">关联知识</a></li>
+          <li><a href="#待探讨">待探讨</a></li>
+        </ul>
+      </section>
+    </aside>
+  </div>
+
+  <footer>
+    <p>Demo Parity — 编译预览 · 源文件: wiki/src-20260601-02-compile-pipeline.md · 重编译: 2026-06-01</p>
+  </footer>
+
+  <script>window.__KNOWLEVER_BASE="../";window.__KNOWLEVER_SITE_NAME="Demo Parity";</script>
+  <script src="../assets/js/site-common.js"></script>
+  <script src="../assets/data/site-page-data.js"></script>
+  <script src="../assets/js/site-nav.js" defer></script>
+  <script src="../assets/js/site-page.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true, theme: document.documentElement.dataset.theme==='dark' ? 'dark' : 'default', securityLevel:'loose', flowchart:{nodeSpacing:20, rankSpacing:40, padding:12}, themeVariables:{fontSize:'16px'}});</script>
+  <script src="../assets/js/tooltips.js"></script>
+  
+  
+  
+</body>
+</html>

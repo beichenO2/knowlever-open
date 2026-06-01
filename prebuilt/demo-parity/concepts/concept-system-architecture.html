@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="定义系统组件组织方式和交互规则的框架，通过分层设计实现复杂系统的模块化管理">
+  <meta name="last-modified" content="2026-06-01">
+  <title>系统架构 — Demo Parity</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  
+  <style>.page-summary{color:var(--text-muted,#666);font-size:1.05rem;line-height:1.6;margin:-0.5rem 0 1.5rem;padding:0.75rem 1rem;background:var(--bg-secondary,#f8f9fa);border-radius:8px;border-left:3px solid var(--accent,#3b82f6);}</style>
+</head>
+<body>
+  <header class="site-header" data-site-nav></header>
+
+  <div class="breadcrumb">
+    <a href="../index.html">首页</a><span>›</span>
+    <a href="../concepts-hub.html">概念</a><span>›</span>
+    系统架构
+  </div>
+
+  <div class="page-layout">
+    <main class="page-content">
+
+      <div class="page-meta">
+        <span class="type-badge concept">💡 Concept</span>
+        <span class="status-badge draft">draft</span>
+        <span class="confidence-badge" style="display:inline-flex;align-items:center;gap:4px;font-size:0.8rem;color:#f59e0b;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;"></span>70%</span>
+        <span class="date-info">更新: 2026-06-01</span>
+      </div>
+      
+
+      <h1>系统架构</h1>
+      <p class="page-summary">定义系统组件组织方式和交互规则的框架，通过分层设计实现复杂系统的模块化管理</p>
+
+      <div class="nav-mermaid" style="margin-bottom:1.5rem;overflow-x:auto;"><pre class="mermaid" style="font-size:15px;min-height:80px;">
+graph LR
+  current["系统架构"]:::current
+  current -.- r0["Agent架构"]:::related
+  click r0 "../concepts/concept-agent-architecture.html"
+  current -.- r1["知识编译"]:::related
+  click r1 "../concepts/concept-knowledge-compilation.html"
+  current -.- r2["Agent Wiki 知识编译系统"]:::related
+  click r2 "../entities/entity-agent-wiki.html"
+  current -.- r3["三层架构"]:::related
+  click r3 "../entities/entity-three-layer-architecture.html"
+  classDef current fill:#3b82f6,stroke:#1e40af,color:#fff,font-weight:bold
+  classDef parent fill:#e0f2fe,stroke:#38bdf8,color:#0c4a6e
+  classDef child fill:#f0fdf4,stroke:#86efac,color:#14532d
+  classDef related fill:#fef3c7,stroke:#f59e0b,color:#78350f
+</pre></div><h2 id="定义">定义</h2>
+<p>系统架构是描述系统组件组织方式和交互规则的框架，通过分层设计、模块划分和接口定义，实现复杂系统的模块化管理。它包含硬件/软件组件的结构关系、数据流路径、控制逻辑和通信协议，是系统设计的核心指导原则。系统架构需满足可扩展性、可靠性、可维护性等关键需求，是软件工程中实现复杂系统构建的基础。</p>
+<h2 id="解决什么问题">解决什么问题</h2>
+<p>系统架构主要解决以下根本困难：</p>
+<ol><li><strong>复杂系统分解</strong>：将庞大系统拆解为可管理的模块</li><li><strong>组件交互规范</strong>：定义不同模块之间的通信规则</li><li><strong>性能优化</strong>：通过架构设计提升系统效率</li><li><strong>风险控制</strong>：隔离故障影响范围</li><li><strong>技术选型</strong>：确定合适的技术栈组合</li></ol>
+<h2 id="工作原理">工作原理</h2>
+<p>系统架构通过分层设计实现功能解耦，典型架构包含以下层级（ASCII示意图）：</p>
+<pre><code>+-----------------+
+|  应用层        |
+|  (User Interface)  |
++-----------------+
+|  业务逻辑层    |
+|  (Business Logic)  |
++-----------------+
+|  数据访问层    |
+|  (Data Access)     |
++-----------------+
+|  持久化层      |
+|  (Persistence)     |
++-----------------+</code></pre>
+<p>各层级通过定义清晰的接口进行通信，上层模块通过下层提供的服务实现功能。架构设计需考虑以下要素：</p>
+<ul><li><strong>模块边界</strong>：明确各组件职责范围</li><li><strong>通信协议</strong>：定义数据交换格式和传输方式</li><li><strong>容错机制</strong>：处理组件失效时的降级策略</li><li><strong>扩展接口</strong>：预留未来功能扩展的接入点</li></ul>
+<h2 id="关键公式-方法">关键公式/方法</h2>
+<p>系统架构设计中常用量化指标包括：</p>
+<ol><li><strong>响应时间公式</strong>：T_total = T_processing + T_communication + T_waiting - T_total：总响应时间 - T_processing：处理时间 - T_communication：通信延迟 - T_waiting：等待时间</li><li><strong>系统吞吐量</strong>：Throughput = N_requests / T_total - N_requests：单位时间处理请求数</li><li><strong>容错率公式</strong>：Fault_tolerance = 1 - (F / N) - F：故障组件数量 - N：总组件数量</li></ol>
+<h2 id="典型应用">典型应用</h2>
+<p>以微服务架构为例，系统架构包含以下特征：</p>
+<ul><li><strong>分布式部署</strong>：各服务独立运行</li><li><strong>API网关</strong>：统一处理请求路由</li><li><strong>服务注册中心</strong>：动态发现服务实例</li><li><strong>断路器模式</strong>：隔离故障服务</li></ul>
+<p>某电商平台采用分层架构后，系统响应时间从2.5秒降至0.8秒，同时支持双倍并发量，验证了架构设计对性能的显著影响。</p>
+<h2 id="与其他概念的对比">与其他概念的对比</h2>
+<table>
+<thead><tr><th>维度</th><th>系统架构</th><th>软件工程</th><th>架构模式</th></tr></thead>
+<tbody>
+<tr><td>核心目标</td><td>组件组织与交互规则</td><td>全生命周期管理</td><td>设计模式应用</td></tr>
+<tr><td>设计层级</td><td>系统级（宏观）</td><td>项目级（中观）</td><td>代码级（微观）</td></tr>
+<tr><td>关键要素</td><td>分层设计、接口定义</td><td>需求分析、项目管理</td><td>设计模式、算法优化</td></tr>
+<tr><td>与<span style="color:var(--text-muted,#888);border-bottom:1px dashed var(--text-muted,#ccc)" title="concept-software-engineering">concept-software-engineering</span>的关系</td><td>是软件工程的核心实践领域</td><td>是系统架构的理论基础</td><td>是架构实现的具体方法</td></tr>
+</tbody>
+</table>
+<h2 id="常见误区">常见误区</h2>
+<ol><li><strong>过度设计</strong>：为追求架构先进性而增加不必要的复杂度</li><li><strong>忽视可维护性</strong>：过度关注性能而牺牲代码可读性</li><li><strong>边界模糊</strong>：模块划分不清晰导致耦合度升高</li><li><strong>忽略非功能需求</strong>：过度关注功能实现而忽视安全、扩展性等</li><li><strong>架构漂移</strong>：未及时调整架构导致系统性能下降</li></ol>
+<h2 id="关联知识">关联知识</h2>
+<p>系统架构与<a href="../concepts/concept-knowledge-compilation.html" class="wiki-link">知识编译</a>知识编译概念存在技术关联，其三层架构思想与<a href="../entities/entity-three-layer-architecture.html" class="wiki-link">三层架构</a>的架构模式形成互补。该概念与<span style="color:var(--text-muted,#888);border-bottom:1px dashed var(--text-muted,#ccc)" title="concept-software-engineering">concept-software-engineering</span>软件工程领域形成目的→方法的包含关系，是实现复杂系统构建的核心实践。</p>
+<h2 id="待探讨">待探讨</h2>
+<ol><li>如何量化评估不同架构模式的优劣</li><li>在云原生环境下系统架构的演变趋势</li><li>架构设计与团队协作效率的关联性</li><li>自动化架构优化工具的有效性验证</li></ol>
+<p>来源：<a href="../sources/src-20260601-01-agent-wiki.html" class="wiki-link">Agent架构知识编译模式</a></p>
+<div align="right" style="opacity: 0.5; font-size: 0.8em;">✨ <i>Compiled by MiniMax-M2.7-highspeed</i></div>
+<h2 id="图示">图示</h2>
+<pre class="mermaid">
+graph BT
+  A[系统架构] --> B(核心组件)
+  A --> C(模块划分)
+  A --> D(交互规则)
+  B --> E(数据层)
+  B --> F(逻辑层)
+  B --> G(界面层)
+  C --> H(前端模块)
+  C --> I(后端模块)
+  C --> J(数据库模块)
+</pre>
+<blockquote><p>系统架构思维导图：展示系统组件、模块划分及各层级的交互关系</p></blockquote>
+      
+      
+      <nav class="page-pager">
+        <div class="page-pager__cell"><a href="../concepts/concept-short-phrase-expression.html" class="page-pager__link"><span class="page-pager__arr">←</span><span class="page-pager__text">短句表达</span></a></div>
+        <div class="page-pager__cell page-pager__cell--next"><span class="page-pager__placeholder"></span></div>
+      </nav>
+
+    </main>
+
+    <aside class="sidebar">
+      <section>
+        <h4>页面信息</h4>
+        <ul>
+          <li>类型：概念</li>
+          <li>状态：draft</li>
+          <li>置信度：<span class="confidence-badge" style="display:inline-flex;align-items:center;gap:4px;font-size:0.8rem;color:#f59e0b;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;"></span>70%</span></li>
+          <li>创建：2026-06-01</li>
+          <li>更新：2026-06-01</li>
+        </ul>
+      </section>
+      
+      <section>
+        <h4>目录</h4>
+        <ul>
+          <li><a href="#定义">定义</a></li>
+          <li><a href="#解决什么问题">解决什么问题</a></li>
+          <li><a href="#工作原理">工作原理</a></li>
+          <li><a href="#关键公式-方法">关键公式/方法</a></li>
+          <li><a href="#典型应用">典型应用</a></li>
+          <li><a href="#与其他概念的对比">与其他概念的对比</a></li>
+          <li><a href="#常见误区">常见误区</a></li>
+          <li><a href="#关联知识">关联知识</a></li>
+          <li><a href="#待探讨">待探讨</a></li>
+          <li><a href="#图示">图示</a></li>
+        </ul>
+      </section>
+    </aside>
+  </div>
+
+  <footer>
+    <p>Demo Parity — 编译预览 · 源文件: wiki/concept-system-architecture.md · 重编译: 2026-06-01</p>
+  </footer>
+
+  <script>window.__KNOWLEVER_BASE="../";window.__KNOWLEVER_SITE_NAME="Demo Parity";</script>
+  <script src="../assets/js/site-common.js"></script>
+  <script src="../assets/data/site-page-data.js"></script>
+  <script src="../assets/js/site-nav.js" defer></script>
+  <script src="../assets/js/site-page.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({startOnLoad:true, theme: document.documentElement.dataset.theme==='dark' ? 'dark' : 'default', securityLevel:'loose', flowchart:{nodeSpacing:20, rankSpacing:40, padding:12}, themeVariables:{fontSize:'16px'}});</script>
+  <script src="../assets/js/tooltips.js"></script>
+  
+  
+  
+</body>
+</html>
