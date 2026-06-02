@@ -4,4 +4,4 @@ Cloned repos serve these under `/library/<topic>/` when `data/topics/<topic>/out
 
 - `demo-parity/` — public demo (~20 HTML pages). Regenerate locally with `npm run pipeline -- --topic demo-parity` then optionally refresh this folder for maintainers only.
 
-Do **not** add private topics (e.g. `radar-2026`) here.
+- `radar-2026/` — course wiki (HTML for browsing). Source PDFs are **not** in git; see `wiki/radar-2026/` for Markdown.
