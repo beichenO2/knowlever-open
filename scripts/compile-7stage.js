@@ -127,6 +127,17 @@ if (sources.length === 0) {
 
 console.log(`[pipeline] Found ${sources.length} normalized sources`);
 
+// Step 0.5: Formula normalization (detect and fix bare math in content.md)
+// Non-blocking: if LLM is unavailable, skip gracefully
+{
+  console.log(`\n[pipeline] === Formula Normalize ===`);
+  const scriptPath = path.resolve(ROOT, 'lib/normalize-formulas.js');
+  const r = spawnSync('node', [scriptPath, '--dir', normalizedDir, '--apply'], { stdio: 'inherit', cwd: ROOT });
+  if (r.status !== 0) {
+    console.warn('[pipeline] ⚠️ Formula normalization failed (non-blocking), continuing...');
+  }
+}
+
 // Stage 1: Crystallize
 for (const sourceId of sources) {
   const contentPath = path.join(normalizedDir, sourceId, 'content.md');
