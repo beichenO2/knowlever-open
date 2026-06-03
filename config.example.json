@@ -4,18 +4,34 @@
   "llm": {
     "model": "your-model-id",
     "provider": "openai-compatible",
-    "comment": "实际密钥与路由由 KnowLever 引擎侧配置（PolarPrivate / 自建 proxy 等）"
+    "comment": "OpenAI-compatible endpoint; set LLM_BASE_URL and LLM_API_KEY env vars"
+  },
+  "embedding": {
+    "model": "text-embedding-3-small",
+    "comment": "Embedding model for Stage 2; set EMBED_BASE_URL / EMBED_MODEL to override"
   },
   "paths": {
     "data_root": "data/topics",
     "examples_root": "examples"
+  },
+  "compile": {
+    "language": "zh",
+    "graph_title_language": "zh"
+  },
+  "pipeline": {
+    "mode": "7stage",
+    "comment": "7stage = full 7-stage pipeline, legacy = old monolithic compile.js"
   },
   "ecosystem": {
     "comment": "通过环境变量指向并排克隆的引擎仓库",
     "env": {
       "ECOSYSTEM_ROOT": "父目录，内含 KnowLever 与 AutoOffice",
       "KNOWLEVER_ROOT": "KnowLever 仓库根",
-      "AUTOOFFICE_DIR": "AutoOffice 仓库根"
+      "AUTOOFFICE_DIR": "AutoOffice 仓库根",
+      "LLM_BASE_URL": "OpenAI-compatible base URL (e.g. http://127.0.0.1:12790)",
+      "LLM_API_KEY": "API key for LLM",
+      "EMBED_BASE_URL": "Embedding endpoint (defaults to LLM_BASE_URL)",
+      "EMBED_MODEL": "Embedding model name"
     }
   }
 }

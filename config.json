@@ -5,6 +5,10 @@
     "model": "MiniMax-M2.7-highspeed",
     "provider": "polarprivate"
   },
+  "embedding": {
+    "model": "text-embedding-3-small",
+    "comment": "OpenAI-compatible embedding endpoint; set EMBED_BASE_URL / EMBED_MODEL env vars to override"
+  },
   "paths": {
     "data_root": "data/topics",
     "examples_root": "examples"
@@ -12,6 +16,10 @@
   "compile": {
     "language": "zh",
     "graph_title_language": "zh",
-    "note": "知识图谱节点标题与 wiki frontmatter title 须为中文（由 KnowLever compile 提示词保证）"
+    "note": "知识图谱节点标题与 wiki frontmatter title 须为中文（由 compile 提示词保证）"
+  },
+  "pipeline": {
+    "mode": "7stage",
+    "comment": "7stage = 新版全量管线 (Stage 1-7), legacy = 旧版单体 compile.js"
   }
 }
