@@ -44,30 +44,55 @@ function safeJoin(root, rel) {
   return file;
 }
 
+const TOPIC_ICONS = ['📚', '🔬', '🧠', '⚡', '🎯', '📊', '🌐', '🔧', '💡', '🎓'];
+const TOPIC_COLORS = ['#4361ee', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#06b6d4', '#ec4899', '#14b8a6'];
+
 function discoverTopics() {
   if (!fs.existsSync(DATA_ROOT)) return [];
-  return fs.readdirSync(DATA_ROOT).filter(d => !d.startsWith('.')).map(d => {
+  return fs.readdirSync(DATA_ROOT).filter(d => !d.startsWith('.')).map((d, i) => {
     const outputDir = path.join(DATA_ROOT, d, 'output');
-    const hasOutput = fs.existsSync(path.join(outputDir, 'index.html'));
+    const siteDir = path.join(outputDir, 'site');
+    const hasOutput = fs.existsSync(path.join(outputDir, 'index.html')) || fs.existsSync(path.join(siteDir, 'index.html'));
     const wikiDir = path.join(DATA_ROOT, d, 'wiki');
-    const wikiCount = fs.existsSync(wikiDir)
-      ? fs.readdirSync(wikiDir, { recursive: true }).filter(f => String(f).endsWith('.md')).length
-      : 0;
-    return { id: d, title: d, href: `/library/${d}/`, status: hasOutput ? 'ready' : 'pending', pages: wikiCount };
+    let wikiCount = 0;
+    let subdirs = [];
+    if (fs.existsSync(wikiDir)) {
+      const entries = fs.readdirSync(wikiDir, { withFileTypes: true });
+      wikiCount = entries.filter(e => e.isFile() && e.name.endsWith('.md')).length;
+      subdirs = entries.filter(e => e.isDirectory() && !e.name.startsWith('.')).map(e => {
+        const subCount = fs.readdirSync(path.join(wikiDir, e.name)).filter(f => f.endsWith('.md')).length;
+        return { name: e.name, count: subCount };
+      });
+      subdirs.forEach(s => { wikiCount += s.count; });
+    }
+    let href = `/library/${d}/`;
+    if (fs.existsSync(path.join(siteDir, 'index.html'))) href = `/library/${d}/site/`;
+    return {
+      id: d, title: d, href, status: hasOutput ? 'ready' : 'pending',
+      pages: wikiCount, icon: TOPIC_ICONS[i % TOPIC_ICONS.length],
+      color: TOPIC_COLORS[i % TOPIC_COLORS.length], subdirs,
+    };
   });
 }
 
 function generateIndex() {
   const topics = discoverTopics();
-  const cards = topics.map(t => `
-    <a class="card" href="${t.href}" ${t.status !== 'ready' ? 'onclick="return false" style="opacity:0.55;cursor:default"' : ''}>
-      <h3>${t.title}</h3>
-      <p>${t.pages} wiki 页面</p>
-      <div class="meta">
-        <span class="status-${t.status}">${t.status === 'ready' ? '可浏览' : '待编译'}</span>
-        <span>${t.pages ? t.pages + ' 页' : ''}</span>
-      </div>
-    </a>`).join('');
+  const totalPages = topics.reduce((s, t) => s + t.pages, 0);
+  const readyCount = topics.filter(t => t.status === 'ready').length;
+
+  const cards = topics.map(t => {
+    const tags = t.subdirs.filter(s => s.count > 0).slice(0, 4)
+      .map(s => `<span class="entry-sub-tag">${s.name} (${s.count})</span>`).join('');
+    const disabled = t.status !== 'ready' ? ' onclick="return false" style="opacity:0.5;cursor:default"' : '';
+    return `
+      <a class="entry-card" href="${t.href}"${disabled}>
+        <span class="entry-icon">${t.icon}</span>
+        <h3>${t.title}</h3>
+        <p>${t.status === 'ready' ? `探索 ${t.pages} 个知识页面` : '待编译'}</p>
+        <div class="entry-sub">${tags}</div>
+        <div class="entry-status"><span class="status-dot status-${t.status}"></span>${t.status === 'ready' ? '可浏览' : '待编译'}</div>
+      </a>`;
+  }).join('');
 
   return `<!DOCTYPE html>
 <html lang="zh-CN">
@@ -77,57 +102,162 @@ function generateIndex() {
   <title>KnowLever Open — 知识库入口</title>
   <style>
 :root {
-  --bg: #0b0f14; --card: #141b24; --border: #243044;
-  --text: #e8eef7; --muted: #8fa3bf; --accent: #5b8def;
-  --gold: #e8c547; --radius: 16px;
-  font-family: "SF Pro Text", "PingFang SC", "Helvetica Neue", system-ui, sans-serif;
+  --bg: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --text: #1a1a2e;
+  --text-muted: #6c757d;
+  --accent: #4361ee;
+  --accent-hover: #3a56d4;
+  --border: #dee2e6;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', Roboto, sans-serif;
+  --max-width: 1200px;
 }
-* { box-sizing: border-box; }
-body {
-  margin: 0; min-height: 100vh; color: var(--text);
-  background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(91,141,239,.18), transparent), var(--bg);
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: var(--font-sans); color: var(--text); background: var(--bg); line-height: 1.7; }
+
+.site-header {
+  border-bottom: 1px solid var(--border);
+  padding: 0.75rem 1.5rem;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; background: var(--bg); z-index: 100;
 }
-.wrap { max-width: 1080px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
-header { display: flex; align-items: center; gap: 1.25rem; margin-bottom: 2.5rem; }
-header svg { width: 72px; height: 72px; }
-header h1 { margin: 0; font-size: 1.85rem; font-weight: 650; letter-spacing: -0.02em; }
-header p { margin: 0.35rem 0 0; color: var(--muted); font-size: 1rem; max-width: 36rem; }
+.site-header h1 { font-size: 1.1rem; font-weight: 600; }
+.site-header h1 a { color: var(--text); text-decoration: none; display: flex; align-items: center; gap: 0.5rem; }
+.site-header svg { width: 28px; height: 28px; }
+
+.main-wrap { max-width: var(--max-width); margin: 0 auto; padding: 2rem 1.5rem; }
+
+.hero {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  color: #fff; padding: 3rem 2rem; border-radius: 12px; margin-bottom: 2rem;
+  position: relative; overflow: hidden;
+}
+.hero::after {
+  content: ''; position: absolute; top: -50%; right: -20%;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(67,97,238,0.15) 0%, transparent 70%);
+  border-radius: 50%;
+}
+.hero h1 { font-size: 2.2rem; margin-bottom: 0.5rem; position: relative; z-index: 1; }
+.hero p { color: rgba(255,255,255,0.75); font-size: 1.05rem; margin-bottom: 1.5rem; max-width: 600px; position: relative; z-index: 1; }
+.hero-stats { display: flex; gap: 2.5rem; position: relative; z-index: 1; }
+.hero-stat { text-align: center; }
+.hero-stat-ring {
+  width: 72px; height: 72px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 0.4rem; position: relative;
+}
+.hero-stat-ring::before {
+  content: ''; position: absolute; inset: 0; border-radius: 50%;
+  border: 3px solid rgba(255,255,255,0.15);
+}
+.hero-stat-ring::after {
+  content: ''; position: absolute; inset: 0; border-radius: 50%;
+  border: 3px solid #4361ee;
+  border-color: #4361ee transparent transparent transparent;
+  transform: rotate(-45deg);
+}
+.hero-stat-number { font-size: 1.6rem; font-weight: 700; color: #fff; }
+.hero-stat-label { font-size: 0.78rem; color: rgba(255,255,255,0.6); letter-spacing: 0.03em; }
 .hero-badge {
   display: inline-block; margin-top: 0.75rem; padding: 0.25rem 0.65rem;
-  border-radius: 999px; font-size: 0.75rem;
-  background: rgba(232,197,71,.12); color: var(--gold); border: 1px solid rgba(232,197,71,.35);
+  border-radius: 999px; font-size: 0.75rem; position: relative; z-index: 1;
+  background: rgba(67,97,238,.15); color: rgba(255,255,255,0.8); border: 1px solid rgba(67,97,238,.35);
 }
-h2 { font-size: 1.1rem; color: var(--muted); font-weight: 500; margin: 2rem 0 1rem; }
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
-.card {
-  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
-  padding: 1.25rem 1.35rem; transition: border-color .2s, transform .2s;
-  text-decoration: none; color: inherit; display: block;
+
+.section-header {
+  display: flex; align-items: center; gap: 0.6rem;
+  font-size: 1.3rem; margin: 2rem 0 1rem; padding-bottom: 0.3rem;
+  border-bottom: 2px solid var(--border);
 }
-.card:hover { border-color: var(--accent); transform: translateY(-2px); }
-.card h3 { margin: 0 0 0.5rem; font-size: 1.15rem; }
-.card p { margin: 0; color: var(--muted); font-size: 0.9rem; line-height: 1.5; }
-.card .meta { margin-top: 1rem; font-size: 0.8rem; color: var(--muted); display: flex; justify-content: space-between; }
-.status-ready { color: #6ee7a0; }
-.status-pending { color: var(--muted); }
-footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border); color: var(--muted); font-size: 0.85rem; }
-footer code { color: var(--gold); font-size: 0.88em; }
+.section-icon {
+  width: 28px; height: 28px; border-radius: 8px; display: inline-flex;
+  align-items: center; justify-content: center; font-size: 0.95rem;
+}
+
+.entry-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin: 2rem 0; }
+.entry-card {
+  background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 16px;
+  padding: 2rem; text-decoration: none; color: inherit; transition: all 0.2s ease;
+  position: relative; overflow: hidden; display: block;
+}
+.entry-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); border-color: var(--accent); }
+.entry-icon { font-size: 2.5rem; margin-bottom: 1rem; display: block; }
+.entry-card h3 { font-size: 1.3rem; margin-bottom: 0.5rem; }
+.entry-card p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.5; margin-bottom: 1rem; }
+.entry-sub { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.75rem; }
+.entry-sub-tag {
+  background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
+  padding: 2px 8px; font-size: 0.75rem; color: var(--text-muted);
+}
+.entry-status { font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.4rem; }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.status-dot.status-ready { background: #28a745; }
+.status-dot.status-pending { background: #ffc107; }
+
+.guide-section {
+  margin: 2.5rem 0; padding: 1.5rem 2rem; background: var(--bg-secondary);
+  border: 1px solid var(--border); border-radius: 12px;
+}
+.guide-section h3 { font-size: 1.05rem; margin-bottom: 0.75rem; }
+.guide-section code {
+  background: #e8eaed; padding: 2px 6px; border-radius: 3px; font-size: 0.88em;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+}
+.guide-steps { list-style: none; counter-reset: step; }
+.guide-steps li { counter-increment: step; padding: 0.3rem 0; font-size: 0.92rem; color: var(--text-muted); }
+.guide-steps li::before {
+  content: counter(step); display: inline-flex; align-items: center; justify-content: center;
+  width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: #fff;
+  font-size: 0.72rem; font-weight: 600; margin-right: 0.6rem;
+}
+
+footer {
+  margin-top: 2rem; padding: 1rem 0; border-top: 1px solid var(--border);
+  color: var(--text-muted); font-size: 0.85rem; text-align: center;
+}
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      ${LOGO_SVG}
-      <div>
-        <h1>KnowLever Open</h1>
-        <p>开源知识编译工具 — 用命令行构建可浏览的知识库，从这里进入各个 topic 站点。</p>
-        <span class="hero-badge">单用户 · 7-Stage Pipeline · MIT</span>
+  <header class="site-header">
+    <h1><a href="/">${LOGO_SVG} KnowLever Open</a></h1>
+  </header>
+
+  <div class="main-wrap">
+    <div class="hero">
+      <h1>KnowLever Open</h1>
+      <p>开源知识编译工具 — 将原始资料编译为互链、可演化的知识网络</p>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hero-stat-ring"><span class="hero-stat-number">${topics.length}</span></div>
+          <div class="hero-stat-label">知识库</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-ring"><span class="hero-stat-number">${totalPages}</span></div>
+          <div class="hero-stat-label">知识页面</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-ring"><span class="hero-stat-number">${readyCount}</span></div>
+          <div class="hero-stat-label">已编译</div>
+        </div>
       </div>
-    </header>
-    <h2>知识库</h2>
-    <div class="grid">${cards || '<p style="color:var(--muted)">还没有编译好的知识库。运行 <code>npm run compile -- --topic &lt;name&gt;</code> 开始。</p>'}</div>
+      <span class="hero-badge">单用户 · 7-Stage Pipeline · MIT</span>
+    </div>
+
+    <h2 class="section-header"><span class="section-icon" style="background:#dbeafe;">📚</span> 知识库</h2>
+    <div class="entry-grid">${cards || '<p style="color:var(--text-muted);padding:2rem;">还没有编译好的知识库。</p>'}</div>
+
+    <div class="guide-section">
+      <h3>快速开始</h3>
+      <ol class="guide-steps">
+        <li>将文件放入 <code>data/topics/&lt;name&gt;/raw/</code></li>
+        <li>运行 <code>npm run compile -- --topic &lt;name&gt;</code></li>
+        <li>刷新本页，点击卡片进入知识库</li>
+      </ol>
+    </div>
+
     <footer>
-      <p>新增库：将文件放入 <code>data/topics/&lt;topic&gt;/raw/</code>，运行 <code>npm run compile -- --topic &lt;name&gt;</code>。</p>
+      <p>KnowLever Open · 由 7-Stage Pipeline 自动编译</p>
     </footer>
   </div>
 </body>
