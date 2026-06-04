@@ -1,0 +1,209 @@
+sources:
+  2025课后作业6:
+    explanations: 0
+    summaries: 1
+    problems: 4
+    coverage: 99.1%
+    original_chars: 428
+    extracted_chars: 424
+    processed_at: 2026-06-04T11:27:14.110Z
+  2025雷达作业5:
+    explanations: 0
+    summaries: 1
+    problems: 4
+    coverage: 96.7%
+    original_chars: 239
+    extracted_chars: 231
+    processed_at: 2026-06-04T11:27:20.621Z
+  2026-10-脉冲多普勒雷达:
+    explanations: 41
+    summaries: 6
+    problems: 1
+    coverage: 96.2%
+    original_chars: 17202
+    extracted_chars: 16556
+    processed_at: 2026-06-04T11:28:09.019Z
+  2026-11-SAR及其他体制雷达:
+    explanations: 10
+    summaries: 0
+    problems: 1
+    coverage: 98.7%
+    original_chars: 6789
+    extracted_chars: 6701
+    processed_at: 2026-06-04T11:28:16.983Z
+  2026-8-模糊函数及雷达波形设计:
+    explanations: 32
+    summaries: 4
+    problems: 0
+    coverage: 91.2%
+    original_chars: 21985
+    extracted_chars: 20059
+    processed_at: 2026-06-04T11:28:25.271Z
+  2026-9-雷达信号处理:
+    explanations: 11
+    summaries: 3
+    problems: 1
+    coverage: 90.4%
+    original_chars: 9157
+    extracted_chars: 8282
+    processed_at: 2026-06-04T11:28:35.215Z
+  2026运动目标检测及测速:
+    explanations: 41
+    summaries: 2
+    problems: 1
+    coverage: 97.5%
+    original_chars: 25176
+    extracted_chars: 24535
+    processed_at: 2026-06-04T11:30:18.182Z
+  2026雷达作业-5-动目标检测及PD雷达:
+    explanations: 0
+    summaries: 1
+    problems: 1
+    coverage: 97.9%
+    original_chars: 237
+    extracted_chars: 232
+    processed_at: 2026-06-04T11:30:22.000Z
+  2026雷达作用距离:
+    explanations: 46
+    summaries: 4
+    problems: 4
+    coverage: 100.0%
+    original_chars: 26528
+    extracted_chars: 26516
+    processed_at: 2026-06-04T11:30:38.501Z
+  2026雷达原理及系统绪论-1:
+    explanations: 20
+    summaries: 8
+    problems: 1
+    coverage: 102.9%
+    original_chars: 15432
+    extracted_chars: 15884
+    processed_at: 2026-06-04T11:31:06.993Z
+  2026雷达原理及系统绪论-2:
+    explanations: 15
+    summaries: 6
+    problems: 2
+    coverage: 99.1%
+    original_chars: 15683
+    extracted_chars: 15546
+    processed_at: 2026-06-04T11:31:14.701Z
+  2026雷达发射机:
+    explanations: 33
+    summaries: 7
+    problems: 0
+    coverage: 91.7%
+    original_chars: 26250
+    extracted_chars: 24075
+    processed_at: 2026-06-04T11:31:27.823Z
+  2026雷达接收机与显示器:
+    explanations: 12
+    summaries: 2
+    problems: 1
+    coverage: 99.7%
+    original_chars: 9524
+    extracted_chars: 9500
+    processed_at: 2026-06-04T11:31:38.938Z
+  2026雷达系统课程设计:
+    explanations: 0
+    summaries: 1
+    problems: 2
+    coverage: 99.6%
+    original_chars: 811
+    extracted_chars: 808
+    processed_at: 2026-06-04T11:31:42.609Z
+  低旁瓣脉冲压缩的实现方法及影响分析:
+    explanations: 9
+    summaries: 3
+    problems: 0
+    coverage: 95.6%
+    original_chars: 11951
+    extracted_chars: 11424
+    processed_at: 2026-06-04T11:31:48.557Z
+  雷达原理与系统知识要点总结:
+    explanations: 0
+    summaries: 10
+    problems: 0
+    coverage: 99.7%
+    original_chars: 2821
+    extracted_chars: 2813
+    processed_at: 2026-06-04T11:31:55.060Z
+  雷达小测2:
+    explanations: 0
+    summaries: 0
+    problems: 11
+    coverage: 98.0%
+    original_chars: 1408
+    extracted_chars: 1380
+    processed_at: 2026-06-04T11:32:07.170Z
+  雷达挑战3:
+    explanations: 8
+    summaries: 3
+    problems: 0
+    coverage: 100.0%
+    original_chars: 4508
+    extracted_chars: 4508
+    processed_at: 2026-06-04T11:32:14.265Z
+  雷达课后作业3:
+    explanations: 0
+    summaries: 1
+    problems: 3
+    coverage: 92.7%
+    original_chars: 123
+    extracted_chars: 114
+    processed_at: 2026-06-04T11:32:19.156Z
+  雷达课程作业2:
+    explanations: 0
+    summaries: 1
+    problems: 4
+    coverage: 99.3%
+    original_chars: 557
+    extracted_chars: 553
+    processed_at: 2026-06-04T11:32:37.554Z
+  2026-9-雷达信号检测:
+    explanations: 61
+    summaries: 1
+    problems: 2
+    coverage: 91.4%
+    original_chars: 35965
+    extracted_chars: 32886
+    processed_at: 2026-06-04T11:38:42.671Z
+  2026目标角度测量:
+    explanations: 11
+    summaries: 0
+    problems: 5
+    coverage: 99.3%
+    original_chars: 10063
+    extracted_chars: 9997
+    processed_at: 2026-06-04T11:42:29.685Z
+  2026目标距离测量:
+    explanations: 34
+    summaries: 8
+    problems: 2
+    coverage: 86.3%
+    original_chars: 23974
+    extracted_chars: 20688
+    processed_at: 2026-06-04T11:54:41.582Z
+  2026相控阵雷达:
+    explanations: 36
+    summaries: 2
+    problems: 0
+    coverage: 96.2%
+    original_chars: 17553
+    extracted_chars: 16889
+    processed_at: 2026-06-04T12:03:03.542Z
+  2026课后作业4-模糊函数与雷达信号检测:
+    explanations: 0
+    summaries: 1
+    problems: 4
+    coverage: 97.1%
+    original_chars: 443
+    extracted_chars: 430
+    processed_at: 2026-06-04T12:06:54.750Z
+  雷达课后作业4:
+    explanations: 0
+    summaries: 0
+    problems: 1
+    coverage: 100.0%
+    original_chars: 805
+    extracted_chars: 805
+    processed_at: 2026-06-04T15:36:54.224Z
