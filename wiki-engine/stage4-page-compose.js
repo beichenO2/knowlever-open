@@ -16,7 +16,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { chatCompletion, getModel } = require('../llm-client');
+const { chatCompletion, getModel } = require('../lib/llm-proxy');
 const { recordDecision } = require('./tech-decisions');
 
 const WORD_LIMITS = { 'leaf-cluster': 1500, intermediate: 2000, root: 3000 };

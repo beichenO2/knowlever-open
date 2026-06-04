@@ -195,13 +195,13 @@ console.log(`[pipeline] Found ${sources.length} normalized sources`);
 for (const sourceId of sources) {
   const contentPath = path.join(normalizedDir, sourceId, 'content.md');
   if (!fs.existsSync(contentPath)) continue;
-  runNode('lib/wiki-engine/stage1-crystallize.js', [sourceId, contentPath, outputDir, topic], `Stage 1: ${sourceId}`);
+  runNode('wiki-engine/stage1-crystallize.js', [sourceId, contentPath, outputDir, topic], `Stage 1: ${sourceId}`);
 }
 
 // Stage 2: Embed + Cluster
 const atomsDir = path.join(outputDir, 'atoms');
 if (!skipEmbed) {
-  runPython('lib/wiki-engine/stage2-embed-cluster.py', [atomsDir, outputDir, topic], 'Stage 2: Embed + Cluster');
+  runPython('wiki-engine/stage2-embed-cluster.py', [atomsDir, outputDir, topic], 'Stage 2: Embed + Cluster');
 } else {
   console.log('\n[pipeline] ⏭️ Skipping Stage 2 (--skip-embed)');
   if (!fs.existsSync(path.join(outputDir, 'clusters.json'))) {
@@ -217,15 +217,15 @@ if (!skipEmbed) {
 
 // Stage 3: Tree Construct
 const clustersPath = path.join(outputDir, 'clusters.json');
-runNode('lib/wiki-engine/stage3-tree-construct.js', [clustersPath, atomsDir, outputDir, topic], 'Stage 3: Tree Construct');
+runNode('wiki-engine/stage3-tree-construct.js', [clustersPath, atomsDir, outputDir, topic], 'Stage 3: Tree Construct');
 
 // Stage 4: Page Compose
 const treePath = path.join(outputDir, 'tree.json');
-runNode('lib/wiki-engine/stage4-page-compose.js', [treePath, atomsDir, outputDir, topic], 'Stage 4: Page Compose');
+runNode('wiki-engine/stage4-page-compose.js', [treePath, atomsDir, outputDir, topic], 'Stage 4: Page Compose');
 
 // Stage 5: Link Validate
 const wikiDir = path.join(outputDir, 'wiki');
-runNode('lib/wiki-engine/stage5-link-validate.js', [wikiDir, treePath, outputDir], 'Stage 5: Link Validate');
+runNode('wiki-engine/stage5-link-validate.js', [wikiDir, treePath, outputDir], 'Stage 5: Link Validate');
 
 // Check Stage 5 result
 const linkReport = path.join(outputDir, 'link-report.json');
@@ -238,18 +238,18 @@ if (fs.existsSync(linkReport)) {
 }
 
 // Stage 4.5: Quiz Generate (after link validation, before site build)
-runNode('lib/wiki-engine/stage4_5-quiz-generate.js', [wikiDir, treePath, outputDir, topic], 'Stage 4.5: Quiz Generate');
+runNode('wiki-engine/stage4_5-quiz-generate.js', [wikiDir, treePath, outputDir, topic], 'Stage 4.5: Quiz Generate');
 
 // Stage 6: Site Build
 if (!skipSite) {
-  runNode('lib/wiki-engine/stage6-site-build.js', [wikiDir, treePath, outputDir, topic], 'Stage 6: Site Build');
+  runNode('wiki-engine/stage6-site-build.js', [wikiDir, treePath, outputDir, topic], 'Stage 6: Site Build');
 } else {
   console.log('\n[pipeline] ⏭️ Skipping Stage 6 (--skip-site)');
 }
 
 // Stage 7: PDF Compose
 if (!skipPdf) {
-  runNode('lib/wiki-engine/stage7-pdf-compose.js', [wikiDir, treePath, outputDir, topic], 'Stage 7: PDF Compose');
+  runNode('wiki-engine/stage7-pdf-compose.js', [wikiDir, treePath, outputDir, topic], 'Stage 7: PDF Compose');
 } else {
   console.log('\n[pipeline] ⏭️ Skipping Stage 7 (--skip-pdf)');
 }

@@ -15,7 +15,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { chatCompletion } = require('../llm-client');
+const { chatCompletion } = require('../lib/llm-proxy');
 
 const QUIZ_PROMPT = `你是一位严谨的出题教师。请基于以下知识页面内容，出 2 道练习题。
 

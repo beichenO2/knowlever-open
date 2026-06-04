@@ -13,7 +13,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { chatCompletion, getModel } = require('../llm-client');
+const { chatCompletion, getModel } = require('../lib/llm-proxy');
 const { recordDecision } = require('./tech-decisions');
 
 const CLAIM_MAX_CHARS = 120;

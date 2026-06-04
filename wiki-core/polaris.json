@@ -1,0 +1,88 @@
+{
+  "name": "wiki-core",
+  "description": "KnowLever 与 LLM-Wiki 共享的 Wiki 构建管线：Markdown 处理、版本管理、搜索索引、开发服务器",
+  "tier": "lib",
+  "status": "active",
+  "version": "1.0.0",
+  "requirements": [
+    {
+      "id": "R1",
+      "need": "Markdown 解析与内容处理",
+      "approach": "纯 Node.js CommonJS 模块，无外部依赖，提供 Markdown 标准化、哈希、解析",
+      "features": [
+        {
+          "name": "Markdown 处理",
+          "status": "done",
+          "tech": [
+            "Node.js"
+          ],
+          "behavior": [
+            "normalizeMarkdown 标准化处理",
+            "hashPageContent 内容哈希",
+            "Markdown 解析工具函数"
+          ],
+          "test_status": "not_tested"
+        }
+      ]
+    },
+    {
+      "id": "R2",
+      "need": "构建管线与版本管理",
+      "approach": "增量构建管线，BUILD_MANIFEST_VERSION 跟踪，支持版本存储、搜索索引生成、关联页面计算",
+      "features": [
+        {
+          "name": "构建管线",
+          "status": "done",
+          "tech": [
+            "Node.js"
+          ],
+          "behavior": [
+            "版本存储（version stores）",
+            "构建清单（manifests）",
+            "搜索索引生成",
+            "文件操作（copyFile/copyDirectory）",
+            "关联页面（related pages）",
+            "图同步（graph sync）"
+          ],
+          "test_status": "not_tested"
+        }
+      ]
+    },
+    {
+      "id": "R3",
+      "need": "Wiki 配置与开发服务器",
+      "approach": "createWikiConfig 生成标准配置，serve 模块提供本地开发服务器",
+      "features": [
+        {
+          "name": "Wiki 配置",
+          "status": "done",
+          "tech": [
+            "Node.js"
+          ],
+          "behavior": [
+            "createWikiConfig 生成标准化 Wiki 配置"
+          ],
+          "test_status": "not_tested"
+        },
+        {
+          "name": "开发服务器",
+          "status": "done",
+          "tech": [
+            "Node.js"
+          ],
+          "behavior": [
+            "serve 模块提供本地 Wiki 预览"
+          ],
+          "test_status": "not_tested"
+        }
+      ]
+    }
+  ],
+  "service_management": null,
+  "contacts": [
+    {
+      "role": "owner",
+      "name": "mac"
+    }
+  ]
+}

@@ -15,7 +15,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { chatCompletion, embedding: getEmbeddings } = require('../llm-client');
+const { chatCompletion, embedding: getEmbeddings } = require('../lib/llm-proxy');
 const { recordDecision } = require('./tech-decisions');
 
 const TARGET_GROUP_SIZE = 4;

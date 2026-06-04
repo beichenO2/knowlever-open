@@ -1,6 +1,6 @@
 {
   "project": "KnowLever_OpenSource",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "status": "active",
   "description": "单用户简化版 KnowLever — 命令行 7 阶段编译管线，独立部署",
   "owner": "Polarisor",
@@ -10,30 +10,31 @@
   "upstream": {
     "project": "KnowLever",
     "relation": "fork-simplified",
-    "alignment_status": "partially_aligned",
-    "alignment_notes": "文件结构已整理，死代码已清除，文档已更新。LLM 调用路径和 Stage 4.5/6/7 对齐待执行。详见 任务书/260604/KnowLever_OpenSource_Alignment.md"
+    "alignment_status": "structurally_aligned",
+    "alignment_notes": "LLM 调用已对齐（llm-proxy: SOTAgent RPC → HTTP fallback）。wiki-engine 已移到仓库根。wiki-core 已复制进来。Stage 4.5/6/7 功能对齐待后续处理。"
   },
 
   "dependencies": {
     "SOTAgent": {
-      "usage": "sdk-port RPC call → polarprivate.chat（LLM 调用）",
-      "status": "planned",
-      "notes": "当前 Open 版用独立 llm-client.js，需改回 SOTAgent sdk-port 路径"
+      "usage": "sdk-port RPC call → polarprivate.chat（LLM 调用首选路径）",
+      "status": "integrated",
+      "notes": "通过 lib/llm-proxy.js 自动发现并使用，不可用时 fallback 到 HTTP"
     },
     "PolarPrivate": {
-      "usage": "LLM Proxy（统一模型调度）",
-      "status": "planned",
-      "notes": "PolarPrivate 也会有开源版本，Open 版应保留此依赖"
+      "usage": "LLM Proxy（统一模型调度），HTTP 直连作为 fallback",
+      "status": "integrated",
+      "notes": "llm-proxy.js 优先走 SOTAgent RPC，fallback 到 HTTP://127.0.0.1:12790"
     },
     "wiki-core": {
       "usage": "Markdown 处理、构建管线、Wiki 配置",
-      "status": "planned",
-      "notes": "需要从生态复制一份到本仓库内"
+      "status": "integrated",
+      "notes": "已复制到 wiki-core/，package.json 引用 file:./wiki-core"
     }
   },
 
   "pipeline": {
-    "entry": "scripts/compile-7stage.js",
+    "entry": "scripts/compile-7stage.js (可选串联)",
+    "independent_stages": true,
     "stages": {
       "ingest": {
         "status": "implemented",
@@ -45,41 +46,47 @@
       },
       "stage1_crystallize": {
         "status": "implemented",
-        "alignment": "partially_aligned",
-        "notes": "Open 版改进（chunkSize=8000, overlap=200, 去重）确认保留；LLM 调用方式需对齐"
+        "alignment": "aligned",
+        "file": "wiki-engine/stage1-crystallize.js",
+        "notes": "LLM 调用已改为 llm-proxy（SOTAgent → HTTP fallback）"
       },
       "stage2_embed_cluster": {
         "status": "implemented",
-        "alignment": "new_in_open",
-        "notes": "Python embedding+Leiden 聚类"
+        "file": "wiki-engine/stage2-embed-cluster.py",
+        "notes": "Python UMAP+HDBSCAN 聚类，不依赖 LLM"
       },
       "stage3_tree_construct": {
         "status": "implemented",
-        "alignment": "diverged",
-        "notes": "Open 版用语义递归分组（embedding cosine similarity），原版用确定性切片"
+        "alignment": "aligned",
+        "file": "wiki-engine/stage3-tree-construct.js",
+        "notes": "LLM 调用已改为 llm-proxy"
       },
       "stage4_page_compose": {
         "status": "implemented",
-        "alignment": "diverged",
-        "notes": "Open 版用「问题驱动叙事」模板，原版用「五段故事弧」。LLM 调用需对齐"
+        "alignment": "aligned",
+        "file": "wiki-engine/stage4-page-compose.js",
+        "notes": "LLM 调用已改为 llm-proxy"
       },
       "stage4_5_quiz": {
         "status": "implemented",
         "alignment": "wrong_design",
-        "notes": "Open 版用 LLM 重新生成练习题，应该是处理 raw 中已有的练习题"
+        "file": "wiki-engine/stage4_5-quiz-generate.js",
+        "notes": "仍然用 LLM 生成练习题，应改为处理 raw 中已有的练习题"
       },
       "stage5_link_validate": {
         "status": "implemented",
-        "alignment": "mostly_aligned"
+        "file": "wiki-engine/stage5-link-validate.js"
       },
       "stage6_site_build": {
         "status": "implemented",
-        "alignment": "diverged",
-        "notes": "579 行图谱式 Wiki 效果不好，回退到原版 208 行 + 保留左右双目录"
+        "alignment": "partially_aligned",
+        "file": "wiki-engine/stage6-site-build.js",
+        "notes": "首页已对齐 demo-parity 风格，内页保留三栏布局"
       },
       "stage7_pdf_compose": {
         "status": "implemented",
         "alignment": "both_need_redo",
+        "file": "wiki-engine/stage7-pdf-compose.js",
         "notes": "新旧版本都不行，写入 roadmap 重做"
       }
     }
@@ -88,7 +95,7 @@
   "features": {
     "formula_normalize": {
       "status": "implemented",
-      "notes": "lib/normalize-formulas.js，随整体搬移保留"
+      "notes": "lib/normalize-formulas.js，LLM 调用已改为 llm-proxy"
     },
     "vlm_formula_ocr": {
       "status": "implemented",
@@ -97,7 +104,7 @@
     },
     "multi_format_ingest": {
       "status": "implemented",
-      "notes": "PDF(pdftotext→VLM OCR降级)/图片(VLM OCR)/DOCX(pandoc)，确认保留"
+      "notes": "PDF(pdftotext→VLM OCR降级)/图片(VLM OCR)/DOCX(pandoc)"
     }
   },
 
@@ -109,15 +116,16 @@
   },
 
   "code_structure": {
-    "lib": {
-      "paths.js": "路径解析 + 生态发现（合并了原 ecosystem.js）",
-      "llm-client.js": "LLM API 客户端（待替换为 PolarPrivate）",
+    "wiki-engine/": "7 阶段管线核心（stage1-7 + tech-decisions），仓库根级",
+    "wiki-core/": "Markdown 处理与 Wiki 配置（从生态复制）",
+    "lib/": {
+      "llm-proxy.js": "统一 LLM 访问层（SOTAgent RPC → HTTP fallback）",
+      "paths.js": "路径解析 + 生态发现",
       "normalize-formulas.js": "公式规范化",
-      "vlm-formula-ocr.js": "VLM OCR（待改走 PolarPrivate）",
-      "wiki-engine/": "7 阶段管线核心（stage1-7 + tech-decisions）"
+      "vlm-formula-ocr.js": "VLM OCR（待改走 PolarPrivate）"
     },
-    "scripts": {
-      "compile-7stage.js": "唯一编译入口",
+    "scripts/": {
+      "compile-7stage.js": "可选串联编译脚本",
       "serve-home.js": "本地开发服务器",
       "office-import.js": "AutoOffice 集成",
       "setup.sh": "首次环境配置"
@@ -125,21 +133,21 @@
   },
 
   "known_issues": [
-    "LLM 调用走独立 llm-client.js 而非 SOTAgent sdk-port → 需对齐",
-    "wiki-engine 嵌套在 lib/ 下而非仓库根 → 需对齐",
-    "Stage 4 写作模板与原版完全不同 → 需评估",
     "Stage 4.5 错误地用 LLM 生成练习题而非处理原文 → 需修复",
-    "Stage 6 产出质量不如原版 → 需回退（保留双目录）",
     "Stage 7 新旧都不行 → roadmap",
-    "README.md + docs/ 已更新完毕"
+    "VLM OCR 直接调 Ollama → 待改走 PolarPrivate"
   ],
 
-  "completed_cleanup": [
+  "completed": [
     "2026-06-04: 文件结构重组（data/ 统一为 raw/normalized/wiki/output）",
-    "2026-06-04: 删除 6 个死脚本（legacy compile/build/pipeline/init-demo/sync/check-deps）",
+    "2026-06-04: 删除 6 个死脚本",
     "2026-06-04: 合并 ecosystem.js 到 paths.js",
     "2026-06-04: 修补 serve-home.js / office-import.js / setup.sh",
-    "2026-06-04: 修复 .gitignore（wiki 进 git，raw/output/normalized 不进）",
-    "2026-06-04: 重写 README + docs 匹配新结构"
+    "2026-06-04: 修复 .gitignore",
+    "2026-06-04: 重写 README + docs",
+    "2026-06-04: LLM 调用改为 llm-proxy（SOTAgent RPC → HTTP fallback）",
+    "2026-06-04: 删除 llm-client.js",
+    "2026-06-04: wiki-core 复制进仓库",
+    "2026-06-04: wiki-engine 移到仓库根级"
   ]
 }

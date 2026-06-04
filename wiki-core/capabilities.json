@@ -1,0 +1,126 @@
+{
+  "project": "wiki-core",
+  "version": "1.0.0",
+  "capabilities": [
+    {
+      "id": "wiki-core.markdown.to_html",
+      "service_name": "wiki-core",
+      "description": "Markdown → HTML 转换管线：支持 frontmatter、wikilink、表格、脚注、Mermaid 图表、KaTeX 数学公式、代码高亮",
+      "transport": "lib",
+      "tool_name": "markdownToHtml",
+      "idempotent": true,
+      "side_effects": false,
+      "timeout_ms": 5000
+    },
+    {
+      "id": "wiki-core.markdown.parse_frontmatter",
+      "service_name": "wiki-core",
+      "description": "解析 Markdown 文件头部 YAML frontmatter 元数据",
+      "transport": "lib",
+      "tool_name": "parseFrontmatter",
+      "idempotent": true,
+      "side_effects": false,
+      "timeout_ms": 1000
+    },
+    {
+      "id": "wiki-core.markdown.extract_toc",
+      "service_name": "wiki-core",
+      "description": "从 HTML 内容中提取目录结构（h2-h4 层级）",
+      "transport": "lib",
+      "tool_name": "extractToc",
+      "idempotent": true,
+      "side_effects": false,
+      "timeout_ms": 1000
+    },
+    {
+      "id": "wiki-core.build.version_store",
+      "service_name": "wiki-core",
+      "description": "版本存储管理：增量构建管线，基于 SHA-256 内容哈希的页面版本追踪",
+      "transport": "lib",
+      "tool_name": "loadVersionStore / updateVersionStore",
+      "idempotent": false,
+      "side_effects": true,
+      "timeout_ms": 10000
+    },
+    {
+      "id": "wiki-core.build.search_index",
+      "service_name": "wiki-core",
+      "description": "搜索索引生成：从 wiki 页面构建结构化搜索条目",
+      "transport": "lib",
+      "tool_name": "buildSearchIndex",
+      "idempotent": true,
+      "side_effects": false,
+      "timeout_ms": 5000
+    },
+    {
+      "id": "wiki-core.build.related_pages",
+      "service_name": "wiki-core",
+      "description": "关联页面计算：基于标签重叠度推荐相关页面",
+      "transport": "lib",
+      "tool_name": "findRelated",
+      "idempotent": true,
+      "side_effects": false,
+      "timeout_ms": 3000
+    },
+    {
+      "id": "wiki-core.build.manifest",
+      "service_name": "wiki-core",
+      "description": "构建清单管理：BUILD_MANIFEST_VERSION 版本控制的页面/资产签名跟踪",
+      "transport": "lib",
+      "tool_name": "loadBuildManifest / buildPageSignature",
+      "idempotent": false,
+      "side_effects": true,
+      "timeout_ms": 5000
+    },
+    {
+      "id": "wiki-core.build.glossary",
+      "service_name": "wiki-core",
+      "description": "术语表构建：从页面 frontmatter defines 收集术语并生成 HTML 卡片布局",
+      "transport": "lib",
+      "tool_name": "collectGlossaryTerms / buildGlossaryBodyHtml",
+      "idempotent": true,
+      "side_effects": false,
+      "timeout_ms": 3000
+    },
+    {
+      "id": "wiki-core.build.static_sync",
+      "service_name": "wiki-core",
+      "description": "静态资源同步：复制 HTML/CSS/JS 静态资源及 graph.json 图数据文件",
+      "transport": "lib",
+      "tool_name": "syncStaticAssets / syncGraphFile",
+      "idempotent": false,
+      "side_effects": true,
+      "timeout_ms": 10000
+    },
+    {
+      "id": "wiki-core.config.multi_wiki",
+      "service_name": "wiki-core",
+      "description": "多 Wiki 配置解析：支持多个独立 Wiki 实例的路径解析与配置管理",
+      "transport": "lib",
+      "tool_name": "createWikiConfig / resolveWiki",
+      "idempotent": true,
+      "side_effects": false,
+      "timeout_ms": 3000
+    },
+    {
+      "id": "wiki-core.serve.dev_server",
+      "service_name": "wiki-core",
+      "description": "开发服务器：支持 WebSocket 实时重载的静态文件预览服务，支持 build-on-save 和 instant 两种模式",
+      "transport": "lib",
+      "tool_name": "startServer",
+      "idempotent": false,
+      "side_effects": true,
+      "timeout_ms": 300000
+    },
+    {
+      "id": "wiki-core.markdown.content_hash",
+      "service_name": "wiki-core",
+      "description": "内容哈希：基于 SHA-256 的页面内容指纹计算，用于增量构建判断",
+      "transport": "lib",
+      "tool_name": "hashPageContent",
+      "idempotent": true,
+      "side_effects": false,
+      "timeout_ms": 1000
+    }
+  ]
+}

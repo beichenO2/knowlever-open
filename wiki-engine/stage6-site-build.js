@@ -358,7 +358,7 @@ function pageTemplate({ title, sidebar, toc, breadcrumb, content, backlinks, rel
 // --- Assets (copy from site-standard or generate) ---
 
 function copySiteAssets(siteDir) {
-  const projectRoot = path.resolve(__dirname, '..', '..');
+  const projectRoot = path.resolve(__dirname, '..');
   const homeDir = process.env.HOME || process.env.USERPROFILE || '';
   const candidates = [
     path.join(projectRoot, 'site-standard', 'assets'),
