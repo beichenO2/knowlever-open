@@ -1,6 +1,6 @@
 {
   "single_user": true,
-  "default_topic": "demo-parity",
+  "default_topic": "radar-2026",
   "llm": {
     "model": "MiniMax-M2.7-highspeed",
     "provider": "polarprivate"

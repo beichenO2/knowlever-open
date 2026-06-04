@@ -12,7 +12,7 @@ const { spawnSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const config = require('../config.json');
-const { ROOT, resolveTopic, knowLeverRoot, ensureTopicDirs } = require('../lib/paths');
+const { ROOT, resolveTopic, ensureTopicDirs } = require('../lib/paths');
 
 function parseArgs() {
   const args = process.argv.slice(2);
@@ -72,40 +72,93 @@ fs.mkdirSync(outputDir, { recursive: true });
 
 // Step 0: Ingest (if raw/ has files and normalized/ is empty)
 const rawDir = t.rawDir;
-const examplesRaw = path.join(ROOT, 'examples', topic, 'raw');
-const ingestInput = fs.existsSync(rawDir) && fs.readdirSync(rawDir).some(f => !f.startsWith('.'))
-  ? rawDir
-  : examplesRaw;
 
-if (fs.existsSync(ingestInput)) {
-  const normalizedFiles = fs.existsSync(normalizedDir) ? fs.readdirSync(normalizedDir) : [];
-  if (normalizedFiles.filter(f => !f.startsWith('.')).length === 0) {
-    // Use KnowLever engine ingest if available
-    const engineRoot = knowLeverRoot();
-    const ingestScript = path.join(engineRoot, 'wiki-engine/ingest.js');
-    if (fs.existsSync(ingestScript)) {
-      console.log(`\n[pipeline] === Ingest ===`);
-      const r = spawnSync('node', [ingestScript, ingestInput, '--topic', topic, '--user', 'open', '--recursive'], {
-        stdio: 'inherit', cwd: engineRoot,
-      });
-      if (r.status !== 0) {
-        console.error('[pipeline] ❌ Ingest failed');
-        process.exit(1);
-      }
-      // Copy normalized output back
-      const engineNorm = path.join(engineRoot, 'data/users/open/topics', topic, 'normalized');
-      if (fs.existsSync(engineNorm)) {
-        fs.cpSync(engineNorm, normalizedDir, { recursive: true, force: true });
-      }
-    } else {
-      console.log('[pipeline] KnowLever engine ingest not available, using raw as normalized');
-      fs.mkdirSync(normalizedDir, { recursive: true });
-      for (const f of fs.readdirSync(ingestInput)) {
-        if (f.endsWith('.md') || f.endsWith('.txt')) {
-          const srcSlug = f.replace(/\.[^.]+$/, '');
-          const srcDir = path.join(normalizedDir, srcSlug);
+if (fs.existsSync(rawDir) && fs.readdirSync(rawDir).some(f => !f.startsWith('.'))) {
+  const normalizedFiles = fs.existsSync(normalizedDir) ? fs.readdirSync(normalizedDir).filter(f => !f.startsWith('.')) : [];
+  if (normalizedFiles.length === 0) {
+    console.log('[pipeline] KnowLever standalone ingest: raw/ → normalized/');
+    fs.mkdirSync(normalizedDir, { recursive: true });
+
+    const textExts = ['.md', '.txt'];
+    const imageExts = ['.png', '.jpg', '.jpeg', '.gif', '.webp'];
+    const pdfExts = ['.pdf'];
+    const vlmOcrPath = path.resolve(ROOT, 'lib/vlm-formula-ocr.js');
+    const hasVlmOcr = fs.existsSync(vlmOcrPath);
+
+    // Garbled detection: if text has too many replacement chars or unreadable patterns
+    function isGarbled(text) {
+      if (!text || text.trim().length < 20) return true;
+      const replacementChars = (text.match(/[\ufffd]/g) || []).length;
+      const totalChars = text.length;
+      if (replacementChars / totalChars > 0.1) return true;
+      // Count CJK + Latin + digits + common punctuation + math symbols + PUA (font-embedded symbols)
+      const readable = text.match(/[\u4e00-\u9fff\u3400-\u4dbf\uf000-\uf8ff\u2460-\u24ff\u2000-\u206fa-zA-Z0-9\s.,;:!?()（）、。，；：""''！？【】《》〈〉〔〕…\-—·\n\r\t$\\{}[\]^_+=/<>|~@#%&*"'`°±×÷αβγδεζηθλμνπρστωΩΔΣ∫∂∞≥≤≠≈∈∉]/gu) || [];
+      return readable.length / totalChars < 0.5;
+    }
+
+    for (const f of fs.readdirSync(rawDir)) {
+      if (f.startsWith('.')) continue;
+      const ext = path.extname(f).toLowerCase();
+      const srcSlug = f.replace(/\.[^.]+$/, '').replace(/\s+/g, '-');
+      const srcDir = path.join(normalizedDir, srcSlug);
+
+      if (textExts.includes(ext)) {
+        fs.mkdirSync(srcDir, { recursive: true });
+        fs.copyFileSync(path.join(rawDir, f), path.join(srcDir, 'content.md'));
+      } else if (pdfExts.includes(ext)) {
+        fs.mkdirSync(srcDir, { recursive: true });
+        // Tier 1: Fast pdftotext extraction
+        console.log(`[pipeline] pdftotext: ${f}`);
+        const pdfResult = spawnSync('pdftotext', ['-layout', path.join(rawDir, f), '-'], {
+          stdio: ['pipe', 'pipe', 'pipe'], timeout: 30_000,
+        });
+        const pdfText = pdfResult.stdout?.toString('utf-8') || '';
+
+        if (!isGarbled(pdfText)) {
+          fs.writeFileSync(path.join(srcDir, 'content.md'), pdfText);
+          console.log(`[pipeline]   → ${srcSlug}/content.md (pdftotext, ${pdfText.length} chars)`);
+        } else if (hasVlmOcr) {
+          // Tier 2: VLM OCR for garbled/image-based pages
+          console.log(`[pipeline]   ⚠️ pdftotext garbled, falling back to VLM OCR: ${f}`);
+          const r = spawnSync('node', [vlmOcrPath, '--pdf', path.join(rawDir, f), '--out', srcDir], {
+            cwd: ROOT, stdio: 'inherit', timeout: 300_000,
+          });
+          if (r.status === 0) {
+            const mdFiles = fs.readdirSync(srcDir).filter(x => x.endsWith('.md'));
+            if (mdFiles.length > 0 && mdFiles[0] !== 'content.md') {
+              fs.renameSync(path.join(srcDir, mdFiles[0]), path.join(srcDir, 'content.md'));
+            }
+            console.log(`[pipeline]   → ${srcSlug}/content.md (VLM OCR)`);
+          } else {
+            console.warn(`[pipeline]   ❌ VLM OCR also failed for ${f}, skipping`);
+            fs.rmdirSync(srcDir, { recursive: true });
+          }
+        } else {
+          console.warn(`[pipeline]   ⚠️ ${f}: pdftotext garbled & no VLM available, skipping`);
+        }
+      } else if (imageExts.includes(ext) && hasVlmOcr) {
+        console.log(`[pipeline] VLM OCR (image): ${f}`);
+        fs.mkdirSync(srcDir, { recursive: true });
+        const r = spawnSync('node', [vlmOcrPath, path.join(rawDir, f)], {
+          cwd: ROOT, stdio: ['pipe', 'pipe', 'inherit'], timeout: 120_000,
+        });
+        if (r.status === 0 && r.stdout) {
+          fs.writeFileSync(path.join(srcDir, 'content.md'), r.stdout.toString('utf-8'));
+          console.log(`[pipeline]   → ${srcSlug}/content.md`);
+        } else {
+          console.warn(`[pipeline]   ⚠️ VLM OCR failed for ${f}, skipping`);
+        }
+      } else if (ext === '.docx') {
+        // Try pandoc for docx
+        console.log(`[pipeline] pandoc: ${f}`);
+        const r = spawnSync('pandoc', [path.join(rawDir, f), '-t', 'markdown', '-o', path.join(srcDir, 'content.md')], {
+          stdio: 'pipe', timeout: 30_000,
+        });
+        if (r.status === 0) {
           fs.mkdirSync(srcDir, { recursive: true });
-          fs.copyFileSync(path.join(ingestInput, f), path.join(srcDir, 'content.md'));
+          console.log(`[pipeline]   → ${srcSlug}/content.md (pandoc)`);
+        } else {
+          console.warn(`[pipeline]   ⚠️ pandoc failed for ${f}, skipping`);
         }
       }
     }
@@ -183,6 +236,9 @@ if (fs.existsSync(linkReport)) {
     console.error('[pipeline] Proceeding to Stage 6/7 anyway (non-blocking in open version).');
   }
 }
+
+// Stage 4.5: Quiz Generate (after link validation, before site build)
+runNode('lib/wiki-engine/stage4_5-quiz-generate.js', [wikiDir, treePath, outputDir, topic], 'Stage 4.5: Quiz Generate');
 
 // Stage 6: Site Build
 if (!skipSite) {

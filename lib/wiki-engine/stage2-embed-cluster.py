@@ -36,14 +36,14 @@ import numpy as np
 
 SIMILARITY_THRESHOLD = 0.55
 DUPLICATE_THRESHOLD = 0.92
-MAX_CLUSTER_SIZE = 7
+MAX_CLUSTER_SIZE = 12
 MIN_CLUSTER_SIZE = 3
 EMBEDDING_MODEL = os.environ.get("EMBED_MODEL", "text-embedding-3-small")
 EMBEDDING_BASE_URL = os.environ.get("EMBED_BASE_URL", "http://127.0.0.1:12790")
 LLM_API_KEY = os.environ.get("LLM_API_KEY", "sk-placeholder")
 
 UMAP_N_DIMS = int(os.environ.get("KNOWLEVER_UMAP_DIMS", "10"))
-HDBSCAN_MIN_CLUSTER_SIZE = int(os.environ.get("KNOWLEVER_HDBSCAN_MIN", "3"))
+HDBSCAN_MIN_CLUSTER_SIZE = int(os.environ.get("KNOWLEVER_HDBSCAN_MIN", "5"))
 
 
 def load_atoms(atoms_dir: Path) -> list[dict]:
@@ -175,7 +175,8 @@ def run(atoms_dir: Path, output_dir: Path, topic: str):
         (output_dir / "clusters.json").write_text("[]", "utf-8")
         return
 
-    texts = [f"{a['claim']} {' '.join(a.get('draft_tags', []))}" for a in atoms]
+    texts = [f"{a.get('claim', '')} {' '.join(a.get('draft_tags', []))}" for a in atoms if a.get('claim')]
+    atoms = [a for a in atoms if a.get('claim')]
     print(f"[Stage 2] Embedding {len(texts)} atoms...")
     embeddings = get_embeddings(texts)
 
