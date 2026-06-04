@@ -6,8 +6,8 @@
     "provider": "polarprivate"
   },
   "embedding": {
-    "model": "text-embedding-3-small",
-    "comment": "OpenAI-compatible embedding endpoint; set EMBED_BASE_URL / EMBED_MODEL env vars to override"
+    "model": "E000",
+    "comment": "PolarPrivate embedding capability code; set EMBED_BASE_URL / EMBED_MODEL env vars to override"
   },
   "paths": {
     "data_root": "data/topics"

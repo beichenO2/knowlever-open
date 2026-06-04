@@ -38,7 +38,15 @@ SIMILARITY_THRESHOLD = 0.55
 DUPLICATE_THRESHOLD = 0.92
 MAX_CLUSTER_SIZE = 12
 MIN_CLUSTER_SIZE = 3
-EMBEDDING_MODEL = os.environ.get("EMBED_MODEL", "text-embedding-3-small")
+def _default_embed_model():
+    cfg_path = Path(__file__).resolve().parent.parent / "config.json"
+    try:
+        cfg = json.loads(cfg_path.read_text("utf-8"))
+        return cfg.get("embedding", {}).get("model", "E000")
+    except Exception:
+        return "E000"
+
+EMBEDDING_MODEL = os.environ.get("EMBED_MODEL") or _default_embed_model()
 EMBEDDING_BASE_URL = os.environ.get("EMBED_BASE_URL", "http://127.0.0.1:12790")
 LLM_API_KEY = os.environ.get("LLM_API_KEY", "sk-placeholder")
 

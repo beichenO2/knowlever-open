@@ -1,12 +1,12 @@
 {
-  "compiled_at": "2026-06-04T10:43:27.451Z",
+  "compiled_at": "2026-06-04T12:06:54.750Z",
   "topic": "radar-2026",
   "decisions": [
     {
       "stage": "stage-0.5",
       "name": "typed-normalize",
       "chosen": "LLM classify_content tool",
-      "rationale": "Full-extraction typed normalize. Chunk: 50000 chars, overlap: 2000. Coverage threshold: 70%. RetryLoop max 3.",
+      "rationale": "Full-extraction typed normalize. Chunk: 6000 chars, overlap: 500. Coverage threshold: 70%. RetryLoop max 3.",
       "known_limits": [
         "Coverage metric is char-count based, not semantic — LLM reformatting can reduce ratio",
         "OCR-degraded sources may have low coverage due to garbled text"
