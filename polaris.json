@@ -1,6 +1,6 @@
 {
   "project": "KnowLever_OpenSource",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "status": "active",
   "description": "单用户简化版 KnowLever — 命令行 7 阶段编译管线，独立部署",
   "owner": "Polarisor",
@@ -136,7 +136,9 @@
   "known_issues": [
     "Stage 4.5 需重写为从 problems/ 生成题目页（非 LLM 出题）",
     "Stage 7 需 LLM 辅助排版审查 → roadmap",
-    "VLM OCR 直接调 Ollama → 待改走 PolarPrivate"
+    "VLM OCR 直接调 Ollama → 待改走 PolarPrivate",
+    "树标签重复（「雷达信号处理」出现 3 次）→ Stage 3 标签去重",
+    "Stage 5 循环引用降级为 warning（wiki 双向链接为正常现象）"
   ],
 
   "completed": [
@@ -151,6 +153,11 @@
     "2026-06-04: wiki-core 复制进仓库",
     "2026-06-04: wiki-engine 移到仓库根级",
     "2026-06-04: 实现 Stage 0.5 Typed Normalize (LLM classify → explanations/summaries/problems)",
-    "2026-06-04: Stage 1 chunkSize 升至 50000 字 (适配 MiniMax-M3 1M 窗口)"
+    "2026-06-04: Stage 1 chunkSize 升至 50000 字 (适配 MiniMax-M3 1M 窗口)",
+    "2026-06-04: 全流程首次编译 radar-2026 (25 sources → 390 atoms → 36 clusters → 44 pages → site)",
+    "2026-06-04: embedding 模型修正 (text-embedding-3-small → E000)",
+    "2026-06-04: Stage 5 link validate 修复（桩链接改查 wiki 文件，循环引用降级为 warning）",
+    "2026-06-04: LLM 超时从 5min 提升到 10min",
+    "2026-06-04: Stage 0.5 增加断点续跑（跳过 manifest 中已处理的源）"
   ]
 }

@@ -62,8 +62,10 @@ function run(wikiDir, treePath, outputDir) {
   const warnings = [];
 
   const wikiFiles = fs.readdirSync(wikiDir).filter(f => f.endsWith('.md'));
+  const wikiSlugs = new Set(wikiFiles.map(f => f.replace(/\.md$/, '')));
+  const allValid = new Set([...slugs, ...wikiSlugs]);
   const incomingCount = {};
-  for (const slug of slugs) incomingCount[slug] = 0;
+  for (const slug of allValid) incomingCount[slug] = 0;
 
   const outgoing = {};
 
@@ -76,7 +78,7 @@ function run(wikiDir, treePath, outputDir) {
     for (const link of links) {
       if (link.target === sourceSlug) {
         errors.push({ code: 'E4', source: sourceSlug, target: link.target, msg: '自引用' });
-      } else if (!slugs.has(link.target)) {
+      } else if (!allValid.has(link.target)) {
         errors.push({ code: 'E1', source: sourceSlug, target: link.target, msg: '桩链接' });
       } else {
         incomingCount[link.target] = (incomingCount[link.target] || 0) + 1;
@@ -103,8 +105,8 @@ function run(wikiDir, treePath, outputDir) {
     visited.add(node);
     stack.add(node);
     for (const target of (outgoing[node] || [])) {
-      if (slugs.has(target) && dfs(target)) {
-        errors.push({ code: 'E2', source: node, target, msg: '循环引用' });
+      if (allValid.has(target) && dfs(target)) {
+        warnings.push({ code: 'W3', source: node, target, msg: '循环引用（双向链接）' });
         return true;
       }
     }
