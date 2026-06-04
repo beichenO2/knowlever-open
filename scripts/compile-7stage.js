@@ -85,15 +85,22 @@ if (fs.existsSync(rawDir) && fs.readdirSync(rawDir).some(f => !f.startsWith('.')
     const vlmOcrPath = path.resolve(ROOT, 'lib/vlm-formula-ocr.js');
     const hasVlmOcr = fs.existsSync(vlmOcrPath);
 
-    // Garbled detection: if text has too many replacement chars or unreadable patterns
     function isGarbled(text) {
       if (!text || text.trim().length < 20) return true;
-      const replacementChars = (text.match(/[\ufffd]/g) || []).length;
       const totalChars = text.length;
+      const replacementChars = (text.match(/[\ufffd]/g) || []).length;
       if (replacementChars / totalChars > 0.1) return true;
-      // Count CJK + Latin + digits + common punctuation + math symbols + PUA (font-embedded symbols)
       const readable = text.match(/[\u4e00-\u9fff\u3400-\u4dbf\uf000-\uf8ff\u2460-\u24ff\u2000-\u206fa-zA-Z0-9\s.,;:!?()（）、。，；：""''！？【】《》〈〉〔〕…\-—·\n\r\t$\\{}[\]^_+=/<>|~@#%&*"'`°±×÷αβγδεζηθλμνπρστωΩΔΣ∫∂∞≥≤≠≈∈∉]/gu) || [];
-      return readable.length / totalChars < 0.5;
+      if (readable.length / totalChars < 0.5) return true;
+      // PPT-style PDF: pdftotext preserves spatial layout with excessive whitespace
+      const lines = text.split('\n');
+      const spatialLines = lines.filter(l => (l.match(/  {3,}/g) || []).length >= 2);
+      if (spatialLines.length / lines.length > 0.3) return true;
+      // Formula garbling: high ratio of single-char "words" from broken math symbols
+      const words = text.split(/\s+/).filter(w => w.length > 0);
+      const singleChars = words.filter(w => w.length === 1 && !/[a-zA-Z0-9\u4e00-\u9fff，。！？、]/.test(w));
+      if (words.length > 20 && singleChars.length / words.length > 0.15) return true;
+      return false;
     }
 
     for (const f of fs.readdirSync(rawDir)) {
