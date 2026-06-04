@@ -327,12 +327,11 @@ async function typedNormalize(sourceId, contentPath, normalizedDir, topic, optio
   for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
     console.log(`[Stage 0.5]   Attempt ${attempt + 1}/${MAX_RETRIES} (${chunks.length} chunk${chunks.length > 1 ? 's' : ''})`);
 
-    const chunkResults = [];
-    for (let i = 0; i < chunks.length; i++) {
-      console.log(`[Stage 0.5]   Classifying chunk ${i + 1}/${chunks.length}...`);
-      const result = await classifyChunk(sourceId, chunks[i], i, chunks.length, content, chunkOffsets[i]);
-      chunkResults.push(result);
-    }
+    console.log(`[Stage 0.5]   Classifying ${chunks.length} chunks (parallel)...`);
+    const chunkPromises = chunks.map((chunk, i) =>
+      classifyChunk(sourceId, chunk, i, chunks.length, content, chunkOffsets[i])
+    );
+    const chunkResults = await Promise.all(chunkPromises);
 
     const merged = mergeResults(chunkResults);
     const { errors, coverage, totalExtracted } = validateResult(merged, originalLength);

@@ -2,7 +2,7 @@
   "single_user": true,
   "default_topic": "radar-2026",
   "llm": {
-    "model": "MiniMax-M3",
+    "model": "GLM-5-Turbo",
     "provider": "polarprivate"
   },
   "embedding": {
