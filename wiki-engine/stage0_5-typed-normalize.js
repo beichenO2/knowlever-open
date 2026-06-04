@@ -21,8 +21,8 @@ const path = require('path');
 const { chatCompletion } = require('../lib/llm-proxy');
 const { recordDecision } = require('./tech-decisions');
 
-const CHUNK_SIZE = 6000;
-const CHUNK_OVERLAP = 500;
+const CHUNK_SIZE = 4000;
+const CHUNK_OVERLAP = 400;
 const COVERAGE_THRESHOLD = 0.70;
 const MAX_RETRIES = 3;
 
@@ -86,8 +86,18 @@ function addLineNumbers(content) {
   const lines = content.split('\n');
   let offset = 0;
   const numbered = [];
+  let consecutiveEmpty = 0;
   for (let i = 0; i < lines.length; i++) {
-    numbered.push(`[${offset}]${lines[i]}`);
+    const trimmed = lines[i].trim();
+    if (trimmed.length === 0) {
+      consecutiveEmpty++;
+      if (consecutiveEmpty <= 1) {
+        numbered.push(`[${offset}]`);
+      }
+    } else {
+      consecutiveEmpty = 0;
+      numbered.push(`[${offset}]${lines[i]}`);
+    }
     offset += lines[i].length + 1;
   }
   return numbered.join('\n');
@@ -385,6 +395,7 @@ async function typedNormalize(sourceId, contentPath, normalizedDir, topic, optio
     known_limits: [
       'Coverage metric is char-count based, not semantic — LLM reformatting can reduce ratio',
       'OCR-degraded sources may have low coverage due to garbled text',
+      'addLineNumbers collapses consecutive blank lines to reduce prompt bloat',
     ],
     switch_conditions: [
       'Fine-tuned classification model available',
