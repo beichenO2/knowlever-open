@@ -271,7 +271,7 @@ async function classifyChunk(sourceId, content, chunkIndex, totalChunks) {
     tools: [CLASSIFY_TOOL],
     tool_choice: { type: 'function', function: { name: 'classify_content' } },
     temperature: 0.1,
-    max_tokens: 65536,
+    max_tokens: 131072,
   });
 
   const choice = response?.choices?.[0];

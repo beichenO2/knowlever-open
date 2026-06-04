@@ -68,7 +68,7 @@ async function generateQuiz(pageContent, slug) {
     const response = await chatCompletion({
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.4,
-      max_tokens: 2000,
+      max_tokens: 131072,
     });
 
     const output = response?.choices?.[0]?.message?.content || '';

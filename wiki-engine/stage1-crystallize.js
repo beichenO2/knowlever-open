@@ -128,7 +128,7 @@ async function crystallize(sourceId, contentPath, outputDir, topic, options = {}
       tools: [EXTRACT_TOOL],
       tool_choice: { type: 'function', function: { name: 'emit_atoms' } },
       temperature: 0.1,
-      max_tokens: 8192,
+      max_tokens: 131072,
     });
 
     const choice = response?.choices?.[0];
@@ -180,14 +180,105 @@ async function crystallize(sourceId, contentPath, outputDir, topic, options = {}
     }
   }
 
-  // Deduplicate atoms from overlap regions (same evidence_quote = duplicate)
-  const seen = new Set();
-  const dedupedAtoms = [];
-  for (const atom of allAtoms) {
-    const key = atom.evidence.quote.slice(0, 80);
-    if (!seen.has(key)) {
-      seen.add(key);
-      dedupedAtoms.push(atom);
+  // LLM-based deduplication: feed all atoms back to LLM for merge judgment
+  let dedupedAtoms = allAtoms;
+  if (allAtoms.length > 1) {
+    console.log(`[Stage 1] LLM dedup: ${allAtoms.length} atoms`);
+    const atomSummary = allAtoms.map((a, i) => `[${i}] ${a.claim} (${a.kind}) — "${a.evidence.quote.slice(0, 60)}..."`).join('\n');
+
+    const DEDUP_TOOL = {
+      type: 'function',
+      function: {
+        name: 'report_duplicates',
+        description: '报告重复的 atom 索引对。如果两个 atom 表述的是同一个知识点（即使角度不同也不算重复），才算重复。',
+        parameters: {
+          type: 'object',
+          required: ['duplicate_groups'],
+          properties: {
+            duplicate_groups: {
+              type: 'array',
+              description: '每组是一个重复集合的索引数组，保留第一个，删除后续的',
+              items: { type: 'array', items: { type: 'integer' } },
+            },
+          },
+        },
+      },
+    };
+
+    try {
+      const dedupResp = await chatCompletion({
+        messages: [
+          { role: 'system', content: '你是知识原子去重引擎。检查以下 atoms 列表，找出表述完全相同知识点的重复项。注意：同一段原文的不同角度/不同 claim 不算重复。只有当两个 atom 的核心知识点完全一样时才报告为重复。' },
+          { role: 'user', content: `共 ${allAtoms.length} 个 atoms:\n${atomSummary}\n\n调用 report_duplicates 报告重复组。如果没有重复，返回空数组。` },
+        ],
+        tools: [DEDUP_TOOL],
+        tool_choice: { type: 'function', function: { name: 'report_duplicates' } },
+        temperature: 0.05,
+        max_tokens: 16384,
+      });
+
+      const dedupChoice = dedupResp?.choices?.[0];
+      const dedupCalls = dedupChoice?.message?.tool_calls || [];
+      if (dedupCalls.length > 0) {
+        const args = JSON.parse(dedupCalls[0].function?.arguments || '{}');
+        const groups = args.duplicate_groups || [];
+        const toRemove = new Set();
+        for (const group of groups) {
+          for (let i = 1; i < group.length; i++) toRemove.add(group[i]);
+        }
+        dedupedAtoms = allAtoms.filter((_, i) => !toRemove.has(i));
+        console.log(`[Stage 1] LLM dedup: removed ${toRemove.size} duplicates`);
+      }
+    } catch (e) {
+      console.warn(`[Stage 1] LLM dedup failed (${e.message}), keeping all atoms`);
+    }
+  }
+
+  // LLM coverage check: verify atoms cover the input content
+  if (dedupedAtoms.length > 0) {
+    console.log(`[Stage 1] Coverage check: ${dedupedAtoms.length} atoms vs source content`);
+    const claimList = dedupedAtoms.map((a, i) => `${i + 1}. ${a.claim}`).join('\n');
+
+    const COVERAGE_TOOL = {
+      type: 'function',
+      function: {
+        name: 'coverage_report',
+        description: '判断 atoms 是否完整覆盖了源文本的知识内容',
+        parameters: {
+          type: 'object',
+          required: ['is_complete', 'missing_topics'],
+          properties: {
+            is_complete: { type: 'boolean', description: '是否完整覆盖（允许遗漏不超过5%的边缘内容）' },
+            missing_topics: { type: 'array', items: { type: 'string' }, description: '遗漏的知识主题（如果有）' },
+          },
+        },
+      },
+    };
+
+    try {
+      const coverageResp = await chatCompletion({
+        messages: [
+          { role: 'system', content: '你是覆盖率审核员。检查提取的知识原子是否完整覆盖了源材料的所有知识内容。' },
+          { role: 'user', content: `源文件: ${sourceId}\n\n源材料原文:\n---\n${content.slice(0, 200000)}\n---\n\n已提取的 ${dedupedAtoms.length} 个知识原子:\n${claimList}\n\n调用 coverage_report 判断是否完整覆盖。` },
+        ],
+        tools: [COVERAGE_TOOL],
+        tool_choice: { type: 'function', function: { name: 'coverage_report' } },
+        temperature: 0.1,
+        max_tokens: 16384,
+      });
+
+      const covChoice = coverageResp?.choices?.[0];
+      const covCalls = covChoice?.message?.tool_calls || [];
+      if (covCalls.length > 0) {
+        const args = JSON.parse(covCalls[0].function?.arguments || '{}');
+        if (args.is_complete) {
+          console.log(`[Stage 1] ✅ Coverage check passed`);
+        } else {
+          console.warn(`[Stage 1] ⚠️ Coverage gaps: ${(args.missing_topics || []).join(', ')}`);
+        }
+      }
+    } catch (e) {
+      console.warn(`[Stage 1] Coverage check failed (${e.message}), proceeding`);
     }
   }
 
