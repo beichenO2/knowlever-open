@@ -26,72 +26,38 @@ const CHUNK_OVERLAP = 2000;
 const COVERAGE_THRESHOLD = 0.70;
 const MAX_RETRIES = 3;
 
+const SPAN_ITEM = {
+  type: 'object',
+  required: ['title', 'type', 'start', 'end'],
+  properties: {
+    title: { type: 'string', description: '该段标题（10-30字）' },
+    type: { type: 'string', enum: ['explanation', 'summary', 'problem'], description: '内容类型' },
+    start: { type: 'integer', description: '原文起始字符偏移量（0-based）' },
+    end: { type: 'integer', description: '原文结束字符偏移量（不含）' },
+    problem_meta: {
+      type: 'object',
+      description: '仅 type=problem 时填写',
+      properties: {
+        id: { type: 'string', description: '题目唯一ID（如 prob_001）' },
+        has_solution: { type: 'boolean', description: '原文是否包含答案/解析' },
+      },
+    },
+  },
+};
+
 const CLASSIFY_TOOL = {
   type: 'function',
   function: {
     name: 'classify_content',
-    description: '把源材料全量分流到三类：知识讲解(explanation)、知识总结(summary)、题目(problem)。不删内容、不挑重点。',
+    description: '把源材料按字符坐标全量分流。只需给出每段的 start/end 偏移量和类型，不需要复制原文。',
     parameters: {
       type: 'object',
-      required: ['explanations', 'summaries', 'problems'],
+      required: ['spans'],
       properties: {
-        explanations: {
+        spans: {
           type: 'array',
-          description: '知识讲解类内容：概念解释、原理说明、推导过程、例子、课堂讲解',
-          items: {
-            type: 'object',
-            required: ['title', 'content', 'source_span'],
-            properties: {
-              title: { type: 'string', description: '该讲解段的标题（10-30字）' },
-              content: { type: 'string', description: '原文内容，不删不改，完整保留' },
-              source_span: { type: 'string', description: '来源位置描述（如 "第3页" 或 "offset 1200-2400"）' },
-            },
-          },
-        },
-        summaries: {
-          type: 'array',
-          description: '知识总结类内容：知识点列表、章节总结、复习提纲、recap、重点总结',
-          items: {
-            type: 'object',
-            required: ['title', 'content', 'source_span'],
-            properties: {
-              title: { type: 'string', description: '该总结段的标题' },
-              content: { type: 'string', description: '原文内容，不删不改' },
-              source_span: { type: 'string', description: '来源位置' },
-            },
-          },
-        },
-        problems: {
-          type: 'array',
-          description: '题目单元：题干+答案+解题步骤作为完整记录，不拆分',
-          items: {
-            type: 'object',
-            required: ['id', 'source_span', 'question'],
-            properties: {
-              id: { type: 'string', description: '题目唯一ID（如 prob_001）' },
-              source_span: { type: 'string', description: '来源位置' },
-              question: {
-                type: 'object',
-                required: ['text'],
-                properties: {
-                  text: { type: 'string', description: '完整题干' },
-                  options: { type: 'array', items: { type: 'string' }, description: '选项（选择题）' },
-                  given_conditions: { type: 'array', items: { type: 'string' }, description: '已知条件' },
-                  target: { type: 'string', description: '求解目标' },
-                },
-              },
-              solution: {
-                type: 'object',
-                properties: {
-                  answer: { type: 'string', description: '答案' },
-                  explanation: { type: 'string', description: '解析' },
-                  steps: { type: 'array', items: { type: 'string' }, description: '解题步骤' },
-                  status: { type: 'string', enum: ['present', 'missing_in_source'], description: '原文是否包含解答' },
-                },
-              },
-              assets: { type: 'array', items: { type: 'string' }, description: '关联图片/图表文件名' },
-            },
-          },
+          description: '按出现顺序排列的分段列表，每段用 start/end 标注原文范围',
+          items: SPAN_ITEM,
         },
       },
     },
@@ -100,42 +66,81 @@ const CLASSIFY_TOOL = {
 
 const SYSTEM_PROMPT = `你是学习资料结构化引擎。
 
-调用 classify_content 工具，把输入的学习资料**全量**分流到三类。
+调用 classify_content 工具，把输入的学习资料**全量**标注分类。
+
+**关键：你只需要输出每段的坐标（start/end 字符偏移量），不需要复制原文内容。**
 
 核心规则：
-1. **全量抽取** — 不删内容、不挑重点、不提前做知识化。输入有多少内容，输出就应该有多少。
+1. **全量覆盖** — 输入的每个字符都应属于某个 span。span 之间不应有遗漏（小量空白/分隔符除外）。
 2. **三类分流**：
-   - explanations：概念解释、原理说明、推导过程、例子、课堂讲解、定义
-   - summaries：知识点列表、章节总结、复习提纲、recap、重点整理
-   - problems：题目+答案+解题步骤作为完整记录。如果原文有答案就填，没有就标记 status="missing_in_source"
-3. **content 字段必须是原文** — 你可以适当整理格式（如修复OCR错误的换行），但不能改写语义、不能缩写、不能总结。
-4. **source_span 必须填写** — 标注这段内容在原文中的位置。
-5. **题目和解答不分离** — 一道题的题干、选项、条件、答案、步骤、解析都放在同一个 problem 记录里。
-6. 如果一段内容同时包含讲解和题目，拆成讲解部分 + 题目部分。`;
+   - explanation：概念解释、原理说明、推导过程、例子、课堂讲解、定义
+   - summary：知识点列表、章节总结、复习提纲、recap、重点整理
+   - problem：题目+答案+解题步骤。一道完整题目（含题干、选项、答案、解析）用一个 span
+3. **坐标精确** — start 是该段第一个字符的 0-based 偏移，end 是最后一个字符之后的偏移（即 [start, end) 半开区间）。
+4. **按顺序排列** — spans 按 start 递增排列。
+5. **不重叠** — 相邻 span 的 start >= 前一个的 end。
+6. 如果一段内容同时包含讲解和题目，拆成讲解 span + 题目 span。
+7. 每行前有行号标注 \`[NNN]\`，利用它精确定位 start/end。`;
 
-function buildUserPrompt(sourceId, content, chunkIndex, totalChunks) {
-  const chunkInfo = totalChunks > 1 ? `（第 ${chunkIndex + 1}/${totalChunks} 块）` : '';
+function addLineNumbers(content) {
+  const lines = content.split('\n');
+  let offset = 0;
+  const numbered = [];
+  for (let i = 0; i < lines.length; i++) {
+    numbered.push(`[${offset}]${lines[i]}`);
+    offset += lines[i].length + 1;
+  }
+  return numbered.join('\n');
+}
+
+function buildUserPrompt(sourceId, content, chunkIndex, totalChunks, chunkOffset) {
+  const chunkInfo = totalChunks > 1 ? `（第 ${chunkIndex + 1}/${totalChunks} 块，偏移 ${chunkOffset}）` : '';
+  const numbered = addLineNumbers(content);
   return `来源文件：${sourceId}${chunkInfo}
+总长度：${content.length} 字符
 
 ---
-${content}
+${numbered}
 ---
 
-调用 classify_content 将以上内容全量分流到 explanations / summaries / problems 三类。`;
+调用 classify_content 标注每段的 start/end 坐标和类型。全量覆盖，不遗漏。`;
+}
+
+function resolveSpans(spans, fullContent, chunkOffset) {
+  const resolved = { explanations: [], summaries: [], problems: [] };
+  let probSeq = 1;
+
+  for (const span of (spans || [])) {
+    const start = (span.start || 0) + chunkOffset;
+    const end = Math.min((span.end || span.start || 0) + chunkOffset, fullContent.length);
+    if (start >= end) continue;
+
+    const content = fullContent.slice(start, end);
+    const sourceSpan = `offset ${start}-${end}`;
+
+    if (span.type === 'explanation') {
+      resolved.explanations.push({ title: span.title || '', content, source_span: sourceSpan });
+    } else if (span.type === 'summary') {
+      resolved.summaries.push({ title: span.title || '', content, source_span: sourceSpan });
+    } else if (span.type === 'problem') {
+      const id = span.problem_meta?.id || `prob_${String(probSeq++).padStart(3, '0')}`;
+      resolved.problems.push({
+        id,
+        source_span: sourceSpan,
+        content,
+        has_solution: span.problem_meta?.has_solution ?? false,
+      });
+    }
+  }
+  return resolved;
 }
 
 function mergeResults(results) {
   const merged = { explanations: [], summaries: [], problems: [] };
-  let probSeq = 1;
   for (const r of results) {
     if (Array.isArray(r.explanations)) merged.explanations.push(...r.explanations);
     if (Array.isArray(r.summaries)) merged.summaries.push(...r.summaries);
-    if (Array.isArray(r.problems)) {
-      for (const p of r.problems) {
-        if (!p.id) p.id = `prob_${String(probSeq++).padStart(3, '0')}`;
-        merged.problems.push(p);
-      }
-    }
+    if (Array.isArray(r.problems)) merged.problems.push(...r.problems);
   }
   return merged;
 }
@@ -147,25 +152,18 @@ function validateResult(result, originalLength) {
     if (!exp.content || exp.content.length < 10) {
       errors.push(`explanations[${i}]: content too short or empty`);
     }
-    if (!exp.source_span) errors.push(`explanations[${i}]: missing source_span`);
   }
 
   for (const [i, prob] of (result.problems || []).entries()) {
-    if (!prob.question?.text) errors.push(`problems[${i}]: missing question.text`);
-    if (prob.solution && !['present', 'missing_in_source'].includes(prob.solution.status)) {
-      errors.push(`problems[${i}]: invalid solution.status`);
+    if (!prob.content || prob.content.length < 5) {
+      errors.push(`problems[${i}]: content too short or empty`);
     }
   }
 
   const totalExtracted =
     (result.explanations || []).reduce((s, e) => s + (e.content?.length || 0), 0) +
     (result.summaries || []).reduce((s, e) => s + (e.content?.length || 0), 0) +
-    (result.problems || []).reduce((s, p) => {
-      let len = p.question?.text?.length || 0;
-      if (p.solution?.explanation) len += p.solution.explanation.length;
-      if (p.solution?.steps) len += p.solution.steps.join('').length;
-      return s + len;
-    }, 0);
+    (result.problems || []).reduce((s, p) => s + (p.content?.length || 0), 0);
 
   const coverage = originalLength > 0 ? totalExtracted / originalLength : 0;
 
@@ -209,28 +207,8 @@ function writeProblems(outDir, sourceSlug, problems) {
   for (const p of problems) {
     yamlLines.push(`  - id: ${JSON.stringify(p.id || 'unknown')}`);
     yamlLines.push(`    source_span: ${JSON.stringify(p.source_span || 'unknown')}`);
-    yamlLines.push(`    question:`);
-    yamlLines.push(`      text: ${JSON.stringify(p.question?.text || '')}`);
-    if (p.question?.options?.length) {
-      yamlLines.push(`      options:`);
-      for (const opt of p.question.options) yamlLines.push(`        - ${JSON.stringify(opt)}`);
-    }
-    if (p.question?.given_conditions?.length) {
-      yamlLines.push(`      given_conditions:`);
-      for (const gc of p.question.given_conditions) yamlLines.push(`        - ${JSON.stringify(gc)}`);
-    }
-    if (p.question?.target) yamlLines.push(`      target: ${JSON.stringify(p.question.target)}`);
-
-    if (p.solution) {
-      yamlLines.push(`    solution:`);
-      yamlLines.push(`      status: ${p.solution.status || 'missing_in_source'}`);
-      if (p.solution.answer) yamlLines.push(`      answer: ${JSON.stringify(p.solution.answer)}`);
-      if (p.solution.explanation) yamlLines.push(`      explanation: ${JSON.stringify(p.solution.explanation)}`);
-      if (p.solution.steps?.length) {
-        yamlLines.push(`      steps:`);
-        for (const step of p.solution.steps) yamlLines.push(`        - ${JSON.stringify(step)}`);
-      }
-    }
+    yamlLines.push(`    has_solution: ${p.has_solution ? 'true' : 'false'}`);
+    yamlLines.push(`    content: ${JSON.stringify(p.content || '')}`);
     yamlLines.push('');
   }
   fs.writeFileSync(path.join(dir, `${sourceSlug}.problems.yaml`), yamlLines.join('\n'), 'utf-8');
@@ -250,19 +228,19 @@ function updateManifest(outDir, sourceSlug, stats) {
     `    original_chars: ${stats.originalLength}`,
     `    extracted_chars: ${stats.totalExtracted}`,
     `    processed_at: ${new Date().toISOString()}`,
-    '',
-  ].join('\n');
+  ].join('\n') + '\n';
 
   if (!manifest.startsWith('sources:')) manifest = 'sources:\n';
-  const sourceRegex = new RegExp(`  ${sourceSlug}:[\\s\\S]*?(?=  \\w|$)`, 'g');
+  const escaped = sourceSlug.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const sourceRegex = new RegExp(`^  ${escaped}:\\n(?:    .+\\n)*`, 'gm');
   manifest = manifest.replace(sourceRegex, '');
   manifest += entry;
 
   fs.writeFileSync(manifestPath, manifest, 'utf-8');
 }
 
-async function classifyChunk(sourceId, content, chunkIndex, totalChunks) {
-  const prompt = buildUserPrompt(sourceId, content, chunkIndex, totalChunks);
+async function classifyChunk(sourceId, chunkContent, chunkIndex, totalChunks, fullContent, chunkOffset) {
+  const prompt = buildUserPrompt(sourceId, chunkContent, chunkIndex, totalChunks, chunkOffset);
   const response = await chatCompletion({
     messages: [
       { role: 'system', content: SYSTEM_PROMPT },
@@ -271,28 +249,30 @@ async function classifyChunk(sourceId, content, chunkIndex, totalChunks) {
     tools: [CLASSIFY_TOOL],
     tool_choice: { type: 'function', function: { name: 'classify_content' } },
     temperature: 0.1,
-    max_tokens: 131072,
+    max_tokens: 16384,
   });
 
   const choice = response?.choices?.[0];
   const toolCalls = choice?.message?.tool_calls || [];
 
+  let parsed = { spans: [] };
   if (toolCalls.length > 0) {
     try {
-      return JSON.parse(toolCalls[0].function?.arguments || '{}');
+      parsed = JSON.parse(toolCalls[0].function?.arguments || '{}');
     } catch (e) {
-      console.warn(`[Stage 0.5] tool_call parse failed for chunk ${chunkIndex}: ${e.message}`);
+      console.warn(`[Stage 0.5]   tool_call parse failed for chunk ${chunkIndex}: ${e.message}`);
+    }
+  } else {
+    const text = choice?.message?.content || '';
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    try {
+      if (jsonMatch) parsed = JSON.parse(jsonMatch[0]);
+    } catch {
+      console.warn(`[Stage 0.5]   JSON regex parse failed for chunk ${chunkIndex}`);
     }
   }
 
-  const text = choice?.message?.content || '';
-  const jsonMatch = text.match(/\{[\s\S]*\}/);
-  try {
-    return jsonMatch ? JSON.parse(jsonMatch[0]) : { explanations: [], summaries: [], problems: [] };
-  } catch {
-    console.warn(`[Stage 0.5] JSON regex parse failed for chunk ${chunkIndex}`);
-    return { explanations: [], summaries: [], problems: [] };
-  }
+  return resolveSpans(parsed.spans, fullContent, chunkOffset);
 }
 
 async function typedNormalize(sourceId, contentPath, normalizedDir, topic, options = {}) {
@@ -307,11 +287,15 @@ async function typedNormalize(sourceId, contentPath, normalizedDir, topic, optio
   console.log(`[Stage 0.5] Processing ${sourceId} (${originalLength} chars)`);
 
   const chunks = [];
+  const chunkOffsets = [];
   if (originalLength <= CHUNK_SIZE) {
     chunks.push(content);
+    chunkOffsets.push(0);
   } else {
-    for (let offset = 0; offset < originalLength; offset += Math.max(CHUNK_SIZE - CHUNK_OVERLAP, 1)) {
+    const step = Math.max(CHUNK_SIZE - CHUNK_OVERLAP, 1);
+    for (let offset = 0; offset < originalLength; offset += step) {
       chunks.push(content.slice(offset, offset + CHUNK_SIZE));
+      chunkOffsets.push(offset);
     }
   }
 
@@ -324,7 +308,7 @@ async function typedNormalize(sourceId, contentPath, normalizedDir, topic, optio
     const chunkResults = [];
     for (let i = 0; i < chunks.length; i++) {
       console.log(`[Stage 0.5]   Classifying chunk ${i + 1}/${chunks.length}...`);
-      const result = await classifyChunk(sourceId, chunks[i], i, chunks.length);
+      const result = await classifyChunk(sourceId, chunks[i], i, chunks.length, content, chunkOffsets[i]);
       chunkResults.push(result);
     }
 
@@ -413,10 +397,22 @@ if (require.main === module) {
       process.exit(1);
     }
 
-    console.log(`[Stage 0.5] Processing ${sources.length} sources for topic: ${topic}`);
+    const manifestPath = path.join(normalizedDir, 'manifest.yaml');
+    const manifestText = fs.existsSync(manifestPath) ? fs.readFileSync(manifestPath, 'utf-8') : '';
+    const alreadyDone = new Set();
+    for (const m of manifestText.matchAll(/^  ([^\s:][^:]*?):\s*$/gm)) {
+      alreadyDone.add(m[1].trim());
+    }
+
+    const todo = sources.filter(src => {
+      const slug = src.replace(/[^a-z0-9\u4e00-\u9fff]/gi, '-').replace(/-+/g, '-');
+      return !alreadyDone.has(src) && !alreadyDone.has(slug);
+    });
+
+    console.log(`[Stage 0.5] ${sources.length} total sources, ${alreadyDone.size} already done, ${todo.length} remaining for topic: ${topic}`);
 
     (async () => {
-      for (const src of sources) {
+      for (const src of todo) {
         const contentPath = path.join(normalizedDir, src, 'content.md');
         await typedNormalize(src, contentPath, normalizedDir, topic);
       }
