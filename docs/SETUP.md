@@ -27,30 +27,25 @@ bash scripts/setup.sh
 ## 3. Run demo
 
 ```bash
-npm run pipeline -- --topic demo-parity
+npm run compile -- --topic demo-parity
 npm run home
 ```
 
-## 4. Private PDFs
+## 4. Your own PDFs
 
 ```bash
-mkdir -p samples-private
-# copy your PDFs here (never git commit)
-npm run office-import -- --from samples-private --topic my-course
-npm run pipeline -- --topic my-course
+# Place files in a topic's raw/ directory
+mkdir -p data/topics/my-course/raw
+cp ~/Downloads/*.pdf data/topics/my-course/raw/
+
+# Compile (ingest handles PDF → Markdown automatically)
+npm run compile -- --topic my-course
+npm run home
 ```
 
-Add a card in `site/topics.json`:
+For Office files that need AutoOffice conversion:
 
-```json
-{
-  "id": "my-course",
-  "title": "My course notes",
-  "description": "Converted from PDF via AutoOffice",
-  "href": "/library/my-course/",
-  "status": "ready",
-  "pages": 0
-}
+```bash
+npm run office-import -- --from ./your-folder --topic my-course
+npm run compile -- --topic my-course
 ```
-
-Re-run `npm run home` after build updates `pages` manually or via script.
