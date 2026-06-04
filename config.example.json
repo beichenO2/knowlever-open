@@ -11,16 +11,11 @@
     "comment": "Embedding model for Stage 2; set EMBED_BASE_URL / EMBED_MODEL to override"
   },
   "paths": {
-    "data_root": "data/topics",
-    "examples_root": "examples"
+    "data_root": "data/topics"
   },
   "compile": {
     "language": "zh",
     "graph_title_language": "zh"
-  },
-  "pipeline": {
-    "mode": "7stage",
-    "comment": "7stage = full 7-stage pipeline, legacy = old monolithic compile.js"
   },
   "ecosystem": {
     "comment": "通过环境变量指向并排克隆的引擎仓库",

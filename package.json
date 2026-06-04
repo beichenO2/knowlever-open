@@ -5,18 +5,11 @@
   "description": "Single-user simplified KnowLever — command-line compile, public examples only",
   "scripts": {
     "setup": "bash scripts/setup.sh",
-    "init:demo": "node scripts/init-demo.js",
     "compile": "node scripts/compile-7stage.js",
-    "compile:legacy": "node scripts/compile.js",
     "normalize-formulas": "node lib/normalize-formulas.js",
     "vlm-ocr": "node lib/vlm-formula-ocr.js",
     "vlm-ocr:check": "node lib/vlm-formula-ocr.js --check",
-    "build": "node scripts/build.js",
-    "pipeline": "node scripts/pipeline.js",
-    "pipeline:7stage": "node scripts/compile-7stage.js",
-    "check-deps": "node scripts/check-deps.js",
     "office-import": "node scripts/office-import.js",
-    "sync-published": "node scripts/sync-published-topic.js",
     "home": "node scripts/serve-home.js",
     "start": "node scripts/serve-home.js"
   },

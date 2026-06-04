@@ -6,13 +6,12 @@ const { spawnSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const config = require('../config.json');
-const { resolveTopic } = require('../lib/paths');
-const { checkEcosystem, autoOfficeRoot } = require('../lib/ecosystem');
+const { resolveTopic, checkEcosystem, autoOfficeRoot } = require('../lib/paths');
 
 function parseArgs() {
   const args = process.argv.slice(2);
   let topic = config.default_topic;
-  let fromDir = path.join(__dirname, '..', '示例');
+  let fromDir = null;
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--topic' && args[i + 1]) topic = args[++i];
     else if (args[i] === '--from' && args[i + 1]) fromDir = args[++i];

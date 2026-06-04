@@ -10,16 +10,11 @@
     "comment": "OpenAI-compatible embedding endpoint; set EMBED_BASE_URL / EMBED_MODEL env vars to override"
   },
   "paths": {
-    "data_root": "data/topics",
-    "examples_root": "examples"
+    "data_root": "data/topics"
   },
   "compile": {
     "language": "zh",
     "graph_title_language": "zh",
     "note": "知识图谱节点标题与 wiki frontmatter title 须为中文（由 compile 提示词保证）"
-  },
-  "pipeline": {
-    "mode": "7stage",
-    "comment": "7stage = 新版全量管线 (Stage 1-7), legacy = 旧版单体 compile.js"
   }
 }
