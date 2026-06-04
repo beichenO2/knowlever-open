@@ -250,17 +250,25 @@ runNode('wiki-engine/stage3-tree-construct.js', [clustersPath, atomsDir, outputD
 const treePath = path.join(outputDir, 'tree.json');
 runNode('wiki-engine/stage4-page-compose.js', [treePath, atomsDir, outputDir, topic], 'Stage 4: Page Compose');
 
-// Stage 5: Link Validate
+// Stage 5: Link Validate (non-blocking — stub links are expected in open version)
 const wikiDir = path.join(outputDir, 'wiki');
-runNode('wiki-engine/stage5-link-validate.js', [wikiDir, treePath, outputDir], 'Stage 5: Link Validate');
-
-// Check Stage 5 result
-const linkReport = path.join(outputDir, 'link-report.json');
-if (fs.existsSync(linkReport)) {
-  const report = JSON.parse(fs.readFileSync(linkReport, 'utf-8'));
-  if (report.errors?.length > 0) {
-    console.error(`\n[pipeline] ⚠️ Stage 5 found ${report.errors.length} link errors.`);
-    console.error('[pipeline] Proceeding to Stage 6/7 anyway (non-blocking in open version).');
+{
+  const scriptPath = path.resolve(ROOT, 'wiki-engine/stage5-link-validate.js');
+  console.log(`\n[pipeline] === Stage 5: Link Validate ===`);
+  console.log(`[pipeline] node wiki-engine/stage5-link-validate.js ${wikiDir} ${treePath} ${outputDir}`);
+  const r = spawnSync('node', [scriptPath, wikiDir, treePath, outputDir], { stdio: 'inherit', cwd: ROOT });
+  const linkReport = path.join(outputDir, 'link-report.json');
+  if (fs.existsSync(linkReport)) {
+    const report = JSON.parse(fs.readFileSync(linkReport, 'utf-8'));
+    if (report.errors?.length > 0) {
+      console.warn(`\n[pipeline] ⚠️ Stage 5 found ${report.errors.length} stub-link errors (non-blocking in open version).`);
+    }
+    if (report.warnings?.length > 0) {
+      console.warn(`[pipeline]   ${report.warnings.length} warnings.`);
+    }
+  }
+  if (r.status !== 0) {
+    console.warn(`[pipeline] Stage 5 exited ${r.status} — continuing (link errors are advisory).`);
   }
 }
 
