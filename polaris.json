@@ -1,6 +1,6 @@
 {
   "project": "KnowLever_OpenSource",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "status": "active",
   "description": "单用户简化版 KnowLever — 命令行 7 阶段编译管线，独立部署",
   "owner": "Polarisor",
@@ -40,15 +40,16 @@
         "status": "implemented",
         "notes": "内嵌于 compile-7stage.js，多格式自动处理（PDF/图片/DOCX）"
       },
-      "stage0_5_classify": {
-        "status": "roadmap",
-        "notes": "normalize → classify → crystallize 分类标注步骤，待设计"
+      "stage0_5_typed_normalize": {
+        "status": "implemented",
+        "file": "wiki-engine/stage0_5-typed-normalize.js",
+        "notes": "LLM classify_content tool: 全量分流到 explanations/summaries/problems。50K字切块，70%覆盖率校验+RetryLoop"
       },
       "stage1_crystallize": {
         "status": "implemented",
         "alignment": "aligned",
         "file": "wiki-engine/stage1-crystallize.js",
-        "notes": "LLM 调用已改为 llm-proxy（SOTAgent → HTTP fallback）"
+        "notes": "chunkSize=50000, overlap=2000. 输入从 explanations+summaries 读取（Stage 0.5 产出）"
       },
       "stage2_embed_cluster": {
         "status": "implemented",
@@ -133,8 +134,8 @@
   },
 
   "known_issues": [
-    "Stage 4.5 错误地用 LLM 生成练习题而非处理原文 → 需修复",
-    "Stage 7 新旧都不行 → roadmap",
+    "Stage 4.5 需重写为从 problems/ 生成题目页（非 LLM 出题）",
+    "Stage 7 需 LLM 辅助排版审查 → roadmap",
     "VLM OCR 直接调 Ollama → 待改走 PolarPrivate"
   ],
 
@@ -148,6 +149,8 @@
     "2026-06-04: LLM 调用改为 llm-proxy（SOTAgent RPC → HTTP fallback）",
     "2026-06-04: 删除 llm-client.js",
     "2026-06-04: wiki-core 复制进仓库",
-    "2026-06-04: wiki-engine 移到仓库根级"
+    "2026-06-04: wiki-engine 移到仓库根级",
+    "2026-06-04: 实现 Stage 0.5 Typed Normalize (LLM classify → explanations/summaries/problems)",
+    "2026-06-04: Stage 1 chunkSize 升至 50000 字 (适配 MiniMax-M3 1M 窗口)"
   ]
 }

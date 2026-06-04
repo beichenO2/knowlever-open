@@ -110,8 +110,8 @@ function validateAtom(atom) {
 
 async function crystallize(sourceId, contentPath, outputDir, topic, options = {}) {
   const content = fs.readFileSync(contentPath, 'utf-8');
-  const chunkSize = options.chunkSize || 8000;
-  const overlap = options.overlap || 200;
+  const chunkSize = options.chunkSize || 50000;
+  const overlap = options.overlap || 2000;
   const allAtoms = [];
   let seq = 1;
 

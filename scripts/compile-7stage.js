@@ -191,11 +191,38 @@ console.log(`[pipeline] Found ${sources.length} normalized sources`);
   }
 }
 
-// Stage 1: Crystallize
-for (const sourceId of sources) {
-  const contentPath = path.join(normalizedDir, sourceId, 'content.md');
-  if (!fs.existsSync(contentPath)) continue;
-  runNode('wiki-engine/stage1-crystallize.js', [sourceId, contentPath, outputDir, topic], `Stage 1: ${sourceId}`);
+// Stage 0.5: Typed Normalize (classify content into explanations/summaries/problems)
+runNode('wiki-engine/stage0_5-typed-normalize.js', ['--all', topic], 'Stage 0.5: Typed Normalize');
+
+// Stage 1: Crystallize (from explanations + summaries, not raw content.md)
+const expDir = path.join(normalizedDir, 'explanations');
+const sumDir = path.join(normalizedDir, 'summaries');
+const typedSources = [];
+if (fs.existsSync(expDir)) {
+  for (const f of fs.readdirSync(expDir).filter(x => x.endsWith('.raw.md'))) {
+    typedSources.push({ id: f.replace('.explanations.raw.md', ''), path: path.join(expDir, f) });
+  }
+}
+if (fs.existsSync(sumDir)) {
+  for (const f of fs.readdirSync(sumDir).filter(x => x.endsWith('.raw.md'))) {
+    const id = f.replace('.summaries.raw.md', '');
+    if (!typedSources.find(s => s.id === id)) {
+      typedSources.push({ id: id + '-summaries', path: path.join(sumDir, f) });
+    }
+  }
+}
+
+if (typedSources.length === 0) {
+  console.warn('[pipeline] ⚠️ Stage 0.5 produced no typed sources. Falling back to raw content.md...');
+  for (const sourceId of sources) {
+    const contentPath = path.join(normalizedDir, sourceId, 'content.md');
+    if (!fs.existsSync(contentPath)) continue;
+    runNode('wiki-engine/stage1-crystallize.js', [sourceId, contentPath, outputDir, topic], `Stage 1: ${sourceId}`);
+  }
+} else {
+  for (const { id, path: srcPath } of typedSources) {
+    runNode('wiki-engine/stage1-crystallize.js', [id, srcPath, outputDir, topic], `Stage 1: ${id}`);
+  }
 }
 
 // Stage 2: Embed + Cluster
