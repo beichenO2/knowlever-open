@@ -3,16 +3,13 @@ node_modules/
 .env
 .env.*
 
-# 本地运行期（源文件、raw、normalized 不进 git）
-data/
-
-# 私人原始资料
-示例/
-samples-private/*
-!samples-private/README.md
+# 原始输入（PDF/DOCX 等大文件不进 git）
+data/topics/*/raw/
 *.pdf
 !docs/**/*.pdf
 
-config.local.json
+# 编译产物（可再生）
+data/topics/*/output/
+data/topics/*/normalized/
 
-# 提交：examples/、wiki/<topic>/、prebuilt/<topic>/、site/
+config.local.json
