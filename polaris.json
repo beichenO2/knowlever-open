@@ -1,0 +1,117 @@
+{
+  "project": "KnowLever_OpenSource",
+  "version": "0.1.0",
+  "status": "active",
+  "description": "单用户简化版 KnowLever — 命令行编译、公开示例、独立部署",
+  "owner": "Polarisor",
+  "created": "2026-06-01",
+  "last_updated": "2026-06-04",
+
+  "upstream": {
+    "project": "KnowLever",
+    "relation": "fork-simplified",
+    "alignment_status": "misaligned",
+    "alignment_notes": "Open 版大规模重写了原版逻辑，需要对齐回原版。详见 任务书/260604/KnowLever_OpenSource_Alignment.md"
+  },
+
+  "dependencies": {
+    "SOTAgent": {
+      "usage": "sdk-port RPC call → polarprivate.chat（LLM 调用）",
+      "status": "planned",
+      "notes": "当前 Open 版用独立 llm-client.js，需改回 SOTAgent sdk-port 路径"
+    },
+    "PolarPrivate": {
+      "usage": "LLM Proxy（统一模型调度）",
+      "status": "planned",
+      "notes": "PolarPrivate 也会有开源版本，Open 版应保留此依赖"
+    },
+    "wiki-core": {
+      "usage": "Markdown 处理、构建管线、Wiki 配置",
+      "status": "planned",
+      "notes": "需要从生态复制一份到本仓库内"
+    }
+  },
+
+  "pipeline": {
+    "stages": {
+      "ingest": {
+        "status": "implemented",
+        "notes": "多格式自动处理（PDF/图片/DOCX），确认保留"
+      },
+      "stage0_5_classify": {
+        "status": "roadmap",
+        "notes": "normalize → classify → crystallize 分类标注步骤，待设计"
+      },
+      "stage1_crystallize": {
+        "status": "implemented",
+        "alignment": "partially_aligned",
+        "notes": "Open 版改进（chunkSize=8000, overlap=200, 去重）确认保留；LLM 调用方式需对齐"
+      },
+      "stage2_embed_cluster": {
+        "status": "implemented",
+        "alignment": "new_in_open",
+        "notes": "Open 版新增 Python embedding+Leiden 聚类"
+      },
+      "stage3_tree_construct": {
+        "status": "implemented",
+        "alignment": "diverged",
+        "notes": "Open 版用语义递归分组（embedding cosine similarity），原版用确定性切片。需要评估哪个更优"
+      },
+      "stage4_page_compose": {
+        "status": "implemented",
+        "alignment": "diverged",
+        "notes": "Open 版用「问题驱动叙事」模板（字数上限高2-3倍），原版用「五段故事弧」。LLM 调用需对齐"
+      },
+      "stage4_5_quiz": {
+        "status": "implemented",
+        "alignment": "wrong_design",
+        "notes": "Open 版用 LLM 重新生成练习题，应该是识别并保留原文中已有的练习题"
+      },
+      "stage5_link_validate": {
+        "status": "implemented",
+        "alignment": "mostly_aligned"
+      },
+      "stage6_site_build": {
+        "status": "implemented",
+        "alignment": "diverged",
+        "notes": "Open 版 579 行图谱式 Wiki 效果不好，回退到原版 + 保留左右双目录"
+      },
+      "stage7_pdf_compose": {
+        "status": "implemented",
+        "alignment": "both_need_redo",
+        "notes": "新旧版本都不行，写入 roadmap 重做"
+      }
+    }
+  },
+
+  "features": {
+    "formula_normalize": {
+      "status": "implemented",
+      "notes": "随整体搬移保留"
+    },
+    "vlm_formula_ocr": {
+      "status": "implemented",
+      "alignment": "needs_reroute",
+      "notes": "当前直接调 Ollama，需改走 PolarPrivate LLM Proxy（注册 l-qwen-vl 等本地模型）"
+    },
+    "multi_format_ingest": {
+      "status": "implemented",
+      "notes": "PDF(pdftotext→VLM OCR降级)/图片(VLM OCR)/DOCX(pandoc)，确认保留"
+    },
+    "prebuilt_demo": {
+      "status": "implemented",
+      "notes": "prebuilt/demo-parity 和 prebuilt/radar-2026 预构建静态站"
+    }
+  },
+
+  "known_issues": [
+    "LLM 调用走独立 llm-client.js 而非 SOTAgent sdk-port → 需对齐",
+    "wiki-engine 嵌套在 lib/ 下而非仓库根 → 需对齐",
+    "Stage 4 写作模板与原版完全不同 → 需评估",
+    "Stage 4.5 错误地用 LLM 生成练习题而非保留原文 → 需修复",
+    "Stage 6 产出质量不如原版 → 需回退",
+    "Stage 7 新旧都不行 → roadmap",
+    "ecosystem.js 与原版依赖关系不清 → 待判断",
+    "两个 topic 用了不同编译路径：demo-parity 走 legacy compile（平铺式网站），radar-2026 走 7-stage pipeline（图谱式 Wiki）→ 产出模板和目录结构完全不同"
+  ]
+}
