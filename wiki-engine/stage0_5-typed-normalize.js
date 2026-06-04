@@ -21,8 +21,8 @@ const path = require('path');
 const { chatCompletion } = require('../lib/llm-proxy');
 const { recordDecision } = require('./tech-decisions');
 
-const CHUNK_SIZE = 50000;
-const CHUNK_OVERLAP = 2000;
+const CHUNK_SIZE = 6000;
+const CHUNK_OVERLAP = 500;
 const COVERAGE_THRESHOLD = 0.70;
 const MAX_RETRIES = 3;
 
@@ -135,6 +135,25 @@ function resolveSpans(spans, fullContent, chunkOffset) {
   return resolved;
 }
 
+function dedupeBySpan(items) {
+  if (items.length <= 1) return items;
+  items.sort((a, b) => {
+    const sa = parseInt((a.source_span || '').match(/\d+/)?.[0] || '0', 10);
+    const sb = parseInt((b.source_span || '').match(/\d+/)?.[0] || '0', 10);
+    return sa - sb;
+  });
+  const result = [items[0]];
+  for (let i = 1; i < items.length; i++) {
+    const prev = result[result.length - 1];
+    const prevStart = parseInt((prev.source_span || '').match(/offset (\d+)/)?.[1] || '0', 10);
+    const prevEnd = parseInt((prev.source_span || '').match(/offset \d+-(\d+)/)?.[1] || '0', 10);
+    const curStart = parseInt((items[i].source_span || '').match(/offset (\d+)/)?.[1] || '0', 10);
+    if (curStart < prevEnd && prevEnd > 0) continue;
+    result.push(items[i]);
+  }
+  return result;
+}
+
 function mergeResults(results) {
   const merged = { explanations: [], summaries: [], problems: [] };
   for (const r of results) {
@@ -142,6 +161,9 @@ function mergeResults(results) {
     if (Array.isArray(r.summaries)) merged.summaries.push(...r.summaries);
     if (Array.isArray(r.problems)) merged.problems.push(...r.problems);
   }
+  merged.explanations = dedupeBySpan(merged.explanations);
+  merged.summaries = dedupeBySpan(merged.summaries);
+  merged.problems = dedupeBySpan(merged.problems);
   return merged;
 }
 
