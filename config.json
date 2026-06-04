@@ -2,7 +2,7 @@
   "single_user": true,
   "default_topic": "radar-2026",
   "llm": {
-    "model": "MiniMax-M2.7-highspeed",
+    "model": "MiniMax-M3",
     "provider": "polarprivate"
   },
   "embedding": {
