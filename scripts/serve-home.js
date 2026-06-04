@@ -283,10 +283,11 @@ function resolve(reqPath) {
   const libMatch = url.match(/^\/library\/([^/]+)(?:\/(.*))?$/);
   if (libMatch) {
     const topic = libMatch[1];
-    const rest = libMatch[2] || 'index.html';
+    let rest = libMatch[2] || '';
+    if (rest === '' || rest.endsWith('/')) rest += 'index.html';
     const outRoot = path.join(DATA_ROOT, topic, 'output');
     if (!fs.existsSync(outRoot)) return null;
-    return safeJoin(outRoot, rest === '' ? 'index.html' : rest);
+    return safeJoin(outRoot, rest);
   }
   return null;
 }
