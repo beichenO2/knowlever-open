@@ -695,8 +695,13 @@ function run(wikiDir, treePath, outputDir, topic) {
   const graph = buildGraph(tree, wikiDir, allSlugs);
   fs.writeFileSync(path.join(siteDir, 'graph.json'), JSON.stringify(graph, null, 2), 'utf-8');
 
+  const wikiFileSlugsForGraph = new Set(fs.readdirSync(wikiDir)
+    .filter(f => f.endsWith('.md'))
+    .map(f => f.replace(/\.md$/, '')));
+  const allKnownSlugs = new Set([...allSlugs, ...wikiFileSlugsForGraph]);
+
   // Build backlinks index
-  const incoming = buildIncomingLinks(wikiDir, allSlugs);
+  const incoming = buildIncomingLinks(wikiDir, allKnownSlugs);
 
   // Build content sequence for prev/next
   const sequence = buildContentSequence(tree);
@@ -719,7 +724,11 @@ function run(wikiDir, treePath, outputDir, topic) {
   let pagesBuilt = 0;
   let skipped = 0;
   const contentSlugs = new Set();
-  for (const slug of allSlugs) {
+  const wikiFileSlugs = fs.readdirSync(wikiDir)
+    .filter(f => f.endsWith('.md'))
+    .map(f => f.replace(/\.md$/, ''));
+  const allBuildSlugs = new Set([...allSlugs, ...wikiFileSlugs]);
+  for (const slug of allBuildSlugs) {
     const { frontmatter, content } = readWikiPage(wikiDir, slug);
     if (!content.trim()) {
       skipped++;
