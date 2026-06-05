@@ -84,7 +84,8 @@ function buildGraph(tree, wikiDir, allSlugs) {
     const linkRe = /\[\[([^\]]+)\]\]/g;
     let m;
     while ((m = linkRe.exec(md)) !== null) {
-      const target = m[1];
+      const raw = m[1];
+      const target = raw.includes('|') ? raw.split('|')[0].trim() : raw.trim();
       if (allSlugs.has(target) && target !== slug) {
         const existingEdge = edges.find(e => e.source === slug && e.target === target);
         if (!existingEdge) {
@@ -162,7 +163,8 @@ function markdownToHtml(md) {
     .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
     .replace(/^---$/gm, '<hr>');
 
-  // [[slug]] → wiki link (client-side will resolve, but provide fallback)
+  // [[slug]] or [[slug|display]] → wiki link
+  html = html.replace(/\[\[([^\]|]+)\|([^\]]+)\]\]/g, '<a href="$1.html" class="wiki-link">$2</a>');
   html = html.replace(/\[\[([^\]]+)\]\]/g, '<a href="$1.html" class="wiki-link">$1</a>');
 
   // Mermaid code blocks

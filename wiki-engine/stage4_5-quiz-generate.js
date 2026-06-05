@@ -1,132 +1,170 @@
 /**
- * Stage 4.5 — Quiz Generate
+ * Stage 4.5 — Quiz Compile
  *
- * 在 wiki 页面中穿插练习题，并生成对应答案。
+ * Compiles existing problems from normalized/problems/*.problems.yaml into
+ * wiki quiz pages. Uses LLM to generate solutions for problems that lack them.
  *
- * 策略：
- *   - 每个叶子页面末尾追加 1-3 道练习题
- *   - 题目类型：选择题 / 简答题 / 计算题（根据内容自动判断）
- *   - 答案单独写入 answers/{slug}-answers.md
- *   - 页面内以折叠标签包裹答案提示
- *
- * 输入：wiki/*.md + tree.json
- * 输出：wiki/*.md (追加题目) + answers/*.md
+ * Input:  data/topics/<topic>/normalized/problems/*.problems.yaml
+ *         wiki/*.md (for context when generating solutions)
+ *         tree.json (for page mapping)
+ * Output: wiki/quiz-<source-slug>.md (one quiz page per problems file)
+ *         wiki index updated with quiz page links
  */
 
 const fs = require('fs');
 const path = require('path');
+const yaml = require('js-yaml');
 const { chatCompletion } = require('../lib/llm-proxy');
 
-const QUIZ_PROMPT = `你是一位严谨的出题教师。请基于以下知识页面内容，出 2 道练习题。
+const SOLVE_PROMPT = `你是一位严谨的教师。请为以下练习题提供详细的解答过程。
 
-知识页面内容：
+题目：
 ---
-{content}
+{problem}
 ---
 
-出题要求：
-1. 题目类型从以下选择（根据内容特点）：
-   - 选择题（4 选 1，含干扰项设计）
-   - 简答题（考查概念理解）
-   - 计算题（如果内容涉及公式/数值）
-2. 每题标注类型和分值（选择 2分，简答 5分，计算 8分）
-3. 题目必须从页面内容出发，不能超纲
-4. 干扰项要有区分度（常见误解作为干扰）
+要求：
+1. 写出完整的解题步骤
+2. 如有公式请用 LaTeX（$...$）书写
+3. 如有计算请给出数值结果
+4. 保持简洁，不要重复题目
 
-输出格式（严格遵守）：
+直接输出解答，不要加前缀。`;
 
-### 练习题
-
-**题 1**（{类型}，{分值}分）
-
-{题目正文}
-
-{如果是选择题：}
-A. ...
-B. ...
-C. ...
-D. ...
-
-**题 2**（{类型}，{分值}分）
-
-{题目正文}
-
----ANSWERS---
-
-**题 1 答案**
-
-{完整解答过程}
-
-**题 2 答案**
-
-{完整解答过程}`;
-
-async function generateQuiz(pageContent, slug) {
-  const prompt = QUIZ_PROMPT.replace('{content}', pageContent.slice(0, 3000));
-
+function parseYaml(text) {
   try {
-    const response = await chatCompletion({
-      messages: [{ role: 'user', content: prompt }],
-      temperature: 0.4,
-      max_tokens: 131072,
-    });
-
-    const output = response?.choices?.[0]?.message?.content || '';
-    const parts = output.split('---ANSWERS---');
-    const questions = (parts[0] || '').trim();
-    const answers = (parts[1] || '').trim();
-    return { questions, answers };
+    const doc = yaml.load(text);
+    if (!doc?.problems || !Array.isArray(doc.problems)) return [];
+    return doc.problems.map((p, i) => ({
+      id: p.id || `prob_${i + 1}`,
+      content: (p.content || '').trim(),
+      has_solution: p.has_solution === true,
+      source_span: p.source_span || '',
+    }));
   } catch (e) {
-    console.error(`[Stage 4.5] Quiz gen failed for ${slug}: ${e.message}`);
-    return { questions: '', answers: '' };
+    console.error(`[Stage 4.5] YAML parse error: ${e.message}`);
+    return [];
   }
 }
 
-async function run(wikiDir, treePath, outputDir, topic) {
-  console.log(`[Stage 4.5] Quiz Generate: ${topic}`);
+function slugify(name) {
+  return name
+    .replace(/\.problems\.yaml$/, '')
+    .replace(/[^\w\u4e00-\u9fff-]/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+}
 
-  const tree = JSON.parse(fs.readFileSync(treePath, 'utf-8'));
-  const answersDir = path.join(outputDir, 'answers');
-  fs.mkdirSync(answersDir, { recursive: true });
-
-  function collectLeaves(node) {
-    if (!node.children || node.children.length === 0) return [node];
-    return node.children.flatMap(collectLeaves);
+async function solveProblem(content) {
+  const prompt = SOLVE_PROMPT.replace('{problem}', content.slice(0, 6000));
+  try {
+    const response = await chatCompletion({
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.3,
+      max_tokens: 4096,
+    });
+    return response?.choices?.[0]?.message?.content?.trim() || '';
+  } catch (e) {
+    console.error(`[Stage 4.5] LLM solve failed: ${e.message}`);
+    return '';
   }
-  const leaves = collectLeaves(tree);
+}
 
-  let quizCount = 0;
-  for (const leaf of leaves) {
-    const slug = leaf.page_slug;
-    const wikiPath = path.join(wikiDir, `${slug}.md`);
-    if (!fs.existsSync(wikiPath)) continue;
+function separateContentAndSolution(content) {
+  const solutionMarkers = ['\n解：', '\n 解：', '\n解:'];
+  for (const marker of solutionMarkers) {
+    const idx = content.indexOf(marker);
+    if (idx !== -1) {
+      return {
+        question: content.slice(0, idx).trim(),
+        existingSolution: content.slice(idx).trim(),
+      };
+    }
+  }
+  return { question: content.trim(), existingSolution: '' };
+}
 
-    const content = fs.readFileSync(wikiPath, 'utf-8');
+async function run(wikiDir, treePath, outputDir, topic) {
+  console.log(`[Stage 4.5] Quiz Compile: ${topic}`);
 
-    // Skip pages with very little content
-    if (content.length < 200) continue;
+  const dataRoot = path.resolve(outputDir, '..');
+  const problemsDir = path.join(dataRoot, 'normalized', 'problems');
 
-    const { questions, answers } = await generateQuiz(content, slug);
-    if (!questions) continue;
+  if (!fs.existsSync(problemsDir)) {
+    console.log('[Stage 4.5] No problems/ directory found — skipping.');
+    return;
+  }
 
-    // Append quiz to wiki page
-    const quizSection = `\n\n---\n\n${questions}\n\n<details>\n<summary>💡 点击查看答案提示</summary>\n\n参见答案文档：answers/${slug}-answers.md\n\n</details>\n`;
-    fs.writeFileSync(wikiPath, content + quizSection, 'utf-8');
+  const files = fs.readdirSync(problemsDir).filter(f => f.endsWith('.problems.yaml'));
+  if (files.length === 0) {
+    console.log('[Stage 4.5] No .problems.yaml files found — skipping.');
+    return;
+  }
 
-    // Write answers file
-    if (answers) {
-      fs.writeFileSync(
-        path.join(answersDir, `${slug}-answers.md`),
-        `# ${leaf.label} — 练习题答案\n\n${answers}\n`,
-        'utf-8'
-      );
+  console.log(`[Stage 4.5] Found ${files.length} problem files`);
+
+  let totalProblems = 0;
+  let solvedCount = 0;
+  let pagesWritten = 0;
+
+  for (const file of files) {
+    const raw = fs.readFileSync(path.join(problemsDir, file), 'utf-8');
+    const problems = parseYaml(raw);
+
+    if (problems.length === 0) {
+      console.log(`[Stage 4.5] ${file}: no problems parsed — skipping`);
+      continue;
     }
 
-    quizCount++;
-    console.log(`[Stage 4.5] ${quizCount}/${leaves.length} ${slug}`);
+    const sourceName = file.replace(/\.problems\.yaml$/, '');
+    const slug = `quiz-${slugify(sourceName)}`;
+
+    let md = `---\ntitle: "${sourceName} — 练习题"\ntype: quiz\nsource: "${sourceName}"\n---\n\n`;
+    md += `# ${sourceName} — 练习题\n\n`;
+    md += `> 本页包含 ${problems.length} 道练习题，来自原始教学材料。\n\n`;
+
+    for (let i = 0; i < problems.length; i++) {
+      const prob = problems[i];
+      totalProblems++;
+
+      const { question, existingSolution } = separateContentAndSolution(prob.content);
+
+      md += `## 题 ${i + 1}\n\n`;
+      md += `${question}\n\n`;
+
+      let solution = existingSolution;
+
+      if (!solution && prob.has_solution) {
+        solution = existingSolution;
+      }
+
+      if (!solution) {
+        console.log(`[Stage 4.5] ${sourceName} prob ${i + 1}: no solution, requesting LLM...`);
+        solution = await solveProblem(question);
+        if (solution) solvedCount++;
+      }
+
+      if (solution) {
+        md += `<details>\n<summary>查看解答</summary>\n\n`;
+        md += `${solution}\n\n`;
+        md += `</details>\n\n`;
+      } else {
+        md += `*（暂无解答）*\n\n`;
+      }
+
+      md += `---\n\n`;
+    }
+
+    const quizPath = path.join(wikiDir, `${slug}.md`);
+    fs.writeFileSync(quizPath, md, 'utf-8');
+    pagesWritten++;
+    console.log(`[Stage 4.5] ${pagesWritten}/${files.length} ${slug} (${problems.length} problems)`);
   }
 
-  console.log(`[Stage 4.5] ✅ Generated quizzes for ${quizCount} pages`);
+  console.log(`[Stage 4.5] ✅ Compiled ${totalProblems} problems into ${pagesWritten} quiz pages`);
+  if (solvedCount > 0) {
+    console.log(`[Stage 4.5]    LLM generated ${solvedCount} solutions`);
+  }
 }
 
 if (require.main === module) {
@@ -141,4 +179,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { run, generateQuiz };
+module.exports = { run };

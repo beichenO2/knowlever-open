@@ -38,7 +38,9 @@ function extractWikiLinks(md) {
   const re = /\[\[([^\]]+)\]\]/g;
   let m;
   while ((m = re.exec(md)) !== null) {
-    links.push({ type: 'wiki', target: m[1], offset: m.index });
+    const raw = m[1];
+    const target = raw.includes('|') ? raw.split('|')[0].trim() : raw.trim();
+    links.push({ type: 'wiki', target, offset: m.index });
   }
   return links;
 }
