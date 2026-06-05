@@ -2,7 +2,7 @@
   "single_user": true,
   "default_topic": "radar-2026",
   "llm": {
-    "model": "astron-code-latest",
+    "model": "000",
     "provider": "polarprivate"
   },
   "embedding": {
