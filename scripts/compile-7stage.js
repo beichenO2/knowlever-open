@@ -89,9 +89,9 @@ if (fs.existsSync(rawDir) && fs.readdirSync(rawDir).some(f => !f.startsWith('.')
       if (!text || text.trim().length < 20) return true;
       const totalChars = text.length;
       const replacementChars = (text.match(/[\ufffd]/g) || []).length;
-      if (replacementChars / totalChars > 0.1) return true;
+      if (replacementChars / totalChars > 0.001) return true;
       const readable = text.match(/[\u4e00-\u9fff\u3400-\u4dbf\uf000-\uf8ff\u2460-\u24ff\u2000-\u206fa-zA-Z0-9\s.,;:!?()（）、。，；：""''！？【】《》〈〉〔〕…\-—·\n\r\t$\\{}[\]^_+=/<>|~@#%&*"'`°±×÷αβγδεζηθλμνπρστωΩΔΣ∫∂∞≥≤≠≈∈∉]/gu) || [];
-      if (readable.length / totalChars < 0.5) return true;
+      if (readable.length / totalChars < 0.95) return true;
       // PPT-style PDF: pdftotext preserves spatial layout with excessive whitespace
       const lines = text.split('\n');
       const spatialLines = lines.filter(l => (l.match(/  {3,}/g) || []).length >= 2);
@@ -156,16 +156,16 @@ if (fs.existsSync(rawDir) && fs.readdirSync(rawDir).some(f => !f.startsWith('.')
           console.warn(`[pipeline]   ⚠️ VLM OCR failed for ${f}, skipping`);
         }
       } else if (ext === '.docx') {
-        // Try pandoc for docx
+        fs.mkdirSync(srcDir, { recursive: true });
         console.log(`[pipeline] pandoc: ${f}`);
         const r = spawnSync('pandoc', [path.join(rawDir, f), '-t', 'markdown', '-o', path.join(srcDir, 'content.md')], {
           stdio: 'pipe', timeout: 30_000,
         });
         if (r.status === 0) {
-          fs.mkdirSync(srcDir, { recursive: true });
           console.log(`[pipeline]   → ${srcSlug}/content.md (pandoc)`);
         } else {
           console.warn(`[pipeline]   ⚠️ pandoc failed for ${f}, skipping`);
+          fs.rmSync(srcDir, { recursive: true, force: true });
         }
       }
     }
@@ -257,8 +257,11 @@ runNode('wiki-engine/stage3-tree-construct.js', [clustersPath, atomsDir, outputD
 const treePath = path.join(outputDir, 'tree.json');
 runNode('wiki-engine/stage4-page-compose.js', [treePath, atomsDir, outputDir, topic], 'Stage 4: Page Compose');
 
-// Stage 5: Link Validate (non-blocking — stub links are expected in open version)
+// Stage 4.5: Quiz Generate (before link validation so quiz links get validated too)
 const wikiDir = path.join(outputDir, 'wiki');
+runNode('wiki-engine/stage4_5-quiz-generate.js', [wikiDir, treePath, outputDir, topic], 'Stage 4.5: Quiz Generate');
+
+// Stage 5: Link Validate (non-blocking — stub links are expected in open version)
 {
   const scriptPath = path.resolve(ROOT, 'wiki-engine/stage5-link-validate.js');
   console.log(`\n[pipeline] === Stage 5: Link Validate ===`);
@@ -278,9 +281,6 @@ const wikiDir = path.join(outputDir, 'wiki');
     console.warn(`[pipeline] Stage 5 exited ${r.status} — continuing (link errors are advisory).`);
   }
 }
-
-// Stage 4.5: Quiz Generate (after link validation, before site build)
-runNode('wiki-engine/stage4_5-quiz-generate.js', [wikiDir, treePath, outputDir, topic], 'Stage 4.5: Quiz Generate');
 
 // Stage 6: Site Build
 if (!skipSite) {

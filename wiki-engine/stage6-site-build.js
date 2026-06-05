@@ -110,9 +110,11 @@ function buildIncomingLinks(wikiDir, allSlugs) {
     const linkRe = /\[\[([^\]]+)\]\]/g;
     let m;
     while ((m = linkRe.exec(md)) !== null) {
-      if (allSlugs.has(m[1]) && m[1] !== sourceSlug) {
-        if (!incoming[m[1]].includes(sourceSlug)) {
-          incoming[m[1]].push(sourceSlug);
+      const raw = m[1];
+      const target = raw.includes('|') ? raw.split('|')[0].trim() : raw.trim();
+      if (allSlugs.has(target) && target !== sourceSlug) {
+        if (!incoming[target].includes(sourceSlug)) {
+          incoming[target].push(sourceSlug);
         }
       }
     }
@@ -163,6 +165,21 @@ function markdownToHtml(md) {
     .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
     .replace(/^---$/gm, '<hr>');
 
+  // Numbered lists
+  html = html.replace(/^\d+\. (.+)$/gm, '<li class="ol-item">$1</li>');
+  html = html.replace(/((?:<li class="ol-item">.*<\/li>\n?)+)/g, '<ol>$1</ol>');
+  html = html.replace(/ class="ol-item"/g, '');
+
+  // Markdown tables
+  html = html.replace(/^(\|.+\|)\n(\|[\s:|-]+\|)\n((?:\|.+\|\n?)+)/gm, (match, headerRow, alignRow, bodyRows) => {
+    const headers = headerRow.split('|').filter(c => c.trim()).map(c => `<th>${c.trim()}</th>`).join('');
+    const rows = bodyRows.trim().split('\n').map(row => {
+      const cells = row.split('|').filter(c => c.trim()).map(c => `<td>${c.trim()}</td>`).join('');
+      return `<tr>${cells}</tr>`;
+    }).join('');
+    return `<table><thead><tr>${headers}</tr></thead><tbody>${rows}</tbody></table>`;
+  });
+
   // [[slug]] or [[slug|display]] → wiki link
   html = html.replace(/\[\[([^\]|]+)\|([^\]]+)\]\]/g, '<a href="$1.html" class="wiki-link">$2</a>');
   html = html.replace(/\[\[([^\]]+)\]\]/g, '<a href="$1.html" class="wiki-link">$1</a>');
@@ -187,6 +204,10 @@ function markdownToHtml(md) {
   html = html.replace(/(<\/h[1-6]>)<\/p>/g, '$1');
   html = html.replace(/<p>(<ul>)/g, '$1');
   html = html.replace(/(<\/ul>)<\/p>/g, '$1');
+  html = html.replace(/<p>(<ol>)/g, '$1');
+  html = html.replace(/(<\/ol>)<\/p>/g, '$1');
+  html = html.replace(/<p>(<table>)/g, '$1');
+  html = html.replace(/(<\/table>)<\/p>/g, '$1');
   html = html.replace(/<p>(<blockquote>)/g, '$1');
   html = html.replace(/(<\/blockquote>)<\/p>/g, '$1');
   html = html.replace(/<p>(<hr>)<\/p>/g, '$1');
@@ -303,7 +324,14 @@ function pageTemplate({ title, sidebar, toc, breadcrumb, content, backlinks, rel
     .tree-sidebar a:hover { background: var(--border, #e2e8f0); color: var(--accent, #2563eb); }
     .tree-sidebar .active > a { background: #dbeafe; color: #1d4ed8; font-weight: 600; }
     .tree-sidebar li ul { margin-left: 0.8rem; border-left: 1px solid var(--border, #e2e8f0); padding-left: 0.4rem; }
-    .tri-content { padding: 2rem 3rem; max-width: 54rem; overflow-wrap: break-word; }
+    .tri-content { padding: 2rem 3rem; max-width: 54rem; overflow-wrap: break-word; line-height: 1.75; }
+    .tri-content table { border-collapse: collapse; width: 100%; margin: 1rem 0; font-size: 0.92rem; }
+    .tri-content th, .tri-content td { border: 1px solid var(--border, #e2e8f0); padding: 0.5rem 0.75rem; text-align: left; }
+    .tri-content th { background: var(--bg-secondary, #f8fafc); font-weight: 600; }
+    .tri-content tr:nth-child(even) { background: var(--bg-secondary, #f8fafc); }
+    .tri-content ol { padding-left: 1.5rem; margin: 0.5rem 0; }
+    .tri-content ul { padding-left: 1.5rem; margin: 0.5rem 0; }
+    .tri-content .katex-display { margin: 1rem 0; overflow-x: auto; }
     .right-sidebar { padding: 2rem 1rem; position: sticky; top: 0; height: 100vh; overflow-y: auto; border-left: 1px solid var(--border, #f0f0f0); }
     .right-sidebar h4 { font-size: 0.9rem; margin-bottom: 0.5rem; color: var(--text-muted, #64748b); }
     .right-sidebar ul { list-style: none; padding: 0; font-size: 0.82rem; }
@@ -763,8 +791,8 @@ function run(wikiDir, treePath, outputDir, topic) {
   // Index page (demo-parity style)
   fs.writeFileSync(path.join(siteDir, 'index.html'), buildIndexPage(tree, graph, topic, contentSlugs, wikiDir), 'utf-8');
 
-  // site-page-data.js for search/nav
-  fs.writeFileSync(path.join(siteDir, 'assets', 'data', 'site-page-data.js'), generateSitePageData(allSlugs, wikiDir, nodeMap), 'utf-8');
+  // site-page-data.js for search/nav (includes quiz and non-tree pages)
+  fs.writeFileSync(path.join(siteDir, 'assets', 'data', 'site-page-data.js'), generateSitePageData(allKnownSlugs, wikiDir, nodeMap), 'utf-8');
 
   // Tech decisions page
   const techDecisions = loadTechDecisions(outputDir);

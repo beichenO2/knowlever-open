@@ -4,11 +4,14 @@
  * Compiles existing problems from normalized/problems/*.problems.yaml into
  * wiki quiz pages. Uses LLM to generate solutions for problems that lack them.
  *
+ * Knowledge injection: reads tree.json + atoms to find which wiki page each
+ * problem maps to, then injects that page's content as context for the LLM.
+ *
  * Input:  data/topics/<topic>/normalized/problems/*.problems.yaml
- *         wiki/*.md (for context when generating solutions)
- *         tree.json (for page mapping)
+ *         wiki/*.md (knowledge context for solution generation)
+ *         tree.json (problem→atom→page mapping)
+ *         atoms/*.json (source offsets for mapping)
  * Output: wiki/quiz-<source-slug>.md (one quiz page per problems file)
- *         wiki index updated with quiz page links
  */
 
 const fs = require('fs');
@@ -16,20 +19,41 @@ const path = require('path');
 const yaml = require('js-yaml');
 const { chatCompletion } = require('../lib/llm-proxy');
 
-const SOLVE_PROMPT = `你是一位严谨的教师。请为以下练习题提供详细的解答过程。
+const SOLVE_PROMPT_WITH_CONTEXT = `你是一位严谨的教师。请基于下方提供的知识背景，为练习题提供详细的解答。
 
-题目：
+## 知识背景
+---
+{context}
+---
+
+## 题目
 ---
 {problem}
 ---
 
 要求：
-1. 写出完整的解题步骤
-2. 如有公式请用 LaTeX（$...$）书写
-3. 如有计算请给出数值结果
-4. 保持简洁，不要重复题目
+1. 用"为了实现XX → 有XX困难 → 用XX方法 → 结果XX"的逻辑结构讲解
+2. 术语和表述与知识背景保持一致
+3. 公式用 LaTeX（$...$）书写
+4. 如有计算给出数值结果
+5. 不要重复题目
 
-直接输出解答，不要加前缀。`;
+直接输出解答。`;
+
+const SOLVE_PROMPT_NO_CONTEXT = `你是一位严谨的教师。请为以下练习题提供详细的解答过程。
+
+## 题目
+---
+{problem}
+---
+
+要求：
+1. 用"为了实现XX → 有XX困难 → 用XX方法 → 结果XX"的逻辑结构讲解
+2. 公式用 LaTeX（$...$）书写
+3. 如有计算给出数值结果
+4. 不要重复题目
+
+直接输出解答。`;
 
 function parseYaml(text) {
   try {
@@ -55,13 +79,110 @@ function slugify(name) {
     .replace(/^-|-$/g, '');
 }
 
-async function solveProblem(content) {
-  const prompt = SOLVE_PROMPT.replace('{problem}', content.slice(0, 6000));
+/**
+ * Build atom→page_slug reverse index from tree.json.
+ * Walks the tree recursively; leaf-cluster nodes have `atoms` arrays.
+ */
+function buildAtomPageIndex(node) {
+  const index = {};
+  if (node.atoms && Array.isArray(node.atoms)) {
+    for (const atomId of node.atoms) {
+      index[atomId] = node.page_slug;
+    }
+  }
+  if (node.children) {
+    for (const child of node.children) {
+      Object.assign(index, buildAtomPageIndex(child));
+    }
+  }
+  return index;
+}
+
+/**
+ * Load all atoms from atoms/*.json, keyed by atom.id.
+ */
+function loadAtoms(atomsDir) {
+  const atoms = {};
+  if (!fs.existsSync(atomsDir)) return atoms;
+  const files = fs.readdirSync(atomsDir).filter(f => f.endsWith('.json'));
+  for (const f of files) {
+    try {
+      const list = JSON.parse(fs.readFileSync(path.join(atomsDir, f), 'utf-8'));
+      for (const a of (Array.isArray(list) ? list : [])) {
+        atoms[a.id] = a;
+      }
+    } catch (e) {
+      console.warn(`[Stage 4.5] Failed to load atoms file ${f}: ${e.message}`);
+    }
+  }
+  return atoms;
+}
+
+/**
+ * Build source_id → Set<page_slug> index.
+ * Maps each original source to the wiki pages that contain its atoms.
+ */
+function buildSourcePageIndex(atoms, atomPageIndex) {
+  const index = {};
+  for (const [atomId, atom] of Object.entries(atoms)) {
+    const sourceId = atom.evidence?.source_id || '';
+    if (!sourceId) continue;
+    const pageSlug = atomPageIndex[atomId];
+    if (!pageSlug) continue;
+    if (!index[sourceId]) index[sourceId] = new Set();
+    index[sourceId].add(pageSlug);
+  }
+  return index;
+}
+
+/**
+ * Find relevant wiki page slugs for a problem source.
+ * Uses source_id matching: all atoms from the same original source file
+ * map to specific wiki pages via the tree structure.
+ */
+function findRelevantPages(sourceName, sourcePageIndex) {
+  for (const [sourceId, pages] of Object.entries(sourcePageIndex)) {
+    const normalizedId = sourceId.replace(/[^a-z0-9\u4e00-\u9fff]/gi, '').toLowerCase();
+    const normalizedName = sourceName.replace(/[^a-z0-9\u4e00-\u9fff]/gi, '').toLowerCase();
+    if (normalizedId === normalizedName || normalizedId.includes(normalizedName) || normalizedName.includes(normalizedId)) {
+      return [...pages];
+    }
+  }
+  return [];
+}
+
+/**
+ * Read wiki page overview section (before first ### heading).
+ * This is the "总述" part that summarizes the page's core knowledge.
+ */
+function readWikiPageOverview(wikiDir, slug) {
+  const filePath = path.join(wikiDir, `${slug}.md`);
+  if (!fs.existsSync(filePath)) return '';
+  let content = fs.readFileSync(filePath, 'utf-8');
+  content = content.replace(/^---[\s\S]*?---\n*/, '');
+  const firstHeading = content.indexOf('\n### ');
+  if (firstHeading > 0) {
+    content = content.slice(0, firstHeading);
+  }
+  return content.trim();
+}
+
+async function solveProblem(content, knowledgeContext) {
+  let prompt;
+  if (knowledgeContext && knowledgeContext.length > 50) {
+    prompt = SOLVE_PROMPT_WITH_CONTEXT
+      .replace('{context}', knowledgeContext.slice(0, 20000))
+      .replace('{problem}', content.slice(0, 6000));
+  } else {
+    prompt = SOLVE_PROMPT_NO_CONTEXT
+      .replace('{problem}', content.slice(0, 6000));
+  }
+
   try {
     const response = await chatCompletion({
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.3,
-      max_tokens: 4096,
+      max_tokens: 100000,
     });
     return response?.choices?.[0]?.message?.content?.trim() || '';
   } catch (e) {
@@ -101,10 +222,29 @@ async function run(wikiDir, treePath, outputDir, topic) {
     return;
   }
 
+  let tree = null;
+  let atomPageIndex = {};
+  let atoms = {};
+
+  if (fs.existsSync(treePath)) {
+    try {
+      tree = JSON.parse(fs.readFileSync(treePath, 'utf-8'));
+      atomPageIndex = buildAtomPageIndex(tree);
+      console.log(`[Stage 4.5] Loaded tree.json: ${Object.keys(atomPageIndex).length} atom→page mappings`);
+    } catch (e) {
+      console.warn(`[Stage 4.5] Failed to load tree.json: ${e.message}`);
+    }
+  }
+
+  const atomsDir = path.join(outputDir, 'atoms');
+  atoms = loadAtoms(atomsDir);
+  const sourcePageIndex = buildSourcePageIndex(atoms, atomPageIndex);
+  console.log(`[Stage 4.5] Loaded ${Object.keys(atoms).length} atoms, ${Object.keys(sourcePageIndex).length} source→page mappings`);
   console.log(`[Stage 4.5] Found ${files.length} problem files`);
 
   let totalProblems = 0;
   let solvedCount = 0;
+  let contextHits = 0;
   let pagesWritten = 0;
 
   for (const file of files) {
@@ -117,7 +257,8 @@ async function run(wikiDir, treePath, outputDir, topic) {
     }
 
     const sourceName = file.replace(/\.problems\.yaml$/, '');
-    const slug = `quiz-${slugify(sourceName)}`;
+    const sourceSlug = slugify(sourceName);
+    const slug = `quiz-${sourceSlug}`;
 
     let md = `---\ntitle: "${sourceName} — 练习题"\ntype: quiz\nsource: "${sourceName}"\n---\n\n`;
     md += `# ${sourceName} — 练习题\n\n`;
@@ -134,13 +275,22 @@ async function run(wikiDir, treePath, outputDir, topic) {
 
       let solution = existingSolution;
 
-      if (!solution && prob.has_solution) {
-        solution = existingSolution;
-      }
-
       if (!solution) {
+        const pageSlugs = findRelevantPages(sourceName, sourcePageIndex);
+        let knowledgeContext = '';
+        if (pageSlugs.length > 0) {
+          knowledgeContext = pageSlugs
+            .map(s => readWikiPageOverview(wikiDir, s))
+            .filter(c => c.length > 0)
+            .join('\n\n---\n\n');
+          if (knowledgeContext.length > 0) {
+            contextHits++;
+            console.log(`[Stage 4.5] ${sourceName} prob ${i + 1}: injecting ${pageSlugs.length} wiki pages as context`);
+          }
+        }
+
         console.log(`[Stage 4.5] ${sourceName} prob ${i + 1}: no solution, requesting LLM...`);
-        solution = await solveProblem(question);
+        solution = await solveProblem(question, knowledgeContext);
         if (solution) solvedCount++;
       }
 
@@ -163,7 +313,7 @@ async function run(wikiDir, treePath, outputDir, topic) {
 
   console.log(`[Stage 4.5] ✅ Compiled ${totalProblems} problems into ${pagesWritten} quiz pages`);
   if (solvedCount > 0) {
-    console.log(`[Stage 4.5]    LLM generated ${solvedCount} solutions`);
+    console.log(`[Stage 4.5]    LLM generated ${solvedCount} solutions (${contextHits} with knowledge context)`);
   }
 }
 

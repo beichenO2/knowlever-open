@@ -67,15 +67,18 @@ const EXTRACT_TOOL = {
   },
 };
 
-const SYSTEM_PROMPT = `你是知识结晶化引擎。
+const SYSTEM_PROMPT = `你是知识总结引擎。先通读全文，理解其核心逻辑和知识结构。
 
-调用 emit_atoms 工具把文本切成知识原子。规则：
-- 一个 atom 承载一个 idea。一段文字含多个 idea 必须拆成多个 atom。
-- claim ≤ 40 中文字，让高中生能充分理解。
-- evidence_quote 必须是原文连续片段（不要改写、不要省略号）。
+然后调用 emit_atoms 输出你总结出的每个核心知识点。每个 atom 应该是你理解后的总结，而不是机械复制原文的一段。
+
+规则：
+- claim 是你总结的核心表述（≤ 40 中文字），让高中生能充分理解。不是原文剪贴。
+- evidence_quote 仍然引用原文连续片段（保证可追溯），≤ 200 中文字，不改写。
 - evidence_char_offset 用文本开头给出的"起始偏移"加上片段在文本里的相对位置。
-- kind 必须是闭集之一：${KIND_ENUM.join(' / ')}。
+- kind 反映知识的职能角色，必须是闭集之一：${KIND_ENUM.join(' / ')}。
 - draft_tags 给 2-5 个关键词。
+- 要抽取概念间的因果关系和前置条件（用 claim 表达"A 导致 B""A 是 B 的前提"等）。
+- 一个 atom 承载一个核心知识点。一段文字含多个知识点必须拆成多个 atom。
 - 不要写整页内容、不要起 slug、不要判断父子关系——这些由后续 stage 完成。`;
 
 function buildUserPrompt(sourceId, content, startOffset) {
@@ -128,7 +131,7 @@ async function crystallize(sourceId, contentPath, outputDir, topic, options = {}
       tools: [EXTRACT_TOOL],
       tool_choice: { type: 'function', function: { name: 'emit_atoms' } },
       temperature: 0.1,
-      max_tokens: 131072,
+      max_tokens: 98000,
     });
 
     const choice = response?.choices?.[0];
@@ -158,7 +161,7 @@ async function crystallize(sourceId, contentPath, outputDir, topic, options = {}
         || raw.char_offset
         || [offset, offset + chunk.length];
       const atom = {
-        id: `atom-${topic}-${sourceId.replace(/[^a-z0-9]/gi, '-').toLowerCase()}-${String(seq).padStart(3, '0')}`,
+        id: `atom-${topic}-${sourceId.replace(/[^a-z0-9\u4e00-\u9fff]/gi, '-').replace(/-+/g, '-').toLowerCase()}-${String(seq).padStart(3, '0')}`,
         claim: raw.claim,
         evidence: {
           quote: evidenceQuote,
@@ -214,7 +217,7 @@ async function crystallize(sourceId, contentPath, outputDir, topic, options = {}
         tools: [DEDUP_TOOL],
         tool_choice: { type: 'function', function: { name: 'report_duplicates' } },
         temperature: 0.05,
-        max_tokens: 16384,
+        max_tokens: 100000,
       });
 
       const dedupChoice = dedupResp?.choices?.[0];
@@ -264,7 +267,7 @@ async function crystallize(sourceId, contentPath, outputDir, topic, options = {}
         tools: [COVERAGE_TOOL],
         tool_choice: { type: 'function', function: { name: 'coverage_report' } },
         temperature: 0.1,
-        max_tokens: 16384,
+        max_tokens: 100000,
       });
 
       const covChoice = coverageResp?.choices?.[0];
@@ -284,17 +287,21 @@ async function crystallize(sourceId, contentPath, outputDir, topic, options = {}
 
   const atomsDir = path.join(outputDir, 'atoms');
   fs.mkdirSync(atomsDir, { recursive: true });
-  const outputPath = path.join(atomsDir, `${sourceId.replace(/[^a-z0-9]/gi, '-')}.json`);
+  const outputPath = path.join(atomsDir, `${sourceId.replace(/[^a-z0-9\u4e00-\u9fff]/gi, '-').replace(/-+/g, '-')}.json`);
   fs.writeFileSync(outputPath, JSON.stringify(dedupedAtoms, null, 2), 'utf-8');
 
   recordDecision(outputDir, topic, {
     stage: 'stage-1',
     name: 'crystallize LLM',
     chosen: getModel(),
-    rationale: `使用 function calling (emit_atoms tool)。chunkSize=${chunkSize}, overlap=${overlap}。tool schema 把 claim/evidence_quote/evidence_char_offset/kind/draft_tags 全部声明为 required，杜绝字段缺失。`,
+    rationale: `[2026-06-05 决策] 从"机械切分"改为"理解后总结"。`
+      + ` 依据 EACL 2026 ARC 框架和 Selective Abstraction 论文：原子化擅长精确定位和验证，整体总结擅长完整性和连贯性。`
+      + ` 方案：保留 emit_atoms tool schema（后续 Stage 2/3 依赖），但 prompt 引导 LLM 先通读理解再总结，claim 是总结而非剪贴。`
+      + ` 技术参数：chunkSize=${chunkSize}, overlap=${overlap}。tool schema required fields 不变。`,
     known_limits: [
       'LLM 仍可能误判 char_offset（建议 Stage 5 evidence offset 校验闸门）',
       'claim 偶有超长情况（后处理截断）',
+      '"理解后总结"依赖 LLM 的全局理解能力，chunk 过大时效果可能下降',
     ],
     switch_conditions: [
       '出现专门的知识结晶化模型（fine-tuned）',

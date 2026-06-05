@@ -129,7 +129,7 @@ async function generateGroupLabel(childLabels, options = {}) {
         content: `以下是一组相关知识概念的标题：\n${childLabels.map(l => `- ${l}`).join('\n')}\n\n请用一个 ≤ 10 字的中文短语概括它们的共同主题。只输出短语，不要解释。`,
       }],
       temperature: 0.1,
-      max_tokens: 256,
+      max_tokens: 20000,
     });
     const label = response?.choices?.[0]?.message?.content?.trim();
     if (label && label.length <= 20) return label;
