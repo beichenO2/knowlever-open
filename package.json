@@ -6,6 +6,7 @@
   "scripts": {
     "setup": "bash scripts/setup.sh",
     "compile": "node scripts/compile-7stage.js",
+    "compile:force": "node scripts/compile-7stage.js --force",
     "normalize-formulas": "node lib/normalize-formulas.js",
     "vlm-ocr": "node lib/vlm-formula-ocr.js",
     "vlm-ocr:check": "node lib/vlm-formula-ocr.js --check",

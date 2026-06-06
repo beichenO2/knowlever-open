@@ -20,13 +20,15 @@ function parseArgs() {
   let skipEmbed = false;
   let skipPdf = false;
   let skipSite = false;
+  let force = false;
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--topic' && args[i + 1]) topic = args[++i];
     else if (args[i] === '--skip-embed') skipEmbed = true;
     else if (args[i] === '--skip-pdf') skipPdf = true;
     else if (args[i] === '--skip-site') skipSite = true;
+    else if (args[i] === '--force') force = true;
   }
-  return { topic, skipEmbed, skipPdf, skipSite };
+  return { topic, skipEmbed, skipPdf, skipSite, force };
 }
 
 function runNode(script, args, label) {
@@ -59,8 +61,9 @@ function runPython(script, args, label) {
   }
 }
 
-const { topic, skipEmbed, skipPdf, skipSite } = parseArgs();
+const { topic, skipEmbed, skipPdf, skipSite, force } = parseArgs();
 const t = ensureTopicDirs(topic);
+const { loadState, saveState, checkStage, recordStage, hashFile } = require('../lib/compile-state');
 
 console.log(`[pipeline] 🚀 7-Stage Pipeline for topic: ${topic}`);
 console.log(`[pipeline] Data dir: ${t.topicDir}`);
@@ -69,6 +72,9 @@ console.log(`[pipeline] Data dir: ${t.topicDir}`);
 const normalizedDir = t.normalizedDir;
 const outputDir = t.outputDir;
 fs.mkdirSync(outputDir, { recursive: true });
+
+const compileState = force ? { stages: {}, files: {} } : loadState(outputDir);
+if (force) console.log('[pipeline] --force: ignoring compile-state.json, full recompile');
 
 // Step 0: Ingest (if raw/ has files and normalized/ is empty)
 const rawDir = t.rawDir;
@@ -240,16 +246,75 @@ if (fs.existsSync(sumDir)) {
   }
 }
 
-if (typedSources.length === 0) {
-  console.warn('[pipeline] ⚠️ Stage 0.5 produced no typed sources. Falling back to raw content.md...');
-  for (const sourceId of sources) {
-    const contentPath = path.join(normalizedDir, sourceId, 'content.md');
-    if (!fs.existsSync(contentPath)) continue;
-    runNode('wiki-engine/stage1-crystallize.js', [sourceId, contentPath, outputDir, topic], `Stage 1: ${sourceId}`);
+{
+  const { crystallize } = require('../wiki-engine/stage1-crystallize');
+  const CONCURRENCY = 5;
+  const STAGGER_MS = 60_000;
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+  const stage1Items = typedSources.length > 0
+    ? typedSources.map(s => ({ id: s.id, contentPath: s.path }))
+    : sources.map(sourceId => ({ id: sourceId, contentPath: path.join(normalizedDir, sourceId, 'content.md') }))
+        .filter(s => fs.existsSync(s.contentPath));
+
+  if (typedSources.length === 0) {
+    console.warn('[pipeline] ⚠️ Stage 0.5 produced no typed sources. Falling back to raw content.md...');
   }
-} else {
-  for (const { id, path: srcPath } of typedSources) {
-    runNode('wiki-engine/stage1-crystallize.js', [id, srcPath, outputDir, topic], `Stage 1: ${id}`);
+
+  console.log(`\n[pipeline] === Stage 1: Crystallize (${stage1Items.length} sources, concurrency=${CONCURRENCY}) ===`);
+
+  const runStage1 = async () => {
+    let done = 0;
+    for (let batch = 0; batch < stage1Items.length; batch += CONCURRENCY) {
+      const chunk = stage1Items.slice(batch, batch + CONCURRENCY);
+      const promises = chunk.map((item, i) => {
+        const delay = i * STAGGER_MS;
+        return (delay > 0 ? sleep(delay) : Promise.resolve())
+          .then(() => {
+            console.log(`[Stage 1] [worker-${i}] Starting ${item.id}`);
+            return crystallize(item.id, item.contentPath, outputDir, topic);
+          })
+          .then(() => { done++; console.log(`[Stage 1] [worker-${i}] Done ${item.id} (${done}/${stage1Items.length})`); })
+          .catch(e => { done++; console.error(`[Stage 1] [worker-${i}] ❌ ${item.id}: ${e.message}`); });
+      });
+      await Promise.all(promises);
+      console.log(`[Stage 1] Batch complete (${Math.min(batch + CONCURRENCY, stage1Items.length)}/${stage1Items.length})`);
+    }
+  };
+
+  const { execSync } = require('child_process');
+  const tmpScript = path.join(ROOT, '_stage1_parallel.js');
+  // Use synchronous wrapper: serialize the async function as a temp script
+  const stage1Code = `
+    const { crystallize } = require('${path.resolve(ROOT, 'wiki-engine/stage1-crystallize')}');
+    const fs = require('fs');
+    const items = ${JSON.stringify(stage1Items)};
+    const outputDir = ${JSON.stringify(outputDir)};
+    const topic = ${JSON.stringify(topic)};
+    const CONCURRENCY = ${CONCURRENCY};
+    const STAGGER_MS = ${STAGGER_MS};
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+    (async () => {
+      let done = 0;
+      for (let batch = 0; batch < items.length; batch += CONCURRENCY) {
+        const chunk = items.slice(batch, batch + CONCURRENCY);
+        const promises = chunk.map((item, i) => {
+          const delay = i * STAGGER_MS;
+          return (delay > 0 ? sleep(delay) : Promise.resolve())
+            .then(() => { console.log('[Stage 1] [worker-' + i + '] Starting ' + item.id); return crystallize(item.id, item.contentPath, outputDir, topic); })
+            .then(() => { done++; console.log('[Stage 1] [worker-' + i + '] Done ' + item.id + ' (' + done + '/' + items.length + ')'); })
+            .catch(e => { done++; console.error('[Stage 1] [worker-' + i + '] FAIL ' + item.id + ': ' + e.message); });
+        });
+        await Promise.all(promises);
+        console.log('[Stage 1] Batch complete (' + Math.min(batch + CONCURRENCY, items.length) + '/' + items.length + ')');
+      }
+    })();
+  `;
+  fs.writeFileSync(tmpScript, stage1Code, 'utf-8');
+  try {
+    execSync(`node ${JSON.stringify(tmpScript)}`, { stdio: 'inherit', cwd: ROOT });
+  } finally {
+    try { fs.unlinkSync(tmpScript); } catch {}
   }
 }
 
@@ -272,15 +337,49 @@ if (!skipEmbed) {
 
 // Stage 3: Tree Construct
 const clustersPath = path.join(outputDir, 'clusters.json');
-runNode('wiki-engine/stage3-tree-construct.js', [clustersPath, atomsDir, outputDir, topic], 'Stage 3: Tree Construct');
+{
+  const codeFile = path.resolve(ROOT, 'wiki-engine/stage3-tree-construct.js');
+  const { skip, reason } = checkStage(compileState, 'stage3', codeFile, [clustersPath, atomsDir]);
+  if (skip) {
+    console.log(`\n[pipeline] ⏭️ Stage 3: Tree Construct — skipped (${reason})`);
+  } else {
+    console.log(`[pipeline] Stage 3 running: ${reason}`);
+    runNode('wiki-engine/stage3-tree-construct.js', [clustersPath, atomsDir, outputDir, topic], 'Stage 3: Tree Construct');
+    recordStage(compileState, 'stage3', codeFile, [clustersPath, atomsDir]);
+    saveState(outputDir, compileState);
+  }
+}
 
 // Stage 4: Page Compose
 const treePath = path.join(outputDir, 'tree.json');
-runNode('wiki-engine/stage4-page-compose.js', [treePath, atomsDir, outputDir, topic], 'Stage 4: Page Compose');
+{
+  const codeFile = path.resolve(ROOT, 'wiki-engine/stage4-page-compose.js');
+  const { skip, reason } = checkStage(compileState, 'stage4', codeFile, [treePath, atomsDir]);
+  if (skip) {
+    console.log(`\n[pipeline] ⏭️ Stage 4: Page Compose — skipped (${reason})`);
+  } else {
+    console.log(`[pipeline] Stage 4 running: ${reason}`);
+    runNode('wiki-engine/stage4-page-compose.js', [treePath, atomsDir, outputDir, topic], 'Stage 4: Page Compose');
+    recordStage(compileState, 'stage4', codeFile, [treePath, atomsDir]);
+    saveState(outputDir, compileState);
+  }
+}
 
 // Stage 4.5: Quiz Generate (before link validation so quiz links get validated too)
 const wikiDir = path.join(outputDir, 'wiki');
-runNode('wiki-engine/stage4_5-quiz-generate.js', [wikiDir, treePath, outputDir, topic], 'Stage 4.5: Quiz Generate');
+{
+  const codeFile = path.resolve(ROOT, 'wiki-engine/stage4_5-quiz-generate.js');
+  const quizInputDir = path.join(path.resolve(outputDir, '..'), 'normalized', 'problems');
+  const { skip, reason } = checkStage(compileState, 'stage4.5', codeFile, [wikiDir, treePath, quizInputDir]);
+  if (skip) {
+    console.log(`\n[pipeline] ⏭️ Stage 4.5: Quiz Generate — skipped (${reason})`);
+  } else {
+    console.log(`[pipeline] Stage 4.5 running: ${reason}`);
+    runNode('wiki-engine/stage4_5-quiz-generate.js', [wikiDir, treePath, outputDir, topic], 'Stage 4.5: Quiz Generate');
+    recordStage(compileState, 'stage4.5', codeFile, [wikiDir, treePath, quizInputDir]);
+    saveState(outputDir, compileState);
+  }
+}
 
 // Stage 4.6: Formula Display Fix (promote important inline $...$ to display $$...$$)
 {
@@ -313,7 +412,16 @@ runNode('wiki-engine/stage4_5-quiz-generate.js', [wikiDir, treePath, outputDir, 
 
 // Stage 6: Site Build
 if (!skipSite) {
-  runNode('wiki-engine/stage6-site-build.js', [wikiDir, treePath, outputDir, topic], 'Stage 6: Site Build');
+  const codeFile = path.resolve(ROOT, 'wiki-engine/stage6-site-build.js');
+  const { skip, reason } = checkStage(compileState, 'stage6', codeFile, [wikiDir, treePath]);
+  if (skip) {
+    console.log(`\n[pipeline] ⏭️ Stage 6: Site Build — skipped (${reason})`);
+  } else {
+    console.log(`[pipeline] Stage 6 running: ${reason}`);
+    runNode('wiki-engine/stage6-site-build.js', [wikiDir, treePath, outputDir, topic], 'Stage 6: Site Build');
+    recordStage(compileState, 'stage6', codeFile, [wikiDir, treePath]);
+    saveState(outputDir, compileState);
+  }
 } else {
   console.log('\n[pipeline] ⏭️ Skipping Stage 6 (--skip-site)');
 }
@@ -325,6 +433,7 @@ if (!skipPdf) {
   console.log('\n[pipeline] ⏭️ Skipping Stage 7 (--skip-pdf)');
 }
 
+saveState(outputDir, compileState);
 console.log(`\n[pipeline] ✅ 7-Stage Pipeline complete!`);
 console.log(`[pipeline] Wiki:  ${wikiDir}`);
 if (!skipSite) console.log(`[pipeline] Site:  ${path.join(outputDir, 'site')}`);
