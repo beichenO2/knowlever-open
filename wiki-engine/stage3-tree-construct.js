@@ -116,9 +116,10 @@ function semanticGroup(items, targetSize = TARGET_GROUP_SIZE) {
 /**
  * LLM-based classification: given ≤15 items with labels and summaries,
  * ask LLM to group them into categories and name each category.
+ * parentLabel provides the higher-level topic name for context.
  * Returns: { groups: [[item indices]], names: [group name], assessment: string }
  */
-async function llmClassifyAndName(items) {
+async function llmClassifyAndName(items, parentLabel = '') {
   const itemDescriptions = items.map((item, i) => {
     const summary = (item.atoms || []).length > 0
       ? ` — 包含${item.atoms.length}个知识点`
@@ -128,17 +129,28 @@ async function llmClassifyAndName(items) {
     return `${i + 1}. ${item.label}${summary}${childInfo}`;
   }).join('\n');
 
+  const parentContext = parentLabel
+    ? `\n上层主题是「${parentLabel}」。你要生成的分类是它的**子层级**，所以分类名称不能与上层主题重名。`
+    : '';
+
   try {
     const response = await chatCompletion({
       messages: [{
         role: 'user',
-        content: `你是知识体系架构师。以下是${items.length}个同级知识概念：
+        content: `你是知识体系架构师。你正在构建一棵知识树：把零散知识点（叶子）归类为更高级的抽象概念（中间节点）。${parentContext}
+
+以下是 ${items.length} 个同级知识概念，需要你同时为它们分组并一次性命名所有分类：
 
 ${itemDescriptions}
 
+**设计哲学**：
+- 分类标题是「更高级的抽象」——它不是重复上层主题名，而是概括一组子概念的共同本质
+- 好的标题让读者一看就知道这组知识讲什么：如「脉冲测距与分辨」「角度跟踪体制」「目标散射特性」
+- 坏的标题就是把上层主题名抄一遍或用笼统词：如「雷达原理」「信号处理」「基础概念」
+
 请完成以下任务：
 1. 将这些概念分成若干类（每类 2-6 个），形成树状结构
-2. 为每个分类命名（≤10字，能区分不同分类，禁止重名）
+2. 一次性为所有分类命名（≤10字，互不相同，有区分度）
 3. 评价分类是否合理
 
 输出严格 JSON 格式：
@@ -154,7 +166,8 @@ ${itemDescriptions}
 - members 使用上方的序号（1-based）
 - 每个概念只能属于一个分类
 - 所有概念必须被分配
-- ⛔ 分类名称绝对禁止重复！每个分类必须有独立的、可区分的名称。例如：不能有两个都叫"雷达原理"的分类，必须取"雷达测距原理""雷达测角原理"等有区分度的名称
+- ⛔ 所有分类名称必须互不相同，且不能与上层主题名「${parentLabel || '(根)'}」重名
+- 标题要具体、有区分度——用「目标散射特性」而非笼统的「雷达原理」
 - 只输出 JSON`,
       }],
       temperature: 0.1,
@@ -208,20 +221,25 @@ ${itemDescriptions}
 /**
  * Generate a group label using LLM (or fallback to tag-based).
  * Used only when embedding-based grouping is active (>15 items).
+ * parentLabel prevents generating a label that duplicates the higher-level topic.
  */
 async function generateGroupLabel(childLabels, options = {}) {
   if (!options.useLlmLabels) {
     return childLabels.slice(0, 2).join('、') + (childLabels.length > 2 ? ' 等' : '');
   }
 
+  const parentHint = options.parentLabel
+    ? `\n上层主题是「${options.parentLabel}」，你的标题不能与之重名，必须是更具体的子领域概括。`
+    : '';
+
   try {
     const response = await chatCompletion({
       messages: [{
         role: 'user',
-        content: `以下是一组相关知识概念的标题：\n${childLabels.map(l => `- ${l}`).join('\n')}\n\n请用一个 ≤ 10 字的中文短语概括它们的共同主题。只输出短语，不要解释。`,
+        content: `以下是一组相关知识概念的标题：\n${childLabels.map(l => `- ${l}`).join('\n')}${parentHint}\n\n请用一个 ≤ 10 字的中文短语概括它们的共同主题（要具体，不能笼统）。只输出短语，不要解释。`,
       }],
       temperature: 0.1,
-      max_tokens: 20000,
+      max_tokens: 200,
     });
     const label = response?.choices?.[0]?.message?.content?.trim();
     if (label && label.length <= 20) return label;
@@ -259,7 +277,7 @@ async function buildSemanticTree(leafNodes, topic, slugSet, options = {}) {
   if (leafNodes.length <= LLM_CLASSIFY_THRESHOLD) {
     // ≤15 items: LLM does classification + naming + assessment
     console.log(`[Stage 3] Using LLM classify for ${leafNodes.length} items (≤${LLM_CLASSIFY_THRESHOLD})`);
-    const llmResult = await llmClassifyAndName(leafNodes);
+    const llmResult = await llmClassifyAndName(leafNodes, topic);
 
     if (llmResult && llmResult.length > 0) {
       const usedLabels = new Set();
@@ -299,7 +317,7 @@ async function buildSemanticTree(leafNodes, topic, slugSet, options = {}) {
       }
 
       const childLabels = group.map(n => n.label);
-      const label = await generateGroupLabel(childLabels, options);
+      const label = await generateGroupLabel(childLabels, { ...options, parentLabel: topic });
       const slug = ensureUniqueSlug(generateSlug('section', label, gi));
 
       intermediates.push({
