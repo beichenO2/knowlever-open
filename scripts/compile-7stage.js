@@ -261,6 +261,14 @@ runNode('wiki-engine/stage4-page-compose.js', [treePath, atomsDir, outputDir, to
 const wikiDir = path.join(outputDir, 'wiki');
 runNode('wiki-engine/stage4_5-quiz-generate.js', [wikiDir, treePath, outputDir, topic], 'Stage 4.5: Quiz Generate');
 
+// Stage 4.6: Formula Display Fix (promote important inline $...$ to display $$...$$)
+{
+  console.log(`\n[pipeline] === Formula Display Fix ===`);
+  const fixScript = path.resolve(ROOT, 'scripts/fix-formula-display.js');
+  const r = spawnSync('node', [fixScript, wikiDir], { stdio: 'inherit', cwd: ROOT });
+  if (r.status !== 0) console.warn(`[pipeline] ⚠️ Formula fix exited ${r.status} — continuing.`);
+}
+
 // Stage 5: Link Validate (non-blocking — stub links are expected in open version)
 {
   const scriptPath = path.resolve(ROOT, 'wiki-engine/stage5-link-validate.js');
