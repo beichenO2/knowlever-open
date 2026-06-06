@@ -169,6 +169,8 @@ ${isLeaf ? leafStrategy : nonLeafStrategy}
 5. 用"高中生能充分理解"的语言，但保持专业准确。
 6. 不要写 slug、不要写 frontmatter、不要写标题（系统自动加）。
 7. **Mermaid 图表**（v11+）：subgraph 标签必须用引号，节点标签中 < > | & ; 要转义。
+   - **禁止**在 Mermaid 节点标签中使用 slug 前缀（concept-、section-、root- 等），只写中文标题。例如用 "目标截面积" 而不是 "concept-目标截面积"。
+   - **禁止**在 Mermaid 节点标签中使用 LaTeX 公式（$...$），因为 Mermaid SVG 不支持 KaTeX 渲染。用纯文本替代，如 "σ 散射" 而不是 "$\\sigma$ 散射"。
 8. **覆盖率**：每个知识原子都必须在正文中有对应内容。原文证据是权威信源。
 
 请直接输出 Markdown 正文。`;

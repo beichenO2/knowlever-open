@@ -191,6 +191,37 @@ async function solveProblem(content, knowledgeContext) {
   }
 }
 
+/**
+ * Fix common OCR artifacts in quiz content:
+ * - Superscript digits on separate lines (e.g. "5m\n 2" → "$5\\text{m}^2$")
+ * - Unicode sub/superscript characters → LaTeX
+ * - Orphaned whitespace around formulas
+ */
+function cleanOcrArtifacts(text) {
+  let s = text;
+  // Fix: "value m\n                 2" → "$value\\text{m}^2$"
+  s = s.replace(/(\d+(?:\.\d+)?)\s*m\s*\n\s{2,}2\b/g, '$$$1\\text{m}^2$$');
+  // Fix: "value km\n                 2" patterns
+  s = s.replace(/(\d+(?:\.\d+)?)\s*km\s*\n\s{2,}2\b/g, '$$$1\\text{km}^2$$');
+  // Fix: isolated superscript "2" after unit on same line with extra spaces
+  s = s.replace(/(\d+(?:\.\d+)?)\s*(m|km|cm)\s{3,}(\d)\b/g, '$$$1\\text{$2}^{$3}$$');
+  // Unicode superscripts → LaTeX
+  s = s.replace(/([⁰¹²³⁴⁵⁶⁷⁸⁹]+)/g, (m) => {
+    const map = { '⁰': '0', '¹': '1', '²': '2', '³': '3', '⁴': '4', '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9' };
+    const digits = [...m].map(c => map[c] || c).join('');
+    return `$^{${digits}}$`;
+  });
+  // Unicode subscripts → LaTeX
+  s = s.replace(/([₀₁₂₃₄₅₆₇₈₉]+)/g, (m) => {
+    const map = { '₀': '0', '₁': '1', '₂': '2', '₃': '3', '₄': '4', '₅': '5', '₆': '6', '₇': '7', '₈': '8', '₉': '9' };
+    const digits = [...m].map(c => map[c] || c).join('');
+    return `$_{${digits}}$`;
+  });
+  // Collapse excessive blank lines (>2 → 1)
+  s = s.replace(/\n{3,}/g, '\n\n');
+  return s;
+}
+
 function separateContentAndSolution(content) {
   const solutionMarkers = ['\n解：', '\n 解：', '\n解:'];
   for (const marker of solutionMarkers) {
@@ -268,7 +299,8 @@ async function run(wikiDir, treePath, outputDir, topic) {
       const prob = problems[i];
       totalProblems++;
 
-      const { question, existingSolution } = separateContentAndSolution(prob.content);
+      const cleaned = cleanOcrArtifacts(prob.content);
+      const { question, existingSolution } = separateContentAndSolution(cleaned);
 
       md += `## 题 ${i + 1}\n\n`;
       md += `${question}\n\n`;

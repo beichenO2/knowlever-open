@@ -154,7 +154,7 @@ ${itemDescriptions}
 - members 使用上方的序号（1-based）
 - 每个概念只能属于一个分类
 - 所有概念必须被分配
-- 分类名称必须互不相同、具有区分度
+- ⛔ 分类名称绝对禁止重复！每个分类必须有独立的、可区分的名称。例如：不能有两个都叫"雷达原理"的分类，必须取"雷达测距原理""雷达测角原理"等有区分度的名称
 - 只输出 JSON`,
       }],
       temperature: 0.1,
@@ -262,14 +262,24 @@ async function buildSemanticTree(leafNodes, topic, slugSet, options = {}) {
     const llmResult = await llmClassifyAndName(leafNodes);
 
     if (llmResult && llmResult.length > 0) {
-      intermediates = llmResult.map((g, gi) => ({
-        page_slug: ensureUniqueSlug(generateSlug('section', g.name, gi)),
-        kind: 'intermediate',
-        label: g.name,
-        atoms: [],
-        children: g.items,
-        embedding: computeCentroid(g.items.filter(it => it.embedding).map(it => it.embedding)),
-      }));
+      const usedLabels = new Set();
+      intermediates = llmResult.map((g, gi) => {
+        let label = g.name;
+        if (usedLabels.has(label)) {
+          const childHints = g.items.slice(0, 2).map(it => it.label).join('·');
+          label = `${label}（${childHints}）`;
+          console.log(`[Stage 3] Dedup label: "${g.name}" → "${label}"`);
+        }
+        usedLabels.add(label);
+        return {
+          page_slug: ensureUniqueSlug(generateSlug('section', label, gi)),
+          kind: 'intermediate',
+          label,
+          atoms: [],
+          children: g.items,
+          embedding: computeCentroid(g.items.filter(it => it.embedding).map(it => it.embedding)),
+        };
+      });
     }
   }
 
