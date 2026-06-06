@@ -1,12 +1,11 @@
 /**
- * Stage 3 — Tree Construct (Recursive Semantic Grouping)
+ * Stage 3 — Tree Construct (Hybrid Semantic Grouping)
  *
  * 从 clusters.json + atoms 构建 tree.json。
  *
- * 核心算法：递归语义聚类
- *   - 每组 3-5 个子节点（TARGET_GROUP_SIZE = 4）
- *   - 用 embedding centroid 的余弦相似度决定哪些簇/节点放在一起
- *   - LLM 为每个分组生成概括性标签
+ * 核心算法：双策略递归分组
+ *   - >15 个条目：embedding cosine 贪心聚类（快速粗分）
+ *   - ≤15 个条目：LLM 智能分类+命名+合理性评价（精细分组）
  *   - Slug 在此唯一发放
  *
  * 输入：clusters.json + atoms/*.json
@@ -21,6 +20,7 @@ const { recordDecision } = require('./tech-decisions');
 const TARGET_GROUP_SIZE = 4;
 const MIN_GROUP_SIZE = 3;
 const MAX_GROUP_SIZE = 6;
+const LLM_CLASSIFY_THRESHOLD = 15;
 
 function loadAtoms(atomsDir) {
   const atoms = {};
@@ -114,11 +114,103 @@ function semanticGroup(items, targetSize = TARGET_GROUP_SIZE) {
 }
 
 /**
+ * LLM-based classification: given ≤15 items with labels and summaries,
+ * ask LLM to group them into categories and name each category.
+ * Returns: { groups: [[item indices]], names: [group name], assessment: string }
+ */
+async function llmClassifyAndName(items) {
+  const itemDescriptions = items.map((item, i) => {
+    const summary = (item.atoms || []).length > 0
+      ? ` — 包含${item.atoms.length}个知识点`
+      : '';
+    const childCount = (item.children || []).length;
+    const childInfo = childCount > 0 ? ` (含${childCount}个子概念)` : '';
+    return `${i + 1}. ${item.label}${summary}${childInfo}`;
+  }).join('\n');
+
+  try {
+    const response = await chatCompletion({
+      messages: [{
+        role: 'user',
+        content: `你是知识体系架构师。以下是${items.length}个同级知识概念：
+
+${itemDescriptions}
+
+请完成以下任务：
+1. 将这些概念分成若干类（每类 2-6 个），形成树状结构
+2. 为每个分类命名（≤10字，能区分不同分类，禁止重名）
+3. 评价分类是否合理
+
+输出严格 JSON 格式：
+{
+  "groups": [
+    {"name": "分类名称A", "members": [1, 3, 5]},
+    {"name": "分类名称B", "members": [2, 4, 6]}
+  ],
+  "assessment": "合理性评价（一句话）"
+}
+
+规则：
+- members 使用上方的序号（1-based）
+- 每个概念只能属于一个分类
+- 所有概念必须被分配
+- 分类名称必须互不相同、具有区分度
+- 只输出 JSON`,
+      }],
+      temperature: 0.1,
+      max_tokens: 2000,
+    });
+
+    const raw = response?.choices?.[0]?.message?.content?.trim() || '';
+    const jsonMatch = raw.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('No JSON in LLM response');
+
+    const parsed = JSON.parse(jsonMatch[0]);
+    if (!parsed.groups || !Array.isArray(parsed.groups)) throw new Error('Missing groups');
+
+    const assigned = new Set();
+    const result = [];
+    for (const g of parsed.groups) {
+      if (!g.name || !Array.isArray(g.members) || g.members.length === 0) continue;
+      const indices = g.members.map(m => m - 1).filter(idx => idx >= 0 && idx < items.length && !assigned.has(idx));
+      indices.forEach(idx => assigned.add(idx));
+      if (indices.length > 0) {
+        result.push({ name: g.name, items: indices.map(idx => items[idx]) });
+      }
+    }
+
+    // Catch unassigned items
+    for (let i = 0; i < items.length; i++) {
+      if (!assigned.has(i)) {
+        if (result.length > 0) {
+          result[result.length - 1].items.push(items[i]);
+        } else {
+          result.push({ name: items[i].label, items: [items[i]] });
+        }
+      }
+    }
+
+    console.log(`[Stage 3] LLM classify: ${items.length} items → ${result.length} groups`);
+    for (const g of result) {
+      console.log(`[Stage 3]   "${g.name}": [${g.items.map(it => it.label).join(', ')}]`);
+    }
+    if (parsed.assessment) {
+      console.log(`[Stage 3]   Assessment: ${parsed.assessment}`);
+    }
+
+    return result;
+  } catch (e) {
+    console.warn(`[Stage 3] LLM classify failed (${e.message}), falling back to embedding grouping`);
+    return null;
+  }
+}
+
+/**
  * Generate a group label using LLM (or fallback to tag-based).
+ * Used only when embedding-based grouping is active (>15 items).
  */
 async function generateGroupLabel(childLabels, options = {}) {
   if (!options.useLlmLabels) {
-    // Fallback: use most common words from child labels
     return childLabels.slice(0, 2).join('、') + (childLabels.length > 2 ? ' 等' : '');
   }
 
@@ -141,6 +233,7 @@ async function generateGroupLabel(childLabels, options = {}) {
 
 /**
  * Recursively build a semantic tree from leaf nodes.
+ * Dual strategy: >15 items → embedding clustering; ≤15 items → LLM classification.
  */
 async function buildSemanticTree(leafNodes, topic, slugSet, options = {}) {
   function ensureUniqueSlug(slug) {
@@ -161,50 +254,71 @@ async function buildSemanticTree(leafNodes, topic, slugSet, options = {}) {
     };
   }
 
-  // Group leaves by semantic similarity
-  const groups = semanticGroup(leafNodes);
+  let intermediates;
 
-  // Build intermediate nodes, collecting orphans separately
-  const intermediates = [];
-  const orphans = [];
-  for (let gi = 0; gi < groups.length; gi++) {
-    const group = groups[gi];
+  if (leafNodes.length <= LLM_CLASSIFY_THRESHOLD) {
+    // ≤15 items: LLM does classification + naming + assessment
+    console.log(`[Stage 3] Using LLM classify for ${leafNodes.length} items (≤${LLM_CLASSIFY_THRESHOLD})`);
+    const llmResult = await llmClassifyAndName(leafNodes);
 
-    if (group.length === 1) {
-      orphans.push(group[0]);
-      continue;
+    if (llmResult && llmResult.length > 0) {
+      intermediates = llmResult.map((g, gi) => ({
+        page_slug: ensureUniqueSlug(generateSlug('section', g.name, gi)),
+        kind: 'intermediate',
+        label: g.name,
+        atoms: [],
+        children: g.items,
+        embedding: computeCentroid(g.items.filter(it => it.embedding).map(it => it.embedding)),
+      }));
     }
-
-    const childLabels = group.map(n => n.label);
-    const label = await generateGroupLabel(childLabels, options);
-    const slug = ensureUniqueSlug(generateSlug('section', label, gi));
-
-    intermediates.push({
-      page_slug: slug,
-      kind: 'intermediate',
-      label,
-      atoms: [],
-      children: group,
-      embedding: computeCentroid(group.map(n => n.embedding)),
-    });
   }
 
-  // Anti-usurpation: absorb orphan leaves into nearest section
-  if (orphans.length > 0 && intermediates.length > 0) {
-    for (const orphan of orphans) {
-      let bestIdx = 0, bestSim = -Infinity;
-      for (let i = 0; i < intermediates.length; i++) {
-        const sim = cosineSimilarity(orphan.embedding, intermediates[i].embedding);
-        if (sim > bestSim) { bestSim = sim; bestIdx = i; }
+  if (!intermediates) {
+    // >15 items OR LLM fallback: embedding-based greedy grouping
+    console.log(`[Stage 3] Using embedding grouping for ${leafNodes.length} items`);
+    const groups = semanticGroup(leafNodes);
+
+    intermediates = [];
+    const orphans = [];
+    for (let gi = 0; gi < groups.length; gi++) {
+      const group = groups[gi];
+
+      if (group.length === 1) {
+        orphans.push(group[0]);
+        continue;
       }
-      intermediates[bestIdx].children.push(orphan);
-      intermediates[bestIdx].embedding = computeCentroid(
-        intermediates[bestIdx].children.map(c => c.embedding)
-      );
-      console.log(`[Stage 3] Anti-usurp: "${orphan.label}" → absorbed into "${intermediates[bestIdx].label}"`);
+
+      const childLabels = group.map(n => n.label);
+      const label = await generateGroupLabel(childLabels, options);
+      const slug = ensureUniqueSlug(generateSlug('section', label, gi));
+
+      intermediates.push({
+        page_slug: slug,
+        kind: 'intermediate',
+        label,
+        atoms: [],
+        children: group,
+        embedding: computeCentroid(group.map(n => n.embedding)),
+      });
     }
-  } else if (orphans.length > 0) {
-    intermediates.push(...orphans);
+
+    // Anti-usurpation: absorb orphan leaves into nearest section
+    if (orphans.length > 0 && intermediates.length > 0) {
+      for (const orphan of orphans) {
+        let bestIdx = 0, bestSim = -Infinity;
+        for (let i = 0; i < intermediates.length; i++) {
+          const sim = cosineSimilarity(orphan.embedding, intermediates[i].embedding);
+          if (sim > bestSim) { bestSim = sim; bestIdx = i; }
+        }
+        intermediates[bestIdx].children.push(orphan);
+        intermediates[bestIdx].embedding = computeCentroid(
+          intermediates[bestIdx].children.map(c => c.embedding)
+        );
+        console.log(`[Stage 3] Anti-usurp: "${orphan.label}" → absorbed into "${intermediates[bestIdx].label}"`);
+      }
+    } else if (orphans.length > 0) {
+      intermediates.push(...orphans);
+    }
   }
 
   // Recursively group intermediates if still too many
