@@ -737,6 +737,39 @@ function run(wikiDir, treePath, outputDir, topic) {
     .map(f => f.replace(/\.md$/, '')));
   const allKnownSlugs = new Set([...allSlugs, ...wikiFileSlugsForGraph]);
 
+  // Inject quiz pages into tree as a dedicated "练习题" section
+  {
+    const quizSlugs = fs.readdirSync(wikiDir)
+      .filter(f => f.startsWith('quiz-') && f.endsWith('.md'))
+      .map(f => f.replace(/\.md$/, ''));
+
+    if (quizSlugs.length > 0) {
+      const treeSlugs = new Set();
+      (function collectSlugs(n) { treeSlugs.add(n.page_slug); (n.children || []).forEach(collectSlugs); })(tree);
+      const missingQuiz = quizSlugs.filter(s => !treeSlugs.has(s));
+
+      if (missingQuiz.length > 0) {
+        const quizChildren = missingQuiz.map(slug => ({
+          page_slug: slug,
+          kind: 'leaf-quiz',
+          label: slug.replace(/^quiz-/, ''),
+          atoms: [],
+          children: [],
+        }));
+        tree.children.push({
+          page_slug: 'section-练习题',
+          kind: 'intermediate',
+          label: '练习题',
+          atoms: [],
+          children: quizChildren,
+        });
+        allSlugs.add('section-练习题');
+        for (const s of missingQuiz) allSlugs.add(s);
+        console.log(`[Stage 6] Injected ${missingQuiz.length} quiz pages into tree under "练习题"`);
+      }
+    }
+  }
+
   // Build backlinks index
   const incoming = buildIncomingLinks(wikiDir, allKnownSlugs);
 
