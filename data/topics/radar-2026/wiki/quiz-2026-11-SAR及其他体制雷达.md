@@ -47,49 +47,54 @@ source: "2026-11-SAR及其他体制雷达"
 
 **1. 距离向分辨力计算**
 距离向分辨力通常指地面距离向分辨力，其表达式为：
-$\Delta R_r = \frac{c}{2 B \sin \theta}$
+$$\Delta R_r = \frac{c}{2 B \sin \theta}$$
 
 代入已知数值：
-$\Delta R_r = \frac{3 \times 10^8}{2 \times 15.55 \times 10^6 \times \sin(23^\circ)}$
+$$\Delta R_r = \frac{3 \times 10^8}{2 \times 15.55 \times 10^6 \times \sin(23^\circ)}$$
 
 计算中间值：
-$\sin(23^\circ) \approx 0.39073$
+$$\sin(23^\circ) \approx 0.39073$$
 分母 $= 2 \times 15.55 \times 10^6 \times 0.39073 \approx 1.2152 \times 10^7$
 
 得出结果：
-$\Delta R_r = \frac{3 \times 10^8}{1.2152 \times 10^7} \approx 24.69 \text{ m} \approx 25 \text{ m}$
+$$\Delta R_r = \frac{3 \times 10^8}{1.2152 \times 10^7} \approx 24.69 \text{ m} \approx 25 \text{ m}$$
 
-*(注：斜距分辨力为 $\frac{c}{2B} \approx 9.65 \text{ m}$，地面分辨力需除以 $\sin\theta$ 进行投影转换。)*
+*(注：斜距分辨力为
+$$\frac{c}{2B} \approx 9.65 \text{ m}$$
+，地面分辨力需除以 $\sin\theta$ 进行投影转换。)*
 
 ---
 
 **2. 方位向分辨力计算（真实孔径雷达 RAR）**
 真实孔径雷达的方位分辨力由天线波束在地面的照射宽度决定：
-$\Delta R_\alpha = \frac{R \lambda}{D}$
+$$\Delta R_\alpha = \frac{R \lambda}{D}$$
 
 代入已知数值：
-$\Delta R_\alpha = \frac{8.53 \times 10^5 \times 0.056}{10}$
+$$\Delta R_\alpha = \frac{8.53 \times 10^5 \times 0.056}{10}$$
 
 计算过程：
-$8.53 \times 10^5 \times 0.056 = 47768$
-$\Delta R_\alpha = \frac{47768}{10} = 4776.8 \text{ m} \approx 4.78 \text{ km} \approx 5 \text{ km}$
+$$8.53 \times 10^5 \times 0.056 = 47768$$
+$$\Delta R_\alpha = \frac{47768}{10} = 4776.8 \text{ m} \approx 4.78 \text{ km} \approx 5 \text{ km}$$
 
 ---
 
 **3. 方位向分辨力计算（合成孔径雷达 SAR）**
 合成孔径雷达利用平台运动合成等效大孔径，其理论方位分辨力仅取决于天线物理长度：
-$\Delta R_\alpha' = \frac{D}{2}$
+$$\Delta R_\alpha' = \frac{D}{2}$$
 
 代入已知数值：
-$\Delta R_\alpha' = \frac{10}{2} = 5 \text{ m}$
+$$\Delta R_\alpha' = \frac{10}{2} = 5 \text{ m}$$
 
 *(注：SAR 方位分辨力与斜距 $R$、波长 $\lambda$ 均无关，这是合成孔径技术的核心优势。)*
 
 ---
 **最终结果汇总**
-- 距离向（地面）分辨力：$\Delta R_r \approx 25 \text{ m}$
-- 真实孔径方位分辨力：$\Delta R_\alpha \approx 5 \text{ km}$
-- 合成孔径方位分辨力：$\Delta R_\alpha' = 5 \text{ m}$
+- 距离向（地面）分辨力：
+$$\Delta R_r \approx 25 \text{ m}$$
+- 真实孔径方位分辨力：
+$$\Delta R_\alpha \approx 5 \text{ km}$$
+- 合成孔径方位分辨力：
+$$\Delta R_\alpha' = 5 \text{ m}$$
 
 </details>
 

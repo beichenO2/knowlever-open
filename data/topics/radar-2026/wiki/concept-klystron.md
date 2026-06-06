@@ -28,9 +28,9 @@ parent: section-klystron-vhf-等
 #### **1. Klystron的多腔谐振放大机制**  
 **公式**：  
 Klystron增益 $ G $ 与腔体谐振频率 $ f $、电子注电流 $ I $、工作电压 $ V $ 的关系为：  
-$$
+ 
 G = \frac{P_{\text{out}}}{P_{\text{in}}} = \left( \frac{e I V}{h f} \right)^{1/2} \cdot \tanh\left( \frac{\pi f}{f_{\text{c}}} \right)
-$$  
+   
 其中：  
 - $ e $ 为电子电荷（$ 1.6 \times 10^{-19} \, \text{C} $）  
 - $ h $ 为普朗克常数（$ 6.626 \times 10^{-34} \, \text{J·s} $）  
@@ -38,9 +38,9 @@ $$
 
 **数值示例**：  
 假设 $ I = 10 \, \text{A} $, $ V = 10 \, \text{kV} $, $ f = 3 \, \text{GHz} $, $ f_c = 2.5 \, \text{GHz} $：  
-$$
+ 
 G = \left( \frac{1.6 \times 10^{-19} \cdot 10 \cdot 10^4}{6.626 \times 10^{-34} \cdot 3 \times 10^9} \right)^{1/2} \cdot \tanh\left( \frac{\pi \cdot 3 \times 10^9}{2.5 \times 10^9} \right) \approx 150 \cdot 0.98 = 147 \, \text{dB}
-$$  
+   
 
 **原理**：  
 电子注在漂移腔中获得能量，经谐振腔调制后形成驻波，通过耦合腔逐级放大信号，实现高增益与频率选择性。  
@@ -50,18 +50,18 @@ $$
 #### **2. 行波管的连续相互作用机制**  
 **公式**：  
 行波管增益 $ G $ 与电子束速度 $ v $、RF波长 $ \lambda $ 的关系为：  
-$$
+ 
 G = \frac{4 \pi}{\lambda} \cdot \frac{v}{c} \cdot L
-$$  
+   
 其中：  
 - $ c $ 为光速（$ 3 \times 10^8 \, \text{m/s} $）  
 - $ L $ 为器件长度  
 
 **数值示例**：  
 若 $ v = 2 \times 10^7 \, \text{m/s} $, $ \lambda = 3 \, \text{cm} $, $ L = 1 \, \text{m} $：  
-$$
+ 
 G = \frac{4 \pi}{0.03} \cdot \frac{2 \times 10^7}{3 \times 10^8} \cdot 1 \approx 418.88 \cdot 0.0667 \approx 28 \, \text{dB}
-$$  
+   
 
 **原理**：  
 电子束与RF场沿轴向连续相互作用，通过螺旋慢波结构或耦合腔实现能量转移，适用于宽频带放大。  
@@ -71,18 +71,18 @@ $$
 #### **3. 磁控管的脉冲发射机制**  
 **公式**：  
 磁控管输出功率 $ P $ 与脉宽 $ t $、重复频率 $ f_r $ 的关系为：  
-$$
+ 
 P = \frac{E}{t} \cdot f_r \cdot \eta
-$$  
+   
 其中：  
 - $ E $ 为单脉冲能量（$ E = P_{\text{peak}} \cdot t $）  
 - $ \eta $ 为效率（约 50–70%）  
 
 **数值示例**：  
 若 $ P_{\text{peak}} = 1 \, \text{MW} $, $ t = 3.5 \, \mu\text{s} $, $ f_r = 100 \, \text{Hz} $, $ \eta = 0.6 $：  
-$$
+ 
 P = \frac{1 \times 10^6 \cdot 3.5 \times 10^{-6}}{3.5 \times 10^{-6}} \cdot 100 \cdot 0.6 = 1 \times 10^6 \cdot 0.6 = 600 \, \text{kW}
-$$  
+   
 
 **原理**：  
 磁控管通过磁感应线与电子注的相互作用产生高频振荡，适用于脉冲高功率发射，但受限于固定频率和脉宽。  

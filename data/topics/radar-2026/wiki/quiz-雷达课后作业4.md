@@ -45,51 +45,78 @@ source: "雷达课后作业4"
 
 ### 2. 圆锥扫描雷达视频脉冲序列及最大值时刻
 扫描转速 $n=15\ \text{r/min}$，扫描周期 $T=\frac{60}{15}=4\ \text{s}$，角频率 $\omega=\frac{2\pi}{T}=\frac{\pi}{2}\ \text{rad/s}$。
-圆锥扫描接收信号包络为 $V(t) \propto 1+m\cos(\omega t-\theta_0)$，其中 $\theta_0$ 为目标在扫描平面内相对于 $t=0$（X轴）的方位角。视频脉冲序列为高PRF脉冲串，其包络呈正弦调制，周期为 $4\ \text{s}$。
+圆锥扫描接收信号包络为
+$$V(t) \propto 1+m\cos(\omega t-\theta_0)$$
+，其中 $\theta_0$ 为目标在扫描平面内相对于 $t=0$（X轴）的方位角。视频脉冲序列为高PRF脉冲串，其包络呈正弦调制，周期为 $4\ \text{s}$。
 
 各目标方位角及包络最大值出现时刻计算如下：
 - **A点 $(1,0)$**：$\theta_A=0^\circ$。最大值时刻 $t_A = \frac{0}{360}\times 4 = 0\ \text{s}$（及 $4k\ \text{s}$）。
-- **B点 $(-1,\sqrt{3})$**：$\theta_B=\arctan\left(\frac{\sqrt{3}}{-1}\right)=120^\circ$（第二象限）。最大值时刻 $t_B = \frac{120}{360}\times 4 = \frac{4}{3}\approx 1.33\ \text{s}$（及 $1.33+4k\ \text{s}$）。
-- **C点 $(-1,-1)$**：$\theta_C=\arctan\left(\frac{-1}{-1}\right)=225^\circ$（第三象限）。最大值时刻 $t_C = \frac{225}{360}\times 4 = 2.5\ \text{s}$（及 $2.5+4k\ \text{s}$）。
+- **B点 $(-1,\sqrt{3})$**：
+$$\theta_B=\arctan\left(\frac{\sqrt{3}}{-1}\right)=120^\circ$$
+（第二象限）。最大值时刻 $t_B = \frac{120}{360}\times 4 = \frac{4}{3}\approx 1.33\ \text{s}$（及 $1.33+4k\ \text{s}$）。
+- **C点 $(-1,-1)$**：
+$$\theta_C=\arctan\left(\frac{-1}{-1}\right)=225^\circ$$
+（第三象限）。最大值时刻 $t_C = \frac{225}{360}\times 4 = 2.5\ \text{s}$（及 $2.5+4k\ \text{s}$）。
 
 **作图说明**：横轴为时间 $t$，纵轴为视频脉冲幅度。画出三组等间隔脉冲序列，分别用正弦曲线连接脉冲峰值。在A图 $t=0$ 处标峰值，B图 $t=1.33\ \text{s}$ 处标峰值，C图 $t=2.5\ \text{s}$ 处标峰值。包络周期均为 $4\ \text{s}$。
 
 ---
 
 ### 3. 相位法测角精度计算
-相位差与角度关系：$\varphi = \frac{2\pi d}{\lambda}\sin\theta$。
-1. **双天线相位差**：$d_{12}=0.5\lambda,\ \theta=60^\circ$
-   $\varphi_{12} = \frac{2\pi(0.5\lambda)}{\lambda}\sin60^\circ = \pi \cdot \frac{\sqrt{3}}{2} \approx 2.72\ \text{rad} \approx 155.88^\circ$。
-2. **双天线测角精度**：对 $\varphi$ 微分得 $\Delta\theta = \frac{\Delta\varphi}{\frac{2\pi d}{\lambda}\cos\theta}$。
+相位差与角度关系：
+$$\varphi = \frac{2\pi d}{\lambda}\sin\theta$$
+。
+1. **双天线相位差**：
+$$d_{12}=0.5\lambda,\ \theta=60^\circ$$
+$$\varphi_{12} = \frac{2\pi(0.5\lambda)}{\lambda}\sin60^\circ = \pi \cdot \frac{\sqrt{3}}{2} \approx 2.72\ \text{rad} \approx 155.88^\circ$$
+。
+2. **双天线测角精度**：对 $\varphi$ 微分得
+$$\Delta\theta = \frac{\Delta\varphi}{\frac{2\pi d}{\lambda}\cos\theta}$$
+。
    已知 $\Delta\varphi = \pm 5^\circ = \pm \frac{5\pi}{180}\ \text{rad}$，
-   $\Delta\theta = \frac{5^\circ}{\pi \cdot \cos60^\circ} = \frac{5}{\pi \cdot 0.5} = \frac{10}{\pi} \approx 3.18^\circ$。
+$$\Delta\theta = \frac{5^\circ}{\pi \cdot \cos60^\circ} = \frac{5}{\pi \cdot 0.5} = \frac{10}{\pi} \approx 3.18^\circ$$
+。
 3. **三天线最高精度**：引入长基线解模糊后，精度由最长有效基线决定。$d_{13}=3\lambda$ 为最长基线。
-   $\Delta\theta_{\min} = \frac{5^\circ}{\frac{2\pi d_{13}}{\lambda}\cos60^\circ} = \frac{5^\circ}{2\pi \cdot 3 \cdot 0.5} = \frac{5}{3\pi} \approx 0.53^\circ$。
+$$\Delta\theta_{\min} = \frac{5^\circ}{\frac{2\pi d_{13}}{\lambda}\cos60^\circ} = \frac{5^\circ}{2\pi \cdot 3 \cdot 0.5} = \frac{5}{3\pi} \approx 0.53^\circ$$
+。
 
 ---
 
 ### 4. 相控阵天线参数计算
-1. **无栅瓣阵元间距**：扫描范围 $\theta_{\max}=45^\circ$，无栅瓣条件为 $d \le \frac{\lambda}{1+|\sin\theta_{\max}|}$。
-   $d \le \frac{3\ \text{cm}}{1+\sin45^\circ} = \frac{3}{1+0.707} \approx 1.76\ \text{cm}$。
+1. **无栅瓣阵元间距**：扫描范围 $\theta_{\max}=45^\circ$，无栅瓣条件为
+$$d \le \frac{\lambda}{1+|\sin\theta_{\max}|}$$
+。
+$$d \le \frac{3\ \text{cm}}{1+\sin45^\circ} = \frac{3}{1+0.707} \approx 1.76\ \text{cm}$$
+。
 2. **阵元数量**：半功率波束宽度 $\theta_B \approx 0.886\frac{\lambda}{Nd}$（弧度制）。$\theta_B=3^\circ = \frac{\pi}{60}\ \text{rad}$，$d=0.5\lambda=1.5\ \text{cm}$。
-   $N \approx \frac{0.886\lambda}{d\theta_B} = \frac{0.886 \times 3}{1.5 \times (\pi/60)} \approx 33.8$，取整 $N=34$。
+$$N \approx \frac{0.886\lambda}{d\theta_B} = \frac{0.886 \times 3}{1.5 \times (\pi/60)} \approx 33.8$$
+，取整 $N=34$。
 3. **波束指向 $30^\circ$ 的相邻阵元相位差**：
-   $\Delta\phi = \frac{2\pi d}{\lambda}\sin\theta_0 = \frac{2\pi(0.5\lambda)}{\lambda}\sin30^\circ = \pi \cdot 0.5 = \frac{\pi}{2}\ \text{rad} = 90^\circ$。
+$$\Delta\phi = \frac{2\pi d}{\lambda}\sin\theta_0 = \frac{2\pi(0.5\lambda)}{\lambda}\sin30^\circ = \pi \cdot 0.5 = \frac{\pi}{2}\ \text{rad} = 90^\circ$$
+。
 
 ---
 
 ### 5. 8位数字移相器计算
 移相位数 $n=8$，状态数 $2^8=256$，移相范围 $360^\circ$。
-1. **移相精度（步进值）**：$\Delta\phi = \frac{360^\circ}{256} = 1.40625^\circ$。
-2. **控制编码 (AA)H 的移相值**：$(AA)_{16} = 10\times16+10 = 170_{10}$。
+1. **移相精度（步进值）**：
+$$\Delta\phi = \frac{360^\circ}{256} = 1.40625^\circ$$
+。
+2. **控制编码 (AA)H 的移相值**：
+$$(AA)_{16} = 10\times16+10 = 170_{10}$$
+。
    移相值 $= 170 \times 1.40625^\circ = 239.0625^\circ$。
-3. **移相 $45^\circ$ 的最佳编码**：$K = \frac{45^\circ}{1.40625^\circ} = 32_{10} = (20)_{16}$。
+3. **移相 $45^\circ$ 的最佳编码**：
+$$K = \frac{45^\circ}{1.40625^\circ} = 32_{10} = (20)_{16}$$
+。
    最佳控制编码为 **(20)H**。
 
 ---
 
 ### 6. LFM信号匹配滤波主副比及旁瓣抑制
-**主副比约 13.4dB 的原因**：LFM信号经匹配滤波后，输出包络近似为 $\text{sinc}$ 函数（矩形频谱的傅里叶逆变换）。$\text{sinc}(x)=\frac{\sin(\pi x)}{\pi x}$ 的第一旁瓣峰值与主瓣峰值之比为 $\frac{1}{1.5\pi} \approx 0.212$，换算为分贝 $20\log_{10}(0.212) \approx -13.4\ \text{dB}$（理论精确值为 $-13.26\ \text{dB}$，工程常称 13.4dB）。这是矩形加权（均匀照射）的固有特性。
+**主副比约 13.4dB 的原因**：LFM信号经匹配滤波后，输出包络近似为 $\text{sinc}$ 函数（矩形频谱的傅里叶逆变换）。$\text{sinc}(x)=\frac{\sin(\pi x)}{\pi x}$ 的第一旁瓣峰值与主瓣峰值之比为
+$$\frac{1}{1.5\pi} \approx 0.212$$
+，换算为分贝 $20\log_{10}(0.212) \approx -13.4\ \text{dB}$（理论精确值为 $-13.26\ \text{dB}$，工程常称 13.4dB）。这是矩形加权（均匀照射）的固有特性。
 **距离旁瓣抑制方法**：
 - **频域/时域加权**：对匹配滤波器或回波信号加窗（如Hamming、Hanning、Taylor、Chebyshev窗），牺牲少量主瓣宽度换取旁瓣下降。
 - **非线性调频（NLFM）**：设计频谱幅度呈窗函数形状，直接降低旁瓣。
@@ -99,7 +126,9 @@ source: "雷达课后作业4"
 ---
 
 ### 7. 均匀线阵方向图主副比及旁瓣抑制意义
-**主副比约 13.4dB 的原因**：均匀线阵的阵列方向图函数为 $AF(\psi)=\frac{\sin(N\psi/2)}{N\sin(\psi/2)}$。当阵元数 $N$ 较大时，该函数逼近 $\text{sinc}$ 函数。均匀幅度分布等效于空间矩形孔径照射，其傅里叶变换（方向图）的第一旁瓣电平同样由 $\text{sinc}$ 函数决定，理论值约为 $-13.26\ \text{dB}$（工程取 13.4dB）。
+**主副比约 13.4dB 的原因**：均匀线阵的阵列方向图函数为
+$$AF(\psi)=\frac{\sin(N\psi/2)}{N\sin(\psi/2)}$$
+。当阵元数 $N$ 较大时，该函数逼近 $\text{sinc}$ 函数。均匀幅度分布等效于空间矩形孔径照射，其傅里叶变换（方向图）的第一旁瓣电平同样由 $\text{sinc}$ 函数决定，理论值约为 $-13.26\ \text{dB}$（工程取 13.4dB）。
 **旁瓣抑制的意义**：
 1. **抗干扰与抗杂波**：高旁瓣会接收来自非主瓣方向的强干扰或地/海杂波，严重降低信干比。
 2. **提高角分辨力**：降低旁瓣可避免强目标旁瓣被误判为独立目标，提升密集目标分辨能力。

@@ -30,27 +30,27 @@ parent: section-数学公式-概率计算-等
 ### 怎么解决（方法/公式/原理）  
 #### 1. **窗函数加权匹配滤波的公式推导**  
 匹配滤波器的频率响应 $ H(\Omega) $ 与冲击响应 $ h(t) $ 满足：  
-$$
+ 
 H(\Omega) = \frac{1}{2\pi} \int_{-\infty}^{\infty} h(t) e^{-j\Omega t} dt
-$$  
-$$
+   
+ 
 h(t) = \frac{1}{2\pi} \int_{-\infty}^{\infty} H(\Omega) e^{j\Omega t} d\Omega
-$$  
+   
 在实际应用中，窗函数 $ w(t) $ 用于加权原始脉冲信号 $ s(t) $：  
-$$
+ 
 s_{\text{win}}(t) = s(t) \cdot w(t)
-$$  
+   
 例如，Hamming窗定义为：  
-$$
+ 
 w(t) = 0.54 - 0.46 \cos\left(\frac{2\pi t}{T}\right), \quad |t| \leq \frac{T}{2}
-$$  
+   
 其中 $ T $ 为脉冲宽度。代入数值计算：若 $ T = 1\mu s $，则窗函数在 $ t = 0 $ 处取最大值 0.54，边缘衰减至 0。  
 
 #### 2. **Kaiser谱设计的原理**  
 Kaiser谱设计通过调整参数 $ \alpha $ 和 $ \beta $，使频谱边缘过渡更平滑：  
-$$
+ 
 \text{旁瓣电平} \propto \frac{1}{\sqrt{1 + \left(\frac{\Omega}{\alpha}\right)^2}} \quad (\text{Kaiser窗公式})
-$$  
+   
 当 $ \alpha $ 增大时，频谱过渡带变宽，旁瓣电平下降。例如，若 $ \alpha = 5 $，则旁瓣电平可降低至 -30dB，但主瓣宽度增加约 20%。  
 
 #### 3. **多普勒滤波器组的频谱重叠优化**  

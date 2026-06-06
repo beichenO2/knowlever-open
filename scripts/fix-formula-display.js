@@ -44,6 +44,49 @@ function fixUnicodeMath(text) {
   return text;
 }
 
+// Fix Unicode sub/superscripts in plain text (outside LaTeX delimiters).
+// Converts patterns like "F₁" to "$F_1$" and "10⁻²³" to "$10^{-23}$"
+function fixUnicodePlainText(line) {
+  // Skip lines that are frontmatter or headings
+  if (/^(---|#|slug:|title:|kind:|parent:|type:|source:)/.test(line.trim())) return line;
+
+  let changed = false;
+
+  // Pattern: letter/digit followed by Unicode subscript digits -> wrap in $...$
+  // e.g. F₁ -> $F_1$, G₁ -> $G_1$, T₀ -> $T_0$
+  line = line.replace(/([A-Za-z])([₀₁₂₃₄₅₆₇₈₉ₐₑₒₓₙₘₖₜₛₚₗᵢⱼ]+)/g, (match, letter, subs) => {
+    // Check if already inside $...$
+    const fixed = subs.replace(subRe, m => UNICODE_SUB[m] || m);
+    changed = true;
+    return `$${letter}${fixed}$`;
+  });
+
+  // Pattern: digit followed by Unicode superscript (e.g. 10⁻²³ or x²)
+  line = line.replace(/([A-Za-z0-9])([⁰¹²³⁴⁵⁶⁷⁸⁹ⁿ⁻]+)/g, (match, base, sups) => {
+    const fixed = sups
+      .replace(supRe, m => UNICODE_SUP[m] || m)
+      .replace(/⁻/g, '^{-}');
+    changed = true;
+    if (/^\^/.test(fixed)) {
+      return `$${base}${fixed}$`;
+    }
+    return `$${base}^{${fixed.replace(/\^/g, '')}}$`;
+  });
+
+  // Pattern: standalone Unicode subscript/superscript digits (rare, but clean up)
+  line = line.replace(subRe, m => { changed = true; return UNICODE_SUB[m] || m; });
+  line = line.replace(supRe, m => { changed = true; return UNICODE_SUP[m] || m; });
+
+  // Clean up double-wrapped $$ from adjacent replacements: $X_1$$Y_2$ -> $X_1 Y_2$
+  line = line.replace(/\$\$/g, (m, offset) => {
+    // Only merge if not display math (preceded by another $)
+    if (offset > 0 && line[offset - 1] === '$') return '$$';
+    return ' ';
+  });
+
+  return line;
+}
+
 const STRUCTURAL_CMDS = /\\(frac|int|iint|oint|sum|prod|sqrt|begin\{|lim|max|min|det|log|ln|exp|binom|left|right|underbrace|overbrace)/;
 const RELATION_OPS = /(=|\\approx|\\le|\\ge|\\propto|\\equiv|\\sim(?![\w])|\\ne|\\neq)/;
 
@@ -65,7 +108,8 @@ function shouldBeDisplay(formula) {
 }
 
 function processFile(filePath) {
-  let content = fs.readFileSync(filePath, 'utf-8');
+  const originalContent = fs.readFileSync(filePath, 'utf-8');
+  let content = originalContent;
   let changes = 0;
 
   content = content.replace(/\$\$[\s\S]*?\$\$/g, match => {
@@ -74,6 +118,54 @@ function processFile(filePath) {
     if (fixed !== inner) changes++;
     return '$$' + fixed + '$$';
   });
+
+  // Phase 2: Fix Unicode sub/superscripts everywhere
+  // For lines without $: apply fixUnicodePlainText (wraps into $...$)
+  // For lines with $: fix Unicode both inside and outside LaTeX delimiters
+  const rawLines = content.split('\n');
+  const fixedPlainLines = [];
+  for (const rl of rawLines) {
+    if (!rl.includes('$')) {
+      const fixed = fixUnicodePlainText(rl);
+      if (fixed !== rl) changes++;
+      fixedPlainLines.push(fixed);
+    } else {
+      // Process segments: split by $...$ and $$...$$ delimiters
+      // Inside $...$: use fixUnicodeMath (LaTeX syntax)
+      // Outside $...$: use fixUnicodePlainText
+      let fixed = rl;
+      // Fix Unicode inside existing $...$ (single dollar)
+      fixed = fixed.replace(/\$([^$]+)\$/g, (m, inner) => {
+        const f = fixUnicodeMath(inner);
+        if (f !== inner) changes++;
+        return '$' + f + '$';
+      });
+      // Fix Unicode in non-LaTeX segments (between $...$ blocks)
+      // Split by $...$ tokens and process non-math parts
+      const parts = [];
+      let lastEnd = 0;
+      const mathRe = /\$\$[\s\S]*?\$\$|\$[^$]+\$/g;
+      let match;
+      while ((match = mathRe.exec(fixed)) !== null) {
+        if (match.index > lastEnd) {
+          const segment = fixed.slice(lastEnd, match.index);
+          const fixedSeg = fixUnicodePlainText(segment);
+          if (fixedSeg !== segment) changes++;
+          parts.push(fixedSeg);
+        }
+        parts.push(match[0]);
+        lastEnd = match.index + match[0].length;
+      }
+      if (lastEnd < fixed.length) {
+        const segment = fixed.slice(lastEnd);
+        const fixedSeg = fixUnicodePlainText(segment);
+        if (fixedSeg !== segment) changes++;
+        parts.push(fixedSeg);
+      }
+      fixedPlainLines.push(parts.join(''));
+    }
+  }
+  content = fixedPlainLines.join('\n');
 
   const lines = content.split('\n');
   const result = [];
@@ -161,9 +253,9 @@ function processFile(filePath) {
   }
 
   const finalContent = result.join('\n');
-  if (finalContent !== content) {
+  if (finalContent !== originalContent) {
     fs.writeFileSync(filePath, finalContent, 'utf-8');
-    return changes;
+    return changes || 1;
   }
   return 0;
 }

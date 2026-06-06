@@ -24,21 +24,27 @@ parent: root-radar-2026
 
 #### 2. **脉冲威力范围差异**  
 常规脉冲与LFM脉冲的能量分布不同：  
-- **常规脉冲**：能量集中在脉冲前沿，最大威力范围为 $ R_{\text{max}} = \frac{c}{2} \sqrt{\frac{P_t G \sigma}{(4\pi)^3 k T_s B}} $。  
+- **常规脉冲**：能量集中在脉冲前沿，最大威力范围为
+$$ R_{\text{max}} = \frac{c}{2} \sqrt{\frac{P_t G \sigma}{(4\pi)^3 k T_s B}} $$
+。
 - **LFM脉冲**：能量分布均匀，最大威力范围扩展至 $ R_{\text{max}} = \frac{c}{2} \sqrt{\frac{P_t G \sigma}{(4\pi)^3 k T_s B}} \cdot \sqrt{\frac{B}{\Delta f}} $。  
 **错误示例**：假设二者威力范围相同，会导致雷达覆盖能力误判。  
 
 #### 3. **多普勒频闪计算**  
 迎面飞行目标（速度 $ v = 240 \, \text{m/s} $）引发的盲速现象：  
-- **频率偏移**：$ f_d = \frac{2 v f_0}{c} $，其中 $ f_0 = 94 \, \text{GHz} $（毫米波雷达频率）。  
-- **计算**：$ f_d = \frac{2 \times 240 \times 94 \times 10^9}{3 \times 10^8} \approx 15,040 \, \text{Hz} $。  
+- **频率偏移**：
+$$ f_d = \frac{2 v f_0}{c} $$
+，其中 $ f_0 = 94 \, \text{GHz} $（毫米波雷达频率）。
+- **计算**：
+$$ f_d = \frac{2 \times 240 \times 94 \times 10^9}{3 \times 10^8} \approx 15,040 \, \text{Hz} $$
+。
 - **盲速区域**：当目标速度与雷达采样率匹配时，多普勒频移与采样率整数倍重合，导致无法分辨。  
 
 #### 4. **主杂波宽度计算**  
 **公式**：  
-$$
+ 
 \theta_{\text{main}} = \frac{2 \lambda}{D} \quad \text{（波束宽度）}
-$$  
+   
 **变量定义**：  
 - $ \lambda = 3 \, \text{cm} $（波长）  
 - $ D = \frac{2 \lambda}{\theta_{\text{main}}} = \frac{2 \times 0.03}{2^\circ} \times \frac{\pi}{180} \approx 0.523 \, \text{m} $（天线直径）  
@@ -46,9 +52,9 @@ $$
 
 #### 5. **旁瓣杂波频率范围**  
 **公式**：  
-$$
+ 
 f_{\text{side}} = \frac{v_T}{\lambda} \quad \text{（频率分布）}
-$$  
+   
 **计算**：  
 - $ v_T = 800 \, \text{m/s} $，$ \lambda = 0.03 \, \text{m} $  
 - $ f_{\text{side}} = \frac{800}{0.03} \approx 26,666.67 \, \text{Hz} $  
@@ -75,8 +81,14 @@ $$
 ### 练习题
 
 **题 1**（计算题，8分）  
-雷达系统中，迎面飞行目标的速度为 $ v = 240 \, \text{m/s} $，雷达工作频率为 $ f_0 = 94 \, \text{GHz} $。根据多普勒频闪原理，计算该目标引发的频率偏移 $ f_d $。  
-公式：$ f_d = \frac{2 v f_0}{c} $，其中 $ c = 3 \times 10^8 \, \text{m/s} $。  
+雷达系统中，迎面飞行目标的速度为
+$$ v = 240 \, \text{m/s} $$
+，雷达工作频率为
+$$ f_0 = 94 \, \text{GHz} $$
+。根据多普勒频闪原理，计算该目标引发的频率偏移 $ f_d $。
+公式：
+$$ f_d = \frac{2 v f_0}{c} $$
+，其中 $ c = 3 \times 10^8 \, \text{m/s} $。
 
 **题 2**（选择题，2分）  
 雷达的英文全称是以下哪一项？  

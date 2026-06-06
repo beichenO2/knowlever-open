@@ -737,7 +737,7 @@ function run(wikiDir, treePath, outputDir, topic) {
     .map(f => f.replace(/\.md$/, '')));
   const allKnownSlugs = new Set([...allSlugs, ...wikiFileSlugsForGraph]);
 
-  // Inject quiz pages into tree as a dedicated "练习题" section
+  // Smart quiz injection: place each quiz under its most relevant section
   {
     const quizSlugs = fs.readdirSync(wikiDir)
       .filter(f => f.startsWith('quiz-') && f.endsWith('.md'))
@@ -749,23 +749,103 @@ function run(wikiDir, treePath, outputDir, topic) {
       const missingQuiz = quizSlugs.filter(s => !treeSlugs.has(s));
 
       if (missingQuiz.length > 0) {
-        const quizChildren = missingQuiz.map(slug => ({
-          page_slug: slug,
-          kind: 'leaf-quiz',
-          label: slug.replace(/^quiz-/, ''),
-          atoms: [],
-          children: [],
-        }));
-        tree.children.push({
-          page_slug: 'section-练习题',
-          kind: 'intermediate',
-          label: '练习题',
-          atoms: [],
-          children: quizChildren,
-        });
-        allSlugs.add('section-练习题');
-        for (const s of missingQuiz) allSlugs.add(s);
-        console.log(`[Stage 6] Injected ${missingQuiz.length} quiz pages into tree under "练习题"`);
+        // Build source_file -> best_section mapping via atom IDs in tree
+        const sourceToSection = {};
+        (function walkAtoms(node, parentSection) {
+          const slug = node.page_slug;
+          const kind = node.kind || '';
+          let curSection = parentSection;
+          if (kind === 'intermediate') curSection = slug;
+          if (kind.startsWith('leaf') && node.atoms) {
+            for (const atomId of node.atoms) {
+              const prefix = 'atom-' + topic + '-';
+              if (atomId.startsWith(prefix)) {
+                const rest = atomId.slice(prefix.length);
+                const parts = rest.split('-');
+                if (parts.length >= 2) {
+                  const num = parts[parts.length - 1];
+                  if (/^\d+$/.test(num)) {
+                    const src = parts.slice(0, -1).join('-').toLowerCase();
+                    if (!sourceToSection[src]) sourceToSection[src] = {};
+                    sourceToSection[src][curSection] = (sourceToSection[src][curSection] || 0) + 1;
+                  }
+                }
+              }
+            }
+          }
+          for (const c of (node.children || [])) walkAtoms(c, curSection);
+        })(tree, null);
+
+        // Find best section for each source
+        const sourceBestSection = {};
+        for (const [src, sections] of Object.entries(sourceToSection)) {
+          let best = null, bestCount = 0;
+          for (const [sec, count] of Object.entries(sections)) {
+            if (count > bestCount) { bestCount = count; best = sec; }
+          }
+          if (best) sourceBestSection[src] = best;
+        }
+
+        // Build section_slug -> tree node reference
+        const sectionNodes = {};
+        (function collectSections(node) {
+          if (node.kind === 'intermediate' || node.kind === 'root') {
+            sectionNodes[node.page_slug] = node;
+          }
+          for (const c of (node.children || [])) collectSections(c);
+        })(tree);
+
+        // Place each quiz
+        const unmatched = [];
+        let placed = 0;
+        for (const quizSlug of missingQuiz) {
+          const quizFile = path.join(wikiDir, quizSlug + '.md');
+          let source = '';
+          try {
+            const content = fs.readFileSync(quizFile, 'utf-8');
+            const fm = content.match(/^---\n([\s\S]*?)\n---/);
+            if (fm) {
+              const srcLine = fm[1].split('\n').find(l => l.startsWith('source:'));
+              if (srcLine) source = srcLine.split(':').slice(1).join(':').trim().replace(/^"|"$/g, '');
+            }
+          } catch (_) {}
+
+          const srcKey = source.toLowerCase();
+          const targetSection = sourceBestSection[srcKey];
+          const quizNode = {
+            page_slug: quizSlug,
+            kind: 'leaf-quiz',
+            label: quizSlug.replace(/^quiz-/, ''),
+            atoms: [],
+            children: [],
+          };
+
+          if (targetSection && sectionNodes[targetSection]) {
+            sectionNodes[targetSection].children.push(quizNode);
+            allSlugs.add(quizSlug);
+            placed++;
+            console.log(`[Stage 6] Quiz "${quizSlug}" → ${targetSection}`);
+          } else {
+            unmatched.push(quizNode);
+          }
+        }
+
+        // Remaining unmatched quiz -> "综合练习" section
+        if (unmatched.length > 0) {
+          const miscSlug = 'section-综合练习';
+          tree.children.push({
+            page_slug: miscSlug,
+            kind: 'intermediate',
+            label: '综合练习',
+            atoms: [],
+            children: unmatched,
+          });
+          allSlugs.add(miscSlug);
+          for (const q of unmatched) allSlugs.add(q.page_slug);
+          console.log(`[Stage 6] ${unmatched.length} quiz pages → "综合练习" (no source match)`);
+        }
+
+        console.log(`[Stage 6] Quiz injection: ${placed} placed by source, ${unmatched.length} to 综合练习`);
       }
     }
   }

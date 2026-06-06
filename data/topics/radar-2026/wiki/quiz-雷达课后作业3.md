@@ -54,28 +54,34 @@ source: "雷达课后作业3"
 
 2. **差拍频率与距离关系**  
    目标回波经距离 $R$ 产生往返时延 $\tau=2R/c$（$c$ 为光速）。回波与当前发射信号混频后，忽略高频分量，得到差拍频率：  
-   $f_b=K\tau=\frac{B}{T}\cdot\frac{2R}{c}$。
+$$f_b=K\tau=\frac{B}{T}\cdot\frac{2R}{c}$$
+。
 
 3. **双目标频率差分析**  
    设两目标距离分别为 $R_1$ 和 $R_2$（$R_2>R_1$），距离差 $\Delta R=R_2-R_1$。对应的差拍频率差为：  
-   $\Delta f_b=f_{b2}-f_{b1}=\frac{2B}{cT}\Delta R$。
+$$\Delta f_b=f_{b2}-f_{b1}=\frac{2B}{cT}\Delta R$$
+。
 
 4. **频谱分辨约束条件**  
-   雷达对时长为 $T$ 的差拍信号进行FFT频谱分析。根据傅里叶变换性质，矩形窗下的理论频率分辨力为 $\Delta f_{\min}=1/T$。依据瑞利分辨准则，两目标可分辨需满足：  
-   $\Delta f_b\ge\Delta f_{\min}$。
+   雷达对时长为 $T$ 的差拍信号进行FFT频谱分析。根据傅里叶变换性质，矩形窗下的理论频率分辨力为
+$$\Delta f_{\min}=1/T$$
+。依据瑞利分辨准则，两目标可分辨需满足：
+$$\Delta f_b\ge\Delta f_{\min}$$
+。
 
 5. **距离分辨力公式推导**  
    将步骤3与步骤4代入不等式：  
-   $\frac{2B}{cT}\Delta R\ge\frac{1}{T}$  
+$$\frac{2B}{cT}\Delta R\ge\frac{1}{T}$$
    消去 $T$ 得：  
-   $\Delta R\ge\frac{c}{2B}$  
+$$\Delta R\ge\frac{c}{2B}$$
    故LFMCW雷达的理论距离分辨力为：  
-   $\Delta R=\frac{c}{2B}$
+$$\Delta R=\frac{c}{2B}$$
 
 6. **物理意义与数值验证**  
    该结果表明，LFMCW雷达的距离分辨力仅取决于扫频带宽 $B$，与扫频时间 $T$ 无关。带宽越宽，分辨力越高。  
    数值示例：若系统扫频带宽 $B=150\,\text{MHz}$，光速 $c=3\times10^8\,\text{m/s}$，则  
-   $\Delta R=\frac{3\times10^8}{2\times150\times10^6}=1.0\,\text{m}$。  
+$$\Delta R=\frac{3\times10^8}{2\times150\times10^6}=1.0\,\text{m}$$
+。
    实际工程中受窗函数展宽、信噪比及非线性调频等因素影响，有效距离分辨力通常略大于该理论值。
 
 </details>
@@ -102,7 +108,11 @@ $$ R = \frac{c \Delta \phi}{4\pi f_m} $$
 该式表明，目标距离 $R$ 与实测相位差 $\Delta \phi$ 呈严格线性正比关系。
 
 **3. 相位模糊性与最大不模糊距离**
-相位测量具有 $2\pi$ 周期性，实际仪器测得的相位差为 $\Delta \phi_{\text{meas}} = \Delta \phi \bmod 2\pi$，即 $\Delta \phi = 2\pi N + \Delta \phi_{\text{meas}}$（$N$ 为整数模糊度）。代入距离公式得：
+相位测量具有 $2\pi$ 周期性，实际仪器测得的相位差为
+$$\Delta \phi_{\text{meas}} = \Delta \phi \bmod 2\pi$$
+，即
+$$\Delta \phi = 2\pi N + \Delta \phi_{\text{meas}}$$
+（$N$ 为整数模糊度）。代入距离公式得：
 $$ R = \frac{c}{2f_m} \left( N + \frac{\Delta \phi_{\text{meas}}}{2\pi} \right) $$
 当 $N=0$ 时，系统可无模糊测量的最大距离为：
 $$ R_{\max} = \frac{c}{2f_m} $$

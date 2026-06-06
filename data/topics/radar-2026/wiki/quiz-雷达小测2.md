@@ -18,7 +18,9 @@ source: "雷达小测2"
 互相关接收机的工作原理是将接收信号 $r(t)$ 与本地参考信号 $s(t)$ 进行互相关运算，其输出为时延 $\tau$ 的函数：
 $$R_{sr}(\tau) = \int_{-\infty}^{\infty} s(t) r(t+\tau) \mathrm{d}t$$
 
-设接收信号模型为 $r(t) = s(t-t_0) + n(t)$，其中 $t_0$ 为信号实际传播时延，$n(t)$ 为加性噪声。代入上式得：
+设接收信号模型为
+$$r(t) = s(t-t_0) + n(t)$$
+，其中 $t_0$ 为信号实际传播时延，$n(t)$ 为加性噪声。代入上式得：
 $$R_{sr}(\tau) = \int_{-\infty}^{\infty} s(t) [s(t+\tau-t_0) + n(t+\tau)] \mathrm{d}t = R_{ss}(\tau-t_0) + R_{sn}(\tau)$$
 
 式中 $R_{ss}(\cdot)$ 为参考信号的自相关函数。对于能量有限的确定性信号，$R_{ss}(\cdot)$ 在自变量为零时取得全局唯一最大值；$R_{sn}(\tau)$ 为信号与噪声的互相关项，在噪声均值为零且与信号不相关时，其统计期望为 $0$。
@@ -45,7 +47,9 @@ $$R_{sr}(\tau) = \int_{-\infty}^{\infty} s(t) [s(t+\tau-t_0) + n(t+\tau)] \mathr
 
 4. **数学表达**：设接收信号频谱为 $S_r(f)$，匹配滤波器频响为 $H(f)$。未加窗输出频谱为 $Y(f)=S_r(f)H(f)$。加窗后输出频谱为：
    $$Y_w(f) = S_r(f) \cdot [H(f)W(f)]$$
-   对应时域输出为 $y_w(t) = y(t) * \mathcal{F}^{-1}\{W(f)\}$。窗函数频谱 $\mathcal{F}^{-1}\{W(f)\}$ 的旁瓣衰减特性直接决定输出距离旁瓣的抑制程度。
+   对应时域输出为
+$$y_w(t) = y(t) * \mathcal{F}^{-1}\{W(f)\}$$
+。窗函数频谱 $\mathcal{F}^{-1}\{W(f)\}$ 的旁瓣衰减特性直接决定输出距离旁瓣的抑制程度。
 
 5. **数值结果与结论**：矩形窗（无加窗）第一旁瓣为 $-13.2\,\text{dB}$；采用汉明窗可降至约 $-42\,\text{dB}$，凯塞窗（$\beta=6$）可降至约 $-50\,\text{dB}$。加窗的代价是主瓣宽度展宽约 $1.3\sim1.5$ 倍（距离分辨率下降）及输出信噪比损失约 $1\sim2\,\text{dB}$，但确能有效抑制距离旁瓣。故原命题正确。
 
@@ -90,12 +94,22 @@ $$R_{sr}(\tau) = \int_{-\infty}^{\infty} s(t) [s(t+\tau-t_0) + n(t+\tau)] \mathr
 
 1. **匹配滤波器的最优性**：在平稳白噪声背景下，匹配滤波器是使输出端瞬时信噪比达到最大的线性滤波器。其冲激响应为 $h(t)=k s^*(t_0-t)$，其中 $s(t)$ 为输入信号，$t_0$ 为最佳采样时刻。
 
-2. **输入信噪比定义**：设常规单载频脉冲信号持续时间为 $T$，能量为 $E=\int_0^T |s(t)|^2\mathrm{d}t$。白噪声双边功率谱密度为 $N_0/2$。以信号有效带宽 $B$ 计算输入信噪比，$\text{SNR}_{\text{in}}=\frac{E/T}{N_0 B}$。对于常规脉冲，时宽带宽积 $BT\approx 1$，故 $\text{SNR}_{\text{in}}\approx \frac{E}{N_0}$。
+2. **输入信噪比定义**：设常规单载频脉冲信号持续时间为 $T$，能量为
+$$E=\int_0^T |s(t)|^2\mathrm{d}t$$
+。白噪声双边功率谱密度为 $N_0/2$。以信号有效带宽 $B$ 计算输入信噪比，$\text{SNR}_{\text{in}}=\frac{E/T}{N_0 B}$。对于常规脉冲，时宽带宽积 $BT\approx 1$，故 $\text{SNR}_{\text{in}}\approx \frac{E}{N_0}$。
 
-3. **输出信噪比推导**：在 $t_0$ 时刻，匹配滤波器输出信号峰值为 $s_o(t_0)=\int s(\tau)s^*(\tau)\mathrm{d}\tau=E$，对应峰值功率为 $E^2$。输出噪声平均功率为 $P_n=\frac{N_0}{2}\int_{-\infty}^{\infty}|H(f)|^2\mathrm{d}f=\frac{N_0}{2}\int_{-\infty}^{\infty}|S(f)|^2\mathrm{d}f=\frac{N_0}{2}E$。因此最大输出信噪比为：
+3. **输出信噪比推导**：在 $t_0$ 时刻，匹配滤波器输出信号峰值为
+$$s_o(t_0)=\int s(\tau)s^*(\tau)\mathrm{d}\tau=E$$
+，对应峰值功率为 $E^2$。输出噪声平均功率为
+$$P_n=\frac{N_0}{2}\int_{-\infty}^{\infty}|H(f)|^2\mathrm{d}f=\frac{N_0}{2}\int_{-\infty}^{\infty}|S(f)|^2\mathrm{d}f=\frac{N_0}{2}E$$
+。因此最大输出信噪比为：
 $$\text{SNR}_{\text{out,max}}=\frac{E^2}{\frac{N_0}{2}E}=\frac{2E}{N_0}$$
 
-4. **信噪比改善量计算**：对比输入与输出信噪比，改善倍数为 $\frac{\text{SNR}_{\text{out,max}}}{\text{SNR}_{\text{in}}}=\frac{2E/N_0}{E/N_0}=2$，换算为分贝值为 $10\lg 2\approx 3\ \text{dB}$。匹配滤波器通过频域共轭匹配与能量相干积累，显著提升了输出信噪比。
+4. **信噪比改善量计算**：对比输入与输出信噪比，改善倍数为
+$$\frac{\text{SNR}_{\text{out,max}}}{\text{SNR}_{\text{in}}}=\frac{2E/N_0}{E/N_0}=2$$
+，换算为分贝值为
+$$10\lg 2\approx 3\ \text{dB}$$
+。匹配滤波器通过频域共轭匹配与能量相干积累，显著提升了输出信噪比。
 
 5. **结论**：原命题称“信噪比不会改善”与匹配滤波器的基本理论相悖。匹配滤波器的核心作用正是在白噪声下最大化输出信噪比，故该判断题答案为 $(\times)$。
 
@@ -153,13 +167,15 @@ $$\sin\theta_{\pm1}=0\pm1\times\frac{\lambda}{\lambda}=\pm1\Rightarrow\theta_{\p
 
 1. **理论依据**：机载脉冲多普勒雷达要构造无杂波区，需工作在高重复频率（HPRF）状态。其核心条件是脉冲重复频率 $f_r$ 必须大于主瓣地杂波的多普勒频带宽度 $B_c$，以避免杂波频谱在频域发生周期混叠。
 
-2. **计算杂波带宽**：机载雷达主瓣地杂波的多普勒频率随波束指向角变化，其理论范围为 $\left[ -\frac{2v}{\lambda}, \frac{2v}{\lambda} \right]$，故杂波总带宽为：
-   $B_c = \frac{4v}{\lambda}$
+2. **计算杂波带宽**：机载雷达主瓣地杂波的多普勒频率随波束指向角变化，其理论范围为
+$$\left[ -\frac{2v}{\lambda}, \frac{2v}{\lambda} \right]$$
+，故杂波总带宽为：
+$$B_c = \frac{4v}{\lambda}$$
    代入已知数据 $v = 150 \, \text{m/s}$，$\lambda = 0.1 \, \text{m}$，得：
-   $B_c = \frac{4 \times 150}{0.1} = 6000 \, \text{Hz} = 6 \, \text{kHz}$
+$$B_c = \frac{4 \times 150}{0.1} = 6000 \, \text{Hz} = 6 \, \text{kHz}$$
 
 3. **条件比对**：已知雷达脉冲重复频率 $f_r = 10 \, \text{kHz}$。将两者进行比较：
-   $f_r = 10 \, \text{kHz} > B_c = 6 \, \text{kHz}$
+$$f_r = 10 \, \text{kHz} > B_c = 6 \, \text{kHz}$$
 
 4. **结论**：当前脉冲重复频率大于地杂波多普勒带宽，满足高重频工作条件。杂波频谱在频域上不会发生混叠，相邻杂波谱之间存在清晰的频域间隔，因此**能**构造无杂波区用于目标检测。
 
@@ -225,20 +241,20 @@ $$n = \frac{240}{50} = 4.8$$
 
 1. **计算所需半功率波束宽度**
 雷达方位分辨力 $\Delta x$ 与波束半功率波束宽度 $\theta_{3dB}$（单位：弧度）及斜距 $R$ 的几何关系为：
-$\Delta x = R \cdot \theta_{3dB}$
+$$\Delta x = R \cdot \theta_{3dB}$$
 代入已知条件 $R = 57.3\text{ km}$，$\Delta x = 1\text{ km}$，得：
-$\theta_{3dB} = \frac{\Delta x}{R} = \frac{1}{57.3} \text{ rad} \approx 1^\circ$
+$$\theta_{3dB} = \frac{\Delta x}{R} = \frac{1}{57.3} \text{ rad} \approx 1^\circ$$
 
 2. **建立波束宽度与阵元数量的关系**
 首先验证参数一致性：工作频率 $f=10\text{ GHz}$ 对应波长 $\lambda = c/f = 3\times 10^8 / 10^{10} = 0.03\text{ m} = 30\text{ mm}$。题设阵元间距 $d=15\text{ mm}$，恰好满足 $d=\lambda/2$ 的半波长设计要求。
 对于均匀激励的线阵列，其半功率波束宽度近似公式为：
-$\theta_{3dB} \approx \frac{0.886\lambda}{L}$
+$$\theta_{3dB} \approx \frac{0.886\lambda}{L}$$
 其中 $L = N d$ 为阵列有效孔径长度，$N$ 为阵元数量。将 $d=\lambda/2$ 代入得：
-$\theta_{3dB} \approx \frac{0.886\lambda}{N (\lambda/2)} = \frac{1.772}{N} \text{ (rad)}$
+$$\theta_{3dB} \approx \frac{0.886\lambda}{N (\lambda/2)} = \frac{1.772}{N} \text{ (rad)}$$
 
 3. **计算最少阵元数量**
 将步骤1求得的 $\theta_{3dB} = 1/57.3 \text{ rad}$ 代入上式求解 $N$：
-$N = \frac{1.772}{\theta_{3dB}} = 1.772 \times 57.3 \approx 101.53$
+$$N = \frac{1.772}{\theta_{3dB}} = 1.772 \times 57.3 \approx 101.53$$
 阵元数量必须为正整数，且为保证实际分辨力不低于指标要求（即实际波束宽度不大于理论计算值），需向上取整：
 $N_{\min} = 102$
 
@@ -268,7 +284,9 @@ $$ \Delta \phi = \frac{\sqrt{2}\pi}{2} \text{ rad} \approx 2.221 \text{ rad} $$
 换算为角度制：
 $$ \Delta \phi = \frac{\sqrt{2}\pi}{2} \times \frac{180^\circ}{\pi} = 90\sqrt{2}^\circ \approx 127.28^\circ $$
 
-故移相器的相移量应为 $\frac{\sqrt{2}\pi}{2} \text{ rad}$（或约 $127.28^\circ$）。若实际系统阵元间距 $d \neq \lambda/2$，请将具体比值 $d/\lambda$ 代入公式 $\Delta \phi = \frac{\sqrt{2}\pi d}{\lambda}$ 计算。
+故移相器的相移量应为
+$$\frac{\sqrt{2}\pi}{2} \text{ rad}$$
+（或约 $127.28^\circ$）。若实际系统阵元间距 $d \neq \lambda/2$，请将具体比值 $d/\lambda$ 代入公式 $\Delta \phi = \frac{\sqrt{2}\pi d}{\lambda}$ 计算。
 
 </details>
 
@@ -293,7 +311,9 @@ $$ \Delta \phi = \frac{\sqrt{2}\pi}{2} \times \frac{180^\circ}{\pi} = 90\sqrt{2}
 **步骤1：波束宽度变化规律**
 相控阵雷达在扫描过程中，波束宽度随扫描角 $\theta$ 增大而逐渐展宽。其半功率波束宽度 $\theta_{3\text{dB}}(\theta)$ 的变化规律为：
 $$ \theta_{3\text{dB}}(\theta) \approx \frac{\theta_{3\text{dB}}(0)}{\cos \theta} $$
-物理机制：波束扫描时，天线孔径在扫描平面内的有效投影长度缩短为 $L_{\text{eff}} = L \cos \theta$。根据天线衍射原理，波束宽度反比于有效孔径尺寸，故波束宽度按 $1/\cos \theta$ 比例展宽。
+物理机制：波束扫描时，天线孔径在扫描平面内的有效投影长度缩短为
+$$L_{\text{eff}} = L \cos \theta$$
+。根据天线衍射原理，波束宽度反比于有效孔径尺寸，故波束宽度按 $1/\cos \theta$ 比例展宽。
 
 **步骤2：增益变化规律**
 天线增益随扫描角 $\theta$ 增大而逐渐下降。仅考虑阵列因子时，增益变化规律为：
@@ -304,9 +324,15 @@ $$ G(\theta) \approx G(0) \cos^2 \theta $$
 
 **步骤3：典型数值计算**
 取典型扫描角 $\theta = 60^\circ$，此时 $\cos 60^\circ = 0.5$：
-- 波束宽度：$\theta_{3\text{dB}}(60^\circ) \approx \dfrac{\theta_{3\text{dB}}(0)}{0.5} = 2 \theta_{3\text{dB}}(0)$，即展宽至法向的2倍。
-- 增益（仅阵列）：$G_{\text{array}}(60^\circ) \approx 0.5 G(0)$，对应下降 $10\lg 0.5 \approx -3.01\ \text{dB}$。
-- 增益（含单元）：$G(60^\circ) \approx 0.25 G(0)$，对应下降 $10\lg 0.25 \approx -6.02\ \text{dB}$。
+- 波束宽度：
+$$\theta_{3\text{dB}}(60^\circ) \approx \dfrac{\theta_{3\text{dB}}(0)}{0.5} = 2 \theta_{3\text{dB}}(0)$$
+，即展宽至法向的2倍。
+- 增益（仅阵列）：
+$$G_{\text{array}}(60^\circ) \approx 0.5 G(0)$$
+，对应下降 $10\lg 0.5 \approx -3.01\ \text{dB}$。
+- 增益（含单元）：
+$$G(60^\circ) \approx 0.25 G(0)$$
+，对应下降 $10\lg 0.25 \approx -6.02\ \text{dB}$。
 
 **结论**
 相控阵雷达扫描过程中，波束宽度与 $\cos \theta$ 成反比展宽，增益与 $\cos \theta$（或 $\cos^2 \theta$）成正比下降。扫描角越大，波束越宽、增益越低，因此工程上通常将有效扫描范围限制在 $\theta \leq 60^\circ$ 以内，以避免性能严重恶化及栅瓣出现。
@@ -342,7 +368,8 @@ $$h(t) = k s(-(t-t_0)) = k s(t_0 - t)$$
 $$h(t) = s(t_0 - t)$$
 
 **3. 结论**
-- 频率响应函数：$H(\Omega) = S^*(\Omega) e^{-j\Omega t_0}$
+- 频率响应函数：
+$$H(\Omega) = S^*(\Omega) e^{-j\Omega t_0}$$
 - 冲击响应函数：$h(t) = s(t_0 - t)$
 
 为保证系统因果可实现，通常需满足 $t_0 \ge T$（$T$ 为信号 $s(t)$ 的有效持续时间），此时 $h(t)=0\ (t<0)$。若题目附图中给出了具体信号 $s(t)$ 的波形，将其代入 $s(t_0-t)$ 即可得到具体的 $h(t)$ 分段解析式。本题为通用理论推导，故给出上述标准表达式。
