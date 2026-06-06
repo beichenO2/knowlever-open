@@ -88,18 +88,39 @@ if (fs.existsSync(rawDir) && fs.readdirSync(rawDir).some(f => !f.startsWith('.')
     function isGarbled(text) {
       if (!text || text.trim().length < 20) return true;
       const totalChars = text.length;
-      const replacementChars = (text.match(/[\ufffd]/g) || []).length;
-      if (replacementChars / totalChars > 0.001) return true;
-      const readable = text.match(/[\u4e00-\u9fff\u3400-\u4dbf\uf000-\uf8ff\u2460-\u24ff\u2000-\u206fa-zA-Z0-9\s.,;:!?()（）、。，；：""''！？【】《》〈〉〔〕…\-—·\n\r\t$\\{}[\]^_+=/<>|~@#%&*"'`°±×÷αβγδεζηθλμνπρστωΩΔΣ∫∂∞≥≤≠≈∈∉]/gu) || [];
-      if (readable.length / totalChars < 0.95) return true;
-      // PPT-style PDF: pdftotext preserves spatial layout with excessive whitespace
+
+      // Check 1: Known garbled characters — union of all known bad patterns from
+      // different PDF tools (pdftotext, poppler, pypdf, etc.)
+      let garbledCount = 0;
+      for (const ch of text) {
+        const code = ch.charCodeAt(0);
+        if (code === 0xFFFD) { garbledCount++; continue; }        // U+FFFD replacement char
+        if (code >= 0xE000 && code <= 0xF8FF) { garbledCount++; continue; }  // Private Use Area
+        if (code <= 0x08 || (code >= 0x0E && code <= 0x1F)) { garbledCount++; continue; }  // C0 controls (except tab/newline/cr)
+        if (code === 0x000B) { garbledCount++; continue; }        // vertical tab
+        if (code === 0x00AD) { garbledCount++; continue; }        // soft hyphen
+        if (code >= 0x200B && code <= 0x200F) { garbledCount++; continue; }  // zero-width chars
+        if (code === 0x2028 || code === 0x2029) { garbledCount++; continue; }  // line/para separators
+        if (code === 0xFEFF && totalChars > 1) { garbledCount++; continue; }  // misplaced BOM
+        if (code === 0xFFFE || code === 0xFFFF) { garbledCount++; continue; }  // non-characters
+      }
+      if (garbledCount / totalChars > 0.001) return true;
+
+      // Check 2: Readable character ratio >= 99%
+      const readable = text.match(/[\u4e00-\u9fff\u3400-\u4dbfa-zA-Z0-9\s.,;:!?()（）、。，；：""''！？【】《》〈〉〔〕…\-—·\n\r\t$\\{}[\]^_+=\/<>|~@#%&*"'`°±×÷αβγδεζηθλμνπρστωΩΔΣ∫∂∞≥≤≠≈∈∉√∑∏←→↓↑↔∀∃∅∩∪⊂⊆⊕⊗⋅≡≅≃≪≫²³\u2070-\u209f\u2460-\u24ff\u2000-\u206f]/gu) || [];
+      if (readable.length / totalChars < 0.99) return true;
+
+      // Check 3: PPT-style spatial layout (3+ consecutive spaces in > 5% of non-empty lines)
       const lines = text.split('\n');
-      const spatialLines = lines.filter(l => (l.match(/  {3,}/g) || []).length >= 2);
-      if (spatialLines.length / lines.length > 0.3) return true;
-      // Formula garbling: high ratio of single-char "words" from broken math symbols
+      const nonEmptyLines = lines.filter(l => l.trim().length > 0);
+      const spatialLines = nonEmptyLines.filter(l => /\s{3,}/.test(l));
+      if (spatialLines.length / (nonEmptyLines.length || 1) > 0.05) return true;
+
+      // Check 4: Formula fragment garbling (single-char non-alphanumeric "words" > 1%)
       const words = text.split(/\s+/).filter(w => w.length > 0);
-      const singleChars = words.filter(w => w.length === 1 && !/[a-zA-Z0-9\u4e00-\u9fff，。！？、]/.test(w));
-      if (words.length > 20 && singleChars.length / words.length > 0.15) return true;
+      const singleChars = words.filter(w => w.length === 1 && !/[a-zA-Z0-9\u4e00-\u9fff，。！？、$\\]/.test(w));
+      if (words.length > 20 && singleChars.length / words.length > 0.01) return true;
+
       return false;
     }
 
