@@ -181,8 +181,15 @@ function markdownToHtml(md) {
   });
 
   // [[slug]] or [[slug|display]] → wiki link
-  html = html.replace(/\[\[([^\]|]+)\|([^\]]+)\]\]/g, '<a href="$1.html" class="wiki-link">$2</a>');
-  html = html.replace(/\[\[([^\]]+)\]\]/g, '<a href="$1.html" class="wiki-link">$1</a>');
+  // Strip kind prefixes (concept-, section-, root-) from display text when no explicit label
+  // URL-encode href for CJK filenames
+  html = html.replace(/\[\[([^\]|]+)\|([^\]]+)\]\]/g, (_, slug, display) => {
+    return `<a href="${encodeURIComponent(slug)}.html" class="wiki-link">${display}</a>`;
+  });
+  html = html.replace(/\[\[([^\]]+)\]\]/g, (_, slug) => {
+    const display = slug.replace(/^(concept|section|root|problems|quiz)-/, '');
+    return `<a href="${encodeURIComponent(slug)}.html" class="wiki-link">${display}</a>`;
+  });
 
   // Mermaid code blocks
   html = html.replace(/```mermaid\n([\s\S]*?)```/g, '<pre class="mermaid">$1</pre>');
@@ -244,10 +251,10 @@ function buildSidebar(tree, currentSlug, contentSlugsSet) {
     const isGroup = node.kind === 'intermediate' || node.kind === 'root';
     let href;
     if (hasContent) {
-      href = `${node.page_slug}.html`;
+      href = `${encodeURIComponent(node.page_slug)}.html`;
     } else if (isGroup && node.children?.length > 0) {
       const first = node.children.find(c => contentSlugsSet?.has(c.page_slug));
-      href = first ? `${first.page_slug}.html` : '#';
+      href = first ? `${encodeURIComponent(first.page_slug)}.html` : '#';
     } else {
       href = '#';
     }
@@ -286,26 +293,26 @@ function pageTemplate({ title, sidebar, toc, breadcrumb, content, backlinks, rel
 
   const breadcrumbHtml = breadcrumb.length > 0 ? `
     <div class="breadcrumb"><a href="index.html">首页</a>${breadcrumb.map(c =>
-      `<span>›</span><a href="${c.slug}.html">${c.label}</a>`
+      `<span>›</span><a href="${encodeURIComponent(c.slug)}.html">${c.label}</a>`
     ).join('')}
     </div>` : '<div class="breadcrumb"><a href="index.html">首页</a></div>';
 
   const backlinksHtml = backlinks.length > 0 ? `
     <aside class="backlinks">
       <h3>🔗 反向链接（${backlinks.length}）</h3>
-      <ul>${backlinks.map(s => `<li><a href="${s}.html">${s}</a></li>`).join('')}</ul>
+      <ul>${backlinks.map(s => `<li><a href="${encodeURIComponent(s)}.html">${s.replace(/^(concept|section|root|problems|quiz)-/, '')}</a></li>`).join('')}</ul>
     </aside>` : '';
 
   const relatedHtml = relatedPages.length > 0 ? `
     <section class="related-pages">
       <h3>📎 相关页面</h3>
-      <div class="related-grid">${relatedPages.map(p => `<a href="${p.slug}.html" class="related-card"><span class="type-badge">${p.type}</span><span>${p.title}</span></a>`).join('')}</div>
+      <div class="related-grid">${relatedPages.map(p => `<a href="${encodeURIComponent(p.slug)}.html" class="related-card"><span class="type-badge">${p.type}</span><span>${p.title}</span></a>`).join('')}</div>
     </section>` : '';
 
   const prevNextHtml = prevNext.prev || prevNext.next ? `
     <nav class="page-pager" aria-label="前后导航">
-      <div class="pager-cell">${prevNext.prev ? `<a href="${prevNext.prev}.html">← 上一页</a>` : ''}</div>
-      <div class="pager-cell">${prevNext.next ? `<a href="${prevNext.next}.html">下一页 →</a>` : ''}</div>
+      <div class="pager-cell">${prevNext.prev ? `<a href="${encodeURIComponent(prevNext.prev)}.html">← 上一页</a>` : ''}</div>
+      <div class="pager-cell">${prevNext.next ? `<a href="${encodeURIComponent(prevNext.next)}.html">下一页 →</a>` : ''}</div>
     </nav>` : '';
 
   return `<!DOCTYPE html>
@@ -469,7 +476,7 @@ function buildIndexPage(tree, graph, topic, contentSlugs, wikiDir) {
     const subTags = domain.children.slice(0, 3)
       .map(c => `<span>${escapeHtml(c.label || c.page_slug)}</span>`).join('');
     const firstChild = domain.children.find(c => contentSlugs.has(c.page_slug));
-    return `<a class="entry-card" href="${firstChild?.page_slug || domain.page_slug}.html">
+    return `<a class="entry-card" href="${encodeURIComponent(firstChild?.page_slug || domain.page_slug)}.html">
         <span class="entry-icon">${emoji}</span>
         <h3>${escapeHtml(domain.label || domain.title)}（${count}）</h3>
         <p>探索 ${count} 个知识页面</p>
@@ -482,7 +489,7 @@ function buildIndexPage(tree, graph, topic, contentSlugs, wikiDir) {
     const dIdx = domains.indexOf(domain);
     const color = dIdx >= 0 ? COLORS[dIdx % COLORS.length] : '#999';
     const linkCount = graph.edges.filter(e => e.source === n.id || e.target === n.id).length;
-    return { id: n.id, name: escapeHtml(n.title), domain: domain?.label || '其他', color, href: `${n.id}.html`, r: Math.max(2, Math.min(6, linkCount)), lc: linkCount };
+    return { id: n.id, name: escapeHtml(n.title), domain: domain?.label || '其他', color, href: `${encodeURIComponent(n.id)}.html`, r: Math.max(2, Math.min(6, linkCount)), lc: linkCount };
   });
   const graphLinks = graph.edges.filter(e => e.relation === 'related_to' || e.relation === 'child_of')
     .map(e => {
@@ -650,11 +657,11 @@ function buildMarkmapMd(tree, contentSlugs) {
   const lines = [`# ${tree.label || tree.title || tree.page_slug}`];
   for (const child of (tree.children || [])) {
     const firstLeaf = (child.children || []).find(c => contentSlugs.has(c.page_slug));
-    const groupHref = firstLeaf ? `${firstLeaf.page_slug}.html` : '#';
+    const groupHref = firstLeaf ? `${encodeURIComponent(firstLeaf.page_slug)}.html` : '#';
     lines.push(`## [${child.label || child.title}](${groupHref})`);
     for (const leaf of (child.children || []).slice(0, 8)) {
       if (contentSlugs.has(leaf.page_slug)) {
-        lines.push(`### [${leaf.label || leaf.title}](${leaf.page_slug}.html)`);
+        lines.push(`### [${leaf.label || leaf.title}](${encodeURIComponent(leaf.page_slug)}.html)`);
       }
     }
     if ((child.children || []).length > 8) lines.push(`### ...${child.children.length - 8} more`);
@@ -667,7 +674,7 @@ function generateSitePageData(allSlugs, wikiDir, nodeMap) {
   for (const slug of allSlugs) {
     const node = nodeMap.get(slug);
     const title = node?.label || node?.title || slug;
-    pages.push({ slug, title, href: `${slug}.html`, type: node?.kind || 'concept' });
+    pages.push({ slug, title, href: `${encodeURIComponent(slug)}.html`, type: node?.kind || 'concept' });
   }
   return `window.__SITE_PAGES=${JSON.stringify(pages)};`;
 }
