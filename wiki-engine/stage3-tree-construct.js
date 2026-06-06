@@ -164,13 +164,14 @@ async function buildSemanticTree(leafNodes, topic, slugSet, options = {}) {
   // Group leaves by semantic similarity
   const groups = semanticGroup(leafNodes);
 
-  // Build intermediate nodes for each group
+  // Build intermediate nodes, collecting orphans separately
   const intermediates = [];
+  const orphans = [];
   for (let gi = 0; gi < groups.length; gi++) {
     const group = groups[gi];
 
     if (group.length === 1) {
-      intermediates.push(group[0]);
+      orphans.push(group[0]);
       continue;
     }
 
@@ -188,6 +189,24 @@ async function buildSemanticTree(leafNodes, topic, slugSet, options = {}) {
     });
   }
 
+  // Anti-usurpation: absorb orphan leaves into nearest section
+  if (orphans.length > 0 && intermediates.length > 0) {
+    for (const orphan of orphans) {
+      let bestIdx = 0, bestSim = -Infinity;
+      for (let i = 0; i < intermediates.length; i++) {
+        const sim = cosineSimilarity(orphan.embedding, intermediates[i].embedding);
+        if (sim > bestSim) { bestSim = sim; bestIdx = i; }
+      }
+      intermediates[bestIdx].children.push(orphan);
+      intermediates[bestIdx].embedding = computeCentroid(
+        intermediates[bestIdx].children.map(c => c.embedding)
+      );
+      console.log(`[Stage 3] Anti-usurp: "${orphan.label}" → absorbed into "${intermediates[bestIdx].label}"`);
+    }
+  } else if (orphans.length > 0) {
+    intermediates.push(...orphans);
+  }
+
   // Recursively group intermediates if still too many
   if (intermediates.length > MAX_GROUP_SIZE) {
     return buildSemanticTree(intermediates, topic, slugSet, options);
@@ -199,6 +218,97 @@ async function buildSemanticTree(leafNodes, topic, slugSet, options = {}) {
     label: topic,
     children: intermediates,
   };
+}
+
+/**
+ * LLM-based tree hierarchy audit.
+ * Detects "usurpation" — leaf nodes placed at a level they don't belong to.
+ * Returns a corrected tree.
+ */
+async function auditTreeHierarchy(tree, topic) {
+  function treeToOutline(node, depth = 0) {
+    const prefix = '  '.repeat(depth);
+    const kindTag = node.kind === 'root' ? '[ROOT]' :
+                    node.kind === 'intermediate' ? '[SECTION]' : '[LEAF]';
+    let lines = [`${prefix}${kindTag} ${node.label} (${node.page_slug})`];
+    for (const child of (node.children || [])) {
+      lines.push(...treeToOutline(child, depth + 1));
+    }
+    return lines;
+  }
+
+  const outline = treeToOutline(tree).join('\n');
+
+  try {
+    const response = await chatCompletion({
+      messages: [{
+        role: 'user',
+        content: `你是知识体系架构审核员。下面是一棵自动生成的知识树，主题是「${topic}」。
+
+${outline}
+
+请审核此树结构是否存在**僭越**问题：
+- 僭越 = 一个具体知识点（LEAF）出现在它不应有的高层级，与更大的概念分类（SECTION）平级
+- 正确的层级关系：具体知识点应该是某个分类的子节点，而不是与分类平级
+- 例如：「第一盲速」不应该和「雷达技术基础」平级，它应该归属于某个信号处理或测速相关的 SECTION 下
+
+如果发现僭越，请输出 JSON 数组，每个元素是一个修正操作：
+[{"move": "要移动的leaf的page_slug", "to": "目标section的page_slug"}]
+
+如果层级合理无需修改，输出空数组 []
+
+只输出 JSON，不要解释。`,
+      }],
+      temperature: 0,
+      max_tokens: 2000,
+    });
+
+    const raw = response?.choices?.[0]?.message?.content?.trim() || '[]';
+    const jsonMatch = raw.match(/\[[\s\S]*\]/);
+    if (!jsonMatch) return tree;
+
+    const moves = JSON.parse(jsonMatch[0]);
+    if (!Array.isArray(moves) || moves.length === 0) {
+      console.log('[Stage 3] Tree audit: hierarchy OK, no usurpation detected.');
+      return tree;
+    }
+
+    function findNodeAndRemove(parent, slug) {
+      if (!parent.children) return null;
+      const idx = parent.children.findIndex(c => c.page_slug === slug);
+      if (idx >= 0) return parent.children.splice(idx, 1)[0];
+      for (const child of parent.children) {
+        const found = findNodeAndRemove(child, slug);
+        if (found) return found;
+      }
+      return null;
+    }
+
+    function findNode(node, slug) {
+      if (node.page_slug === slug) return node;
+      for (const child of (node.children || [])) {
+        const found = findNode(child, slug);
+        if (found) return found;
+      }
+      return null;
+    }
+
+    for (const { move, to } of moves) {
+      if (!move || !to) continue;
+      const node = findNodeAndRemove(tree, move);
+      if (!node) { console.warn(`[Stage 3] Audit: cannot find "${move}" to move`); continue; }
+      const target = findNode(tree, to);
+      if (!target) { console.warn(`[Stage 3] Audit: target "${to}" not found`); continue; }
+      if (!target.children) target.children = [];
+      target.children.push(node);
+      console.log(`[Stage 3] Audit fix: moved "${node.label}" → "${target.label}"`);
+    }
+
+    return tree;
+  } catch (e) {
+    console.warn(`[Stage 3] Tree audit LLM call failed: ${e.message} — skipping audit.`);
+    return tree;
+  }
 }
 
 /**
@@ -334,7 +444,10 @@ async function run(clustersPath, atomsDir, outputDir, topic, options = {}) {
   const tree = await buildSemanticTree(leafNodes, topic, slugSet, {
     useLlmLabels: options.useLlmLabels ?? true,
   });
-  const cleanTree = stripEmbeddings(tree);
+  let cleanTree = stripEmbeddings(tree);
+
+  // LLM Tree Audit: check hierarchy for usurpation
+  cleanTree = await auditTreeHierarchy(cleanTree, topic);
 
   fs.mkdirSync(outputDir, { recursive: true });
   fs.writeFileSync(path.join(outputDir, 'tree.json'), JSON.stringify(cleanTree, null, 2), 'utf-8');
