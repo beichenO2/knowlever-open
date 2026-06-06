@@ -760,18 +760,24 @@ function run(wikiDir, treePath, outputDir, topic) {
   // Build pages (skip virtual nodes with no wiki content)
   let pagesBuilt = 0;
   let skipped = 0;
-  const contentSlugs = new Set();
   const wikiFileSlugs = fs.readdirSync(wikiDir)
     .filter(f => f.endsWith('.md'))
     .map(f => f.replace(/\.md$/, ''));
   const allBuildSlugs = new Set([...allSlugs, ...wikiFileSlugs]);
+
+  // Pre-compute contentSlugs so sidebar links work on every page
+  const contentSlugs = new Set();
+  for (const slug of allBuildSlugs) {
+    const { content } = readWikiPage(wikiDir, slug);
+    if (content.trim()) contentSlugs.add(slug);
+  }
+
   for (const slug of allBuildSlugs) {
     const { frontmatter, content } = readWikiPage(wikiDir, slug);
     if (!content.trim()) {
       skipped++;
       continue;
     }
-    contentSlugs.add(slug);
     const node = nodeMap.get(slug);
     const title = frontmatter.title || node?.label || node?.title || slug;
     const htmlContent = markdownToHtml(content);
