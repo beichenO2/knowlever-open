@@ -737,117 +737,66 @@ function run(wikiDir, treePath, outputDir, topic) {
     .map(f => f.replace(/\.md$/, '')));
   const allKnownSlugs = new Set([...allSlugs, ...wikiFileSlugsForGraph]);
 
-  // Smart quiz injection: place each quiz under its most relevant section
+  // Build quiz → section mapping via atom IDs (source_file → section with most atoms)
+  // Quiz content will be appended to the matching section page
+  const quizBySection = {};  // section_slug -> [quiz_slug]
   {
-    const quizSlugs = fs.readdirSync(wikiDir)
-      .filter(f => f.startsWith('quiz-') && f.endsWith('.md'))
-      .map(f => f.replace(/\.md$/, ''));
-
-    if (quizSlugs.length > 0) {
-      const treeSlugs = new Set();
-      (function collectSlugs(n) { treeSlugs.add(n.page_slug); (n.children || []).forEach(collectSlugs); })(tree);
-      const missingQuiz = quizSlugs.filter(s => !treeSlugs.has(s));
-
-      if (missingQuiz.length > 0) {
-        // Build source_file -> best_section mapping via atom IDs in tree
-        const sourceToSection = {};
-        (function walkAtoms(node, parentSection) {
-          const slug = node.page_slug;
-          const kind = node.kind || '';
-          let curSection = parentSection;
-          if (kind === 'intermediate') curSection = slug;
-          if (kind.startsWith('leaf') && node.atoms) {
-            for (const atomId of node.atoms) {
-              const prefix = 'atom-' + topic + '-';
-              if (atomId.startsWith(prefix)) {
-                const rest = atomId.slice(prefix.length);
-                const parts = rest.split('-');
-                if (parts.length >= 2) {
-                  const num = parts[parts.length - 1];
-                  if (/^\d+$/.test(num)) {
-                    const src = parts.slice(0, -1).join('-').toLowerCase();
-                    if (!sourceToSection[src]) sourceToSection[src] = {};
-                    sourceToSection[src][curSection] = (sourceToSection[src][curSection] || 0) + 1;
-                  }
-                }
-              }
+    // Step 1: Build source_file → best_section mapping via atom IDs in tree
+    const sourceToSectionCounts = {};
+    (function walkAtoms(node, parentSection) {
+      const kind = node.kind || '';
+      let curSection = parentSection;
+      if (kind === 'intermediate') curSection = node.page_slug;
+      if (kind.startsWith('leaf') && node.atoms) {
+        for (const atomId of node.atoms) {
+          const prefix = 'atom-' + topic + '-';
+          if (atomId.startsWith(prefix)) {
+            const rest = atomId.slice(prefix.length);
+            const lastDash = rest.lastIndexOf('-');
+            if (lastDash > 0 && /^\d+$/.test(rest.slice(lastDash + 1))) {
+              const src = rest.slice(0, lastDash).toLowerCase();
+              if (!sourceToSectionCounts[src]) sourceToSectionCounts[src] = {};
+              sourceToSectionCounts[src][curSection] = (sourceToSectionCounts[src][curSection] || 0) + 1;
             }
           }
-          for (const c of (node.children || [])) walkAtoms(c, curSection);
-        })(tree, null);
-
-        // Find best section for each source
-        const sourceBestSection = {};
-        for (const [src, sections] of Object.entries(sourceToSection)) {
-          let best = null, bestCount = 0;
-          for (const [sec, count] of Object.entries(sections)) {
-            if (count > bestCount) { bestCount = count; best = sec; }
-          }
-          if (best) sourceBestSection[src] = best;
         }
-
-        // Build section_slug -> tree node reference
-        const sectionNodes = {};
-        (function collectSections(node) {
-          if (node.kind === 'intermediate' || node.kind === 'root') {
-            sectionNodes[node.page_slug] = node;
-          }
-          for (const c of (node.children || [])) collectSections(c);
-        })(tree);
-
-        // Place each quiz
-        const unmatched = [];
-        let placed = 0;
-        for (const quizSlug of missingQuiz) {
-          const quizFile = path.join(wikiDir, quizSlug + '.md');
-          let source = '';
-          try {
-            const content = fs.readFileSync(quizFile, 'utf-8');
-            const fm = content.match(/^---\n([\s\S]*?)\n---/);
-            if (fm) {
-              const srcLine = fm[1].split('\n').find(l => l.startsWith('source:'));
-              if (srcLine) source = srcLine.split(':').slice(1).join(':').trim().replace(/^"|"$/g, '');
-            }
-          } catch (_) {}
-
-          const srcKey = source.toLowerCase();
-          const targetSection = sourceBestSection[srcKey];
-          const quizNode = {
-            page_slug: quizSlug,
-            kind: 'leaf-quiz',
-            label: quizSlug.replace(/^quiz-/, ''),
-            atoms: [],
-            children: [],
-          };
-
-          if (targetSection && sectionNodes[targetSection]) {
-            sectionNodes[targetSection].children.push(quizNode);
-            allSlugs.add(quizSlug);
-            placed++;
-            console.log(`[Stage 6] Quiz "${quizSlug}" → ${targetSection}`);
-          } else {
-            unmatched.push(quizNode);
-          }
-        }
-
-        // Remaining unmatched quiz -> "综合练习" section
-        if (unmatched.length > 0) {
-          const miscSlug = 'section-综合练习';
-          tree.children.push({
-            page_slug: miscSlug,
-            kind: 'intermediate',
-            label: '综合练习',
-            atoms: [],
-            children: unmatched,
-          });
-          allSlugs.add(miscSlug);
-          for (const q of unmatched) allSlugs.add(q.page_slug);
-          console.log(`[Stage 6] ${unmatched.length} quiz pages → "综合练习" (no source match)`);
-        }
-
-        console.log(`[Stage 6] Quiz injection: ${placed} placed by source, ${unmatched.length} to 综合练习`);
       }
+      for (const c of (node.children || [])) walkAtoms(c, curSection);
+    })(tree, null);
+
+    const sourceBestSection = {};
+    for (const [src, sections] of Object.entries(sourceToSectionCounts)) {
+      let best = null, bestCount = 0;
+      for (const [sec, count] of Object.entries(sections)) {
+        if (count > bestCount) { bestCount = count; best = sec; }
+      }
+      if (best) sourceBestSection[src] = best;
     }
+
+    // Step 2: Map quiz files to sections via their source field
+    const quizFiles = fs.readdirSync(wikiDir)
+      .filter(f => f.startsWith('quiz-') && f.endsWith('.md'));
+    let mapped = 0;
+    for (const qf of quizFiles) {
+      try {
+        const qContent = fs.readFileSync(path.join(wikiDir, qf), 'utf-8');
+        const fm = qContent.match(/^---\n([\s\S]*?)\n---/);
+        if (fm) {
+          const srcLine = fm[1].split('\n').find(l => l.startsWith('source:'));
+          if (srcLine) {
+            const source = srcLine.split(':').slice(1).join(':').trim().replace(/^"|"$/g, '');
+            const srcKey = source.toLowerCase();
+            const targetSection = sourceBestSection[srcKey];
+            if (targetSection) {
+              if (!quizBySection[targetSection]) quizBySection[targetSection] = [];
+              quizBySection[targetSection].push(qf.replace(/\.md$/, ''));
+              mapped++;
+            }
+          }
+        }
+      } catch (_) {}
+    }
+    console.log(`[Stage 6] Quiz inline mapping: ${mapped}/${quizFiles.length} quiz files mapped to ${Object.keys(quizBySection).length} sections`);
   }
 
   // Build backlinks index
@@ -885,7 +834,11 @@ function run(wikiDir, treePath, outputDir, topic) {
     if (content.trim()) contentSlugs.add(slug);
   }
 
+  const quizAppended = new Set();
   for (const slug of allBuildSlugs) {
+    // Skip standalone quiz pages — their content will be appended to source pages
+    if (slug.startsWith('quiz-')) continue;
+
     const { frontmatter, content } = readWikiPage(wikiDir, slug);
     if (!content.trim()) {
       skipped++;
@@ -893,7 +846,27 @@ function run(wikiDir, treePath, outputDir, topic) {
     }
     const node = nodeMap.get(slug);
     const title = frontmatter.title || node?.label || node?.title || slug;
-    const htmlContent = markdownToHtml(content);
+
+    // Append matching quiz content to this page (section pages get quizzes)
+    let fullContent = content;
+    const matchingQuizzes = quizBySection[slug] || [];
+    if (matchingQuizzes.length > 0) {
+      fullContent += '\n\n---\n\n## 练习题\n\n';
+      for (const quizSlug of matchingQuizzes) {
+        const { content: quizContent } = readWikiPage(wikiDir, quizSlug);
+        if (quizContent.trim()) {
+          // Strip the quiz's own title heading (# ...) and intro line
+          const stripped = quizContent
+            .replace(/^#\s+.+\n*/m, '')
+            .replace(/^>\s+本页包含.+\n*/m, '')
+            .trim();
+          fullContent += stripped + '\n\n';
+          quizAppended.add(quizSlug);
+        }
+      }
+    }
+
+    const htmlContent = markdownToHtml(fullContent);
     const toc = extractToc(htmlContent);
     const breadcrumb = buildBreadcrumb(slug, nodeMap);
     const sidebar = buildSidebar(tree, slug, contentSlugs);
@@ -912,6 +885,31 @@ function run(wikiDir, treePath, outputDir, topic) {
     fs.writeFileSync(path.join(siteDir, `${slug}.html`), html, 'utf-8');
     pagesBuilt++;
   }
+
+  // Build standalone pages for unmatched quiz files (no section match found)
+  const allQuizSlugs = fs.readdirSync(wikiDir)
+    .filter(f => f.startsWith('quiz-') && f.endsWith('.md'))
+    .map(f => f.replace(/\.md$/, ''));
+  const unmatchedQuiz = allQuizSlugs.filter(s => !quizAppended.has(s));
+  for (const quizSlug of unmatchedQuiz) {
+    const { frontmatter, content } = readWikiPage(wikiDir, quizSlug);
+    if (!content.trim()) continue;
+    const title = frontmatter.title || quizSlug.replace(/^quiz-/, '') + ' — 练习题';
+    const htmlContent = markdownToHtml(content);
+    const toc = extractToc(htmlContent);
+    const breadcrumb = buildBreadcrumb(quizSlug, nodeMap);
+    const sidebar = buildSidebar(tree, quizSlug, contentSlugs);
+    const backlinks = incoming[quizSlug] || [];
+    const relatedPages = findRelatedPages(quizSlug, graph, nodeMap);
+    const html = pageTemplate({
+      title, sidebar, toc, breadcrumb, content: htmlContent,
+      backlinks, relatedPages, prevNext: { prev: null, next: null }, topic,
+    });
+    fs.writeFileSync(path.join(siteDir, `${quizSlug}.html`), html, 'utf-8');
+    pagesBuilt++;
+  }
+  if (quizAppended.size > 0) console.log(`[Stage 6] Appended ${quizAppended.size} quiz files to source pages`);
+  if (unmatchedQuiz.length > 0) console.log(`[Stage 6] Built ${unmatchedQuiz.length} standalone quiz pages (no matching source)`);
   if (skipped > 0) console.log(`[Stage 6] Skipped ${skipped} virtual nodes (no wiki content)`);
 
   // Index page (demo-parity style)
