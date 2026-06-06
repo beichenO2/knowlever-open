@@ -150,10 +150,31 @@ function buildBreadcrumb(slug, nodeMap) {
   return crumbs;
 }
 
-// --- Markdown → HTML (enhanced) ---
+// --- Markdown → HTML (enhanced, LaTeX-safe) ---
 
 function markdownToHtml(md) {
-  let html = md
+  // Phase 1: Protect LaTeX and code blocks from markdown processing.
+  // Extract them, replace with placeholders, process markdown, then restore.
+  const protected = [];
+  function protect(text) {
+    const idx = protected.length;
+    protected.push(text);
+    return `\x00PROTECT${idx}\x00`;
+  }
+
+  let src = md;
+
+  // Protect fenced code blocks first (highest priority)
+  src = src.replace(/```(\w*)\n([\s\S]*?)```/g, (m) => protect(m));
+
+  // Protect display math $$...$$ (may span lines)
+  src = src.replace(/\$\$([\s\S]*?)\$\$/g, (m) => protect(m));
+
+  // Protect inline math $...$ (single line, non-greedy, no nested $)
+  src = src.replace(/\$([^\$\n]+?)\$/g, (m) => protect(m));
+
+  // Phase 2: Standard markdown conversion (safe — no LaTeX to corrupt)
+  let html = src
     .replace(/^#### (.+)$/gm, '<h4 id="$1">$1</h4>')
     .replace(/^### (.+)$/gm, '<h3 id="$1">$1</h3>')
     .replace(/^## (.+)$/gm, '<h2 id="$1">$1</h2>')
@@ -181,8 +202,6 @@ function markdownToHtml(md) {
   });
 
   // [[slug]] or [[slug|display]] → wiki link
-  // Strip kind prefixes (concept-, section-, root-) from display text when no explicit label
-  // URL-encode href for CJK filenames
   html = html.replace(/\[\[([^\]|]+)\|([^\]]+)\]\]/g, (_, slug, display) => {
     return `<a href="${encodeURIComponent(slug)}.html" class="wiki-link">${display}</a>`;
   });
@@ -190,15 +209,6 @@ function markdownToHtml(md) {
     const display = slug.replace(/^(concept|section|root|problems|quiz)-/, '');
     return `<a href="${encodeURIComponent(slug)}.html" class="wiki-link">${display}</a>`;
   });
-
-  // Mermaid code blocks
-  html = html.replace(/```mermaid\n([\s\S]*?)```/g, '<pre class="mermaid">$1</pre>');
-
-  // Generic code blocks
-  html = html.replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code class="language-$1">$2</code></pre>');
-
-  // <details> blocks (pass through)
-  // Already HTML, leave as-is
 
   // Wrap consecutive <li> in <ul>
   html = html.replace(/((?:<li>.*<\/li>\n?)+)/g, '<ul>$1</ul>');
@@ -222,6 +232,34 @@ function markdownToHtml(md) {
   html = html.replace(/(<\/pre>)<\/p>/g, '$1');
   html = html.replace(/<p>(<details>)/g, '$1');
   html = html.replace(/(<\/details>)<\/p>/g, '$1');
+
+  // Phase 3: Restore protected blocks with proper rendering
+  html = html.replace(/\x00PROTECT(\d+)\x00/g, (_, idx) => {
+    const original = protected[parseInt(idx)];
+
+    // Fenced code block → render as <pre><code>
+    const codeMatch = original.match(/^```(\w*)\n([\s\S]*?)```$/);
+    if (codeMatch) {
+      if (codeMatch[1] === 'mermaid') {
+        return `<pre class="mermaid">${codeMatch[2]}</pre>`;
+      }
+      return `<pre><code class="language-${codeMatch[1]}">${codeMatch[2]}</code></pre>`;
+    }
+
+    // Display math $$...$$ → block-level element for KaTeX
+    const displayMatch = original.match(/^\$\$([\s\S]*?)\$\$$/);
+    if (displayMatch) {
+      return `</p><div class="math-display">$$${displayMatch[1]}$$</div><p>`;
+    }
+
+    // Inline math $...$ → pass through for KaTeX auto-render
+    return original;
+  });
+
+  // Clean up empty <p> tags created by display math extraction
+  html = html.replace(/<p><\/p>/g, '');
+  html = html.replace(/<p>(<div class="math-display">)/g, '$1');
+  html = html.replace(/(<\/div>)<\/p>/g, '$1');
 
   return html;
 }
@@ -339,6 +377,8 @@ function pageTemplate({ title, sidebar, toc, breadcrumb, content, backlinks, rel
     .tri-content ol { padding-left: 1.5rem; margin: 0.5rem 0; }
     .tri-content ul { padding-left: 1.5rem; margin: 0.5rem 0; }
     .tri-content .katex-display { margin: 1rem 0; overflow-x: auto; }
+    .math-display { margin: 1.2rem 0; text-align: center; overflow-x: auto; font-size: 1.1em; }
+    .math-display .katex-display { margin: 0; }
     .right-sidebar { padding: 2rem 1rem; position: sticky; top: 0; height: 100vh; overflow-y: auto; border-left: 1px solid var(--border, #f0f0f0); }
     .right-sidebar h4 { font-size: 0.9rem; margin-bottom: 0.5rem; color: var(--text-muted, #64748b); }
     .right-sidebar ul { list-style: none; padding: 0; font-size: 0.82rem; }
@@ -360,7 +400,8 @@ function pageTemplate({ title, sidebar, toc, breadcrumb, content, backlinks, rel
   </style>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.css">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/contrib/auto-render.min.js"></script>
+  <script>document.addEventListener('DOMContentLoaded',function(){if(typeof renderMathInElement==='function'){renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false});}});</script>
   <script defer src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" onload="mermaid.initialize({startOnLoad:true,theme:'neutral'});"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
