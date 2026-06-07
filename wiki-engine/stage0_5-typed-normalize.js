@@ -444,9 +444,25 @@ if (require.main === module) {
     console.log(`[Stage 0.5] ${sources.length} total sources, ${alreadyDone.size} already done, ${todo.length} remaining for topic: ${topic}`);
 
     (async () => {
-      for (const src of todo) {
-        const contentPath = path.join(normalizedDir, src, 'content.md');
-        await typedNormalize(src, contentPath, normalizedDir, topic);
+      const CONCURRENCY = 5;
+      const STAGGER_MS = 60_000;
+      const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+      console.log(`[Stage 0.5] Running with concurrency=${CONCURRENCY}, stagger=${STAGGER_MS/1000}s`);
+
+      for (let batch = 0; batch < todo.length; batch += CONCURRENCY) {
+        const chunk = todo.slice(batch, batch + CONCURRENCY);
+        const promises = chunk.map((src, i) => {
+          const contentPath = path.join(normalizedDir, src, 'content.md');
+          const delay = i * STAGGER_MS;
+          return (delay > 0 ? sleep(delay) : Promise.resolve())
+            .then(() => {
+              console.log(`[Stage 0.5] [worker-${i}] Starting ${src}`);
+              return typedNormalize(src, contentPath, normalizedDir, topic);
+            });
+        });
+        await Promise.all(promises);
+        console.log(`[Stage 0.5] Batch ${Math.floor(batch / CONCURRENCY) + 1} complete (${Math.min(batch + CONCURRENCY, todo.length)}/${todo.length})`);
       }
       console.log(`[Stage 0.5] All ${sources.length} sources processed.`);
     })().catch(e => {

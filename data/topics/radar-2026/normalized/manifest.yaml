@@ -207,3 +207,11 @@ sources:
     original_chars: 805
     extracted_chars: 805
     processed_at: 2026-06-04T15:36:54.224Z
+  2026Radar-作业1:
+    explanations: 0
+    summaries: 1
+    problems: 3
+    coverage: 98.6%
+    original_chars: 283
+    extracted_chars: 279
+    processed_at: 2026-06-07T02:22:47.017Z
