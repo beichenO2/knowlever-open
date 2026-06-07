@@ -224,6 +224,13 @@ function hasOcrGarbage(text) {
     /\(4\s*\)\s*\d/,
     /PRF\s{3,}/,
     /[A-Z]\s{2,}[a-z]/,
+    /[a-z]\s*\(\s*[a-z]\s*\)\s{2,}/,
+    /[a-z]\s*\(\s*[a-z]\s*\)\s*[a-z]\s*\(\s*[a-z]\s*\)/,
+    /\be\s+j\s*\[/,
+    /\bCy\s*\*\s*\(/,
+    /\\qquad|\\quad/,
+    /\n\s{10,}\S/,
+    /[a-z]\s{2,}\d\s{2,}[a-z]/,
   ];
   return patterns.some(p => p.test(text));
 }

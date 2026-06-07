@@ -48,6 +48,13 @@ function needsRepair(text) {
     /[a-z]\s{2,}[a-z]\s{2,}\d/,
     /\(4\s*\)\s*\d/,
     /PRF\s{3,}/,
+    /[a-z]\s*\(\s*[a-z]\s*\)\s{2,}/,
+    /[a-z]\s*\(\s*[a-z]\s*\)\s*[a-z]\s*\(\s*[a-z]\s*\)/,
+    /\be\s+j\s*\[/,
+    /\bCy\s*\*\s*\(/,
+    /\\qquad|\\quad/,
+    /\n\s{10,}\S/,
+    /[a-z]\s{2,}\d\s{2,}[a-z]/,
   ];
   return ocrPatterns.some(p => p.test(text));
 }
