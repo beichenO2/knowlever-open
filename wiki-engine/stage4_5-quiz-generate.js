@@ -191,35 +191,71 @@ async function solveProblem(content, knowledgeContext) {
   }
 }
 
-/**
- * Fix common OCR artifacts in quiz content:
- * - Superscript digits on separate lines (e.g. "5m\n 2" → "$5\\text{m}^2$")
- * - Unicode sub/superscript characters → LaTeX
- * - Orphaned whitespace around formulas
- */
-function cleanOcrArtifacts(text) {
-  let s = text;
-  // Fix: "value m\n                 2" → "$value\\text{m}^2$"
-  s = s.replace(/(\d+(?:\.\d+)?)\s*m\s*\n\s{2,}2\b/g, '$$$1\\text{m}^2$$');
-  // Fix: "value km\n                 2" patterns
-  s = s.replace(/(\d+(?:\.\d+)?)\s*km\s*\n\s{2,}2\b/g, '$$$1\\text{km}^2$$');
-  // Fix: isolated superscript "2" after unit on same line with extra spaces
-  s = s.replace(/(\d+(?:\.\d+)?)\s*(m|km|cm)\s{3,}(\d)\b/g, '$$$1\\text{$2}^{$3}$$');
-  // Unicode superscripts → LaTeX
-  s = s.replace(/([⁰¹²³⁴⁵⁶⁷⁸⁹]+)/g, (m) => {
-    const map = { '⁰': '0', '¹': '1', '²': '2', '³': '3', '⁴': '4', '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9' };
-    const digits = [...m].map(c => map[c] || c).join('');
-    return `$^{${digits}}$`;
-  });
-  // Unicode subscripts → LaTeX
-  s = s.replace(/([₀₁₂₃₄₅₆₇₈₉]+)/g, (m) => {
-    const map = { '₀': '0', '₁': '1', '₂': '2', '₃': '3', '₄': '4', '₅': '5', '₆': '6', '₇': '7', '₈': '8', '₉': '9' };
-    const digits = [...m].map(c => map[c] || c).join('');
-    return `$_{${digits}}$`;
-  });
-  // Collapse excessive blank lines (>2 → 1)
-  s = s.replace(/\n{3,}/g, '\n\n');
-  return s;
+const OCR_REPAIR_PROMPT = `你是一位雷达/电子工程领域的 LaTeX 排版专家。
+
+下面给你一段从 PDF 用 OCR 提取出来的文本，其中的数学公式被 OCR 严重破坏了：
+- 变量赋值写成 "N  66" 应该是 "$N = 66$"
+- 希腊字母丢失，如 "脉冲宽度   1 s" 应该是 "脉冲宽度 $\\tau = 1\\mu s$"
+- 分数被拆成多行空格对齐，如分子在上行、分母在下行
+- 上下标被拆成独立的数字
+- 运算符和等号用空格替代
+- 单位没有用 \\text{} 包裹
+
+请修复这段文本，规则：
+1. 把所有数学公式和变量用 LaTeX 行内公式 $...$ 包裹
+2. 保留原始的中文文字内容不变，不增删语义
+3. 把多行碎裂的公式合并为正确的单行 LaTeX
+4. 删除明显的 OCR 垃圾（如 \\f 分页符、"信息与通信工程学院" 页脚）
+5. 保留题目编号和结构（如"例："、"①"、"练习"等）
+6. 如果文本中已经有正确的 LaTeX，保持不变
+7. 不要添加解答，只修复文本的格式
+
+直接输出修复后的文本，不要加任何解释。`;
+
+function hasOcrGarbage(text) {
+  if (!text || text.trim().length < 10) return false;
+  const patterns = [
+    /[A-Z]\s{2,}\d/,
+    /\n\s{3,}\d\b/,
+    /\f/,
+    /信息与通信工程学院/,
+    /\d+\s{3,}\d+/,
+    /[a-z]\s{2,}[a-z]\s{2,}\d/,
+    /\(4\s*\)\s*\d/,
+    /PRF\s{3,}/,
+    /[A-Z]\s{2,}[a-z]/,
+  ];
+  return patterns.some(p => p.test(text));
+}
+
+async function repairOcrWithLlm(text, maxRetries = 3) {
+  if (!hasOcrGarbage(text)) return text;
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const response = await chatCompletion({
+        messages: [
+          { role: 'user', content: `${OCR_REPAIR_PROMPT}\n\n---\n${text}\n---` }
+        ],
+        temperature: 0.1,
+        max_tokens: 8192,
+      });
+      const result = response?.choices?.[0]?.message?.content?.trim();
+      if (result && result.length > 10) {
+        if (hasOcrGarbage(result) && attempt < maxRetries) {
+          console.log(`    [ocr-repair] attempt ${attempt}: still has garbage, retrying...`);
+          continue;
+        }
+        return result;
+      }
+    } catch (e) {
+      console.error(`    [ocr-repair] attempt ${attempt}/${maxRetries} failed: ${e.message}`);
+      if (attempt < maxRetries) {
+        await new Promise(r => setTimeout(r, 2000 * attempt));
+      }
+    }
+  }
+  return text;
 }
 
 function separateContentAndSolution(content) {
@@ -299,13 +335,18 @@ async function run(wikiDir, treePath, outputDir, topic) {
       const prob = problems[i];
       totalProblems++;
 
-      const cleaned = cleanOcrArtifacts(prob.content);
-      const { question, existingSolution } = separateContentAndSolution(cleaned);
+      const repaired = await repairOcrWithLlm(prob.content);
+      const { question, existingSolution } = separateContentAndSolution(repaired);
 
       md += `## 题 ${i + 1}\n\n`;
       md += `${question}\n\n`;
 
       let solution = existingSolution;
+
+      if (solution && hasOcrGarbage(solution)) {
+        console.log(`[Stage 4.5] ${sourceName} prob ${i + 1}: repairing existing solution OCR...`);
+        solution = await repairOcrWithLlm(solution);
+      }
 
       if (!solution) {
         const pageSlugs = findRelevantPages(sourceName, sourcePageIndex);

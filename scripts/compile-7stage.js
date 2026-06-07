@@ -81,8 +81,20 @@ const rawDir = t.rawDir;
 
 if (fs.existsSync(rawDir) && fs.readdirSync(rawDir).some(f => !f.startsWith('.'))) {
   const normalizedFiles = fs.existsSync(normalizedDir) ? fs.readdirSync(normalizedDir).filter(f => !f.startsWith('.')) : [];
-  if (normalizedFiles.length === 0) {
-    console.log('[pipeline] KnowLever standalone ingest: raw/ → normalized/');
+  const rawFiles = fs.readdirSync(rawDir).filter(f => !f.startsWith('.'));
+  const normalizedSlugs = new Set(normalizedFiles);
+  const newRawFiles = rawFiles.filter(f => {
+    const slug = f.replace(/\.[^.]+$/, '').replace(/\s+/g, '-');
+    return !normalizedSlugs.has(slug);
+  });
+
+  if (normalizedFiles.length === 0 || newRawFiles.length > 0) {
+    if (newRawFiles.length > 0 && normalizedFiles.length > 0) {
+      console.log(`[pipeline] Incremental ingest: ${newRawFiles.length} new raw files → normalized/`);
+      console.log(`[pipeline]   New: ${newRawFiles.join(', ')}`);
+    } else {
+      console.log('[pipeline] KnowLever standalone ingest: raw/ → normalized/');
+    }
     fs.mkdirSync(normalizedDir, { recursive: true });
 
     const textExts = ['.md', '.txt'];
