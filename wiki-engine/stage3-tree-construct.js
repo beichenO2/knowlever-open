@@ -236,7 +236,7 @@ async function generateGroupLabel(childLabels, options = {}) {
     const response = await chatCompletion({
       messages: [{
         role: 'user',
-        content: `以下是一组相关知识概念的标题：\n${childLabels.map(l => `- ${l}`).join('\n')}${parentHint}\n\n请用一个 ≤ 10 字的中文短语概括它们的共同主题（要具体，不能笼统）。只输出短语，不要解释。`,
+        content: `以下是一组相关知识概念的标题：\n${childLabels.map(l => `- ${l}`).join('\n')}${parentHint}\n\n请用一个 ≤ 10 字的中文短语概括它们的共同主题。\n\n要求：\n1. 必须具体，反映这组概念的共同本质\n2. ⛔ 绝对禁止使用笼统名称如「雷达原理」「信号处理」「基础概念」「系统基础」\n3. 好的例子：「脉冲测距与分辨」「角度跟踪体制」「频域滤波与积累」\n4. 如果子概念涉及不同方面，选最突出的方面命名\n\n只输出短语，不要解释。`,
       }],
       temperature: 0.1,
       max_tokens: 200,
@@ -308,6 +308,7 @@ async function buildSemanticTree(leafNodes, topic, slugSet, options = {}) {
 
     intermediates = [];
     const orphans = [];
+    const usedGroupLabels = new Set();
     for (let gi = 0; gi < groups.length; gi++) {
       const group = groups[gi];
 
@@ -317,7 +318,16 @@ async function buildSemanticTree(leafNodes, topic, slugSet, options = {}) {
       }
 
       const childLabels = group.map(n => n.label);
-      const label = await generateGroupLabel(childLabels, { ...options, parentLabel: topic });
+      let label = await generateGroupLabel(childLabels, { ...options, parentLabel: topic });
+
+      if (usedGroupLabels.has(label)) {
+        const childHints = childLabels.slice(0, 2).join('·');
+        const deduped = `${label}（${childHints}）`;
+        console.log(`[Stage 3] Dedup group label: "${label}" → "${deduped}"`);
+        label = deduped;
+      }
+      usedGroupLabels.add(label);
+
       const slug = ensureUniqueSlug(generateSlug('section', label, gi));
 
       intermediates.push({

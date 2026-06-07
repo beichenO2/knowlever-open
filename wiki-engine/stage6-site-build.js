@@ -398,9 +398,9 @@ function pageTemplate({ title, sidebar, toc, breadcrumb, content, backlinks, rel
     .pager-cell a { color: var(--accent, #2563eb); font-size: 0.9rem; }
     @media (max-width: 1024px) { .tri-layout { grid-template-columns: 1fr; } .tree-sidebar, .right-sidebar { display: none; } .tri-content { padding: 1rem; } }
   </style>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.css">
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/contrib/auto-render.min.js"></script>
+  <link rel="stylesheet" href="assets/katex/katex.min.css">
+  <script defer src="assets/katex/katex.min.js"></script>
+  <script defer src="assets/katex/auto-render.min.js"></script>
   <script>document.addEventListener('DOMContentLoaded',function(){if(typeof renderMathInElement==='function'){renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false});}});</script>
   <script defer src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" onload="mermaid.initialize({startOnLoad:true,theme:'neutral'});"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
@@ -445,7 +445,9 @@ function copySiteAssets(siteDir) {
   ];
   let src = null;
   for (const c of candidates) {
-    if (fs.existsSync(path.join(c, 'css', 'style.css'))) { src = c; break; }
+    if (fs.existsSync(path.join(c, 'css', 'style.css')) || fs.existsSync(path.join(c, 'katex', 'katex.min.js'))) {
+      src = c; break;
+    }
   }
 
   const destAssets = path.join(siteDir, 'assets');
@@ -467,6 +469,24 @@ function copySiteAssets(siteDir) {
     };
     copyDir('css');
     copyDir('js');
+
+    const katexSrc = path.join(src, 'katex');
+    if (fs.existsSync(katexSrc)) {
+      const katexDst = path.join(destAssets, 'katex');
+      fs.mkdirSync(katexDst, { recursive: true });
+      for (const f of fs.readdirSync(katexSrc)) {
+        const s = path.join(katexSrc, f);
+        const d = path.join(katexDst, f);
+        if (fs.statSync(s).isDirectory()) {
+          fs.mkdirSync(d, { recursive: true });
+          for (const ff of fs.readdirSync(s)) {
+            fs.copyFileSync(path.join(s, ff), path.join(d, ff));
+          }
+        } else {
+          fs.copyFileSync(s, d);
+        }
+      }
+    }
     return true;
   }
   fs.writeFileSync(path.join(destAssets, 'css', 'style.css'), generateFallbackCSS(), 'utf-8');
