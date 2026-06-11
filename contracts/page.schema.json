@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "WikiPage",
+  "description": "Stage 4 (Page Compose) 产出的 wiki 页面 frontmatter + 五段结构。",
+  "type": "object",
+  "required": ["slug", "title", "kind", "word_count", "sections"],
+  "properties": {
+    "slug": { "type": "string", "description": "来自 tree.json 的唯一 slug" },
+    "title": { "type": "string" },
+    "kind": {
+      "type": "string",
+      "enum": ["leaf", "intermediate", "root"]
+    },
+    "word_count": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "中文字数，叶子 ≤400 / 中间 ≤800 / 根 ≤1500"
+    },
+    "parent_slug": { "type": ["string", "null"] },
+    "sibling_slugs": { "type": "array", "items": { "type": "string" } },
+    "child_slugs": { "type": "array", "items": { "type": "string" } },
+    "sections": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "required": ["heading", "content_md"],
+        "properties": {
+          "heading": {
+            "type": "string",
+            "description": "五段之一：我们在做什么 / 遇到什么困难 / 采取什么方法 / 有什么利弊 / 下一步深入"
+          },
+          "content_md": { "type": "string" }
+        }
+      }
+    },
+    "atoms_referenced": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "本页引用的 atom.id 列表"
+    }
+  },
+  "additionalProperties": false
+}

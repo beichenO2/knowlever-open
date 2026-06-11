@@ -1,0 +1,38 @@
+[
+  {
+    "ts": "2026-05-01T12:00:00.000Z",
+    "type": "bug",
+    "source_project": "KnowLever",
+    "severity": "error",
+    "payload": {
+      "message": "RAG pipeline failed during embedding generation",
+      "component": "rag",
+      "operation": "embed"
+    },
+    "dedup_key": "a1b2c3d4e5f6"
+  },
+  {
+    "ts": "2026-05-01T12:05:00.000Z",
+    "type": "compile_error",
+    "source_project": "KnowLever",
+    "severity": "error",
+    "payload": {
+      "message": "Wiki compilation failed for topic 'AI Research'",
+      "topic": "AI Research",
+      "stage": "compile"
+    },
+    "dedup_key": "b2c3d4e5f6a1"
+  },
+  {
+    "ts": "2026-05-01T08:00:00.000Z",
+    "type": "scheduled_health_scan",
+    "source_project": "KnowLever",
+    "severity": "info",
+    "payload": {
+      "healthy": true,
+      "topics_count": 12,
+      "rag_status": "ready"
+    },
+    "dedup_key": "c3d4e5f6a1b2"
+  }
+]

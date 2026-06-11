@@ -1,0 +1,12 @@
+{
+  "id": "atom-pharm-study-enzyme-inhibition-001",
+  "claim": "竞争性抑制剂与底物竞争活性位点，Km 升高但 Vmax 不变",
+  "evidence": {
+    "quote": "在竞争性抑制中，抑制剂分子与底物具有相似的结构，它们竞争性地结合酶的活性位点。此时表观 Km 值增大，但 Vmax 不受影响。",
+    "source_id": "pharm-study/pharmacology-ch3.md",
+    "char_offset": [1245, 1340]
+  },
+  "kind": "definition",
+  "draft_tags": ["酶动力学", "药理学", "抑制"],
+  "lifted_at": "2026-05-08T12:00:00+08:00"
+}

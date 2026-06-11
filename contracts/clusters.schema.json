@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ClustersOutput",
+  "description": "Stage 2 (Embed + Cluster) 产出。Leiden 递归聚类结果，不含 LLM 判断。",
+  "type": "object",
+  "required": ["clustered_at", "algorithm", "clusters", "duplicate_pairs"],
+  "properties": {
+    "clustered_at": { "type": "string", "format": "date-time" },
+    "algorithm": {
+      "type": "string",
+      "description": "使用的聚类算法（如 leiden-recursive / hdbscan）"
+    },
+    "embedding_model": { "type": "string" },
+    "similarity_threshold": { "type": "number" },
+    "clusters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["cluster_id", "atom_ids"],
+        "properties": {
+          "cluster_id": { "type": "string" },
+          "atom_ids": {
+            "type": "array",
+            "items": { "type": "string" },
+            "minItems": 1,
+            "maxItems": 7
+          },
+          "parent_cluster_id": { "type": ["string", "null"] },
+          "level": { "type": "integer", "minimum": 0 }
+        }
+      }
+    },
+    "duplicate_pairs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["atom_a", "atom_b", "cosine"],
+        "properties": {
+          "atom_a": { "type": "string" },
+          "atom_b": { "type": "string" },
+          "cosine": { "type": "number", "minimum": 0.92 }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

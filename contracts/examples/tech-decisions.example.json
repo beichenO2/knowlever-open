@@ -1,0 +1,27 @@
+{
+  "compiled_at": "2026-05-08T12:30:00+08:00",
+  "topic": "pharm-study",
+  "decisions": [
+    {
+      "stage": "stage-2",
+      "name": "embedding 模型",
+      "chosen": "Qwen3-Embedding-4B",
+      "version": "qwen3-embedding-4b-2026.04",
+      "alternatives_considered": [
+        { "name": "Qwen3-Embedding-8B", "score_or_reason": "C-MTEB 73.84 但本地 16GB 显存、速度慢 5-8 倍" },
+        { "name": "bge-m3", "score_or_reason": "C-MTEB 落后约 8 分" }
+      ],
+      "rationale": "C-MTEB ~71，本地 ~8GB 显存可接受。同家族支持 Matryoshka，缓存可跨档位切换。atom claim ≤ 40 字不需要 32K 上下文优势。",
+      "known_limits": ["C-MTEB 略低于 8B 档", "未在代码库类型知识上专门评测"],
+      "switch_conditions": ["8B 档本地推理速度优化到 4B 的 2 倍以内", "出现专门针对代码知识的 embedding 模型"]
+    }
+  ],
+  "audit": {
+    "embedding_cache_hit_rate": 0.0,
+    "atom_count": 156,
+    "tree_depth": 4,
+    "tree_max_branching": 5,
+    "link_validate_p0_errors": 0,
+    "link_validate_p1_warnings": 1
+  }
+}

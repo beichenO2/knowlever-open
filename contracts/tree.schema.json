@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TreeNode",
+  "description": "Stage 3 (Tree Construct) 产出的知识树节点。slug 在此唯一发放，全流程后续禁止再生成新 slug。",
+  "type": "object",
+  "required": ["page_slug", "kind", "label"],
+  "properties": {
+    "page_slug": {
+      "type": "string",
+      "description": "全流程唯一 slug，带类型前缀（concept-xxx / entity-xxx）"
+    },
+    "kind": {
+      "type": "string",
+      "enum": ["root", "intermediate", "leaf-cluster"]
+    },
+    "label": {
+      "type": "string",
+      "description": "节点显示名"
+    },
+    "children": {
+      "type": "array",
+      "items": { "$ref": "#" },
+      "maxItems": 7,
+      "description": "子节点，硬上限 7（Cowan 3-5 + Miller 7±2）"
+    },
+    "atoms": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "leaf-cluster 关联的 atom.id 列表（仅 kind=leaf-cluster 时必填）"
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Atom",
+  "description": "Stage 1 (Crystallize) 产出的知识原子。一个 atom 承载一个 idea（Zettelkasten 原子化原则）。",
+  "type": "object",
+  "required": ["id", "claim", "evidence", "kind", "lifted_at"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^atom-.+-.+-.+$",
+      "description": "atom-<topic>-<slug-fragment>-<seq>"
+    },
+    "claim": {
+      "type": "string",
+      "maxLength": 120,
+      "description": "知识点凝练表述，≤ 40 中文字（约 120 bytes UTF-8）"
+    },
+    "evidence": {
+      "type": "object",
+      "required": ["quote", "source_id", "char_offset"],
+      "properties": {
+        "quote": {
+          "type": "string",
+          "maxLength": 600,
+          "description": "原始文本引用，≤ 200 中文字"
+        },
+        "source_id": {
+          "type": "string",
+          "description": "normalized content.md 的来源标识"
+        },
+        "char_offset": {
+          "type": "array",
+          "items": { "type": "integer" },
+          "minItems": 2,
+          "maxItems": 2,
+          "description": "[start, end) in normalized content.md"
+        }
+      }
+    },
+    "kind": {
+      "type": "string",
+      "enum": ["definition", "example", "formula", "rule", "anti-pattern", "problem"]
+    },
+    "draft_tags": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "仅供 Stage 2 聚类初始化，Stage 3 后丢弃"
+    },
+    "lifted_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "additionalProperties": false
+}

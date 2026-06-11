@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TechDecisions",
+  "description": "各 stage 技术取舍记录。Stage 1-5 累积追加，Stage 6/7 渲染为产物内独立页。",
+  "type": "object",
+  "required": ["compiled_at", "topic", "decisions"],
+  "properties": {
+    "compiled_at": { "type": "string", "format": "date-time" },
+    "topic": { "type": "string" },
+    "decisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["stage", "name", "chosen", "rationale"],
+        "properties": {
+          "stage": {
+            "type": "string",
+            "enum": ["stage-1", "stage-2", "stage-3", "stage-4", "stage-5", "stage-6", "stage-7"]
+          },
+          "name": { "type": "string" },
+          "chosen": { "type": "string" },
+          "version": { "type": "string" },
+          "alternatives_considered": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": { "type": "string" },
+                "score_or_reason": { "type": "string" }
+              }
+            }
+          },
+          "rationale": { "type": "string", "maxLength": 900 },
+          "known_limits": { "type": "array", "items": { "type": "string" } },
+          "switch_conditions": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "audit": {
+      "type": "object",
+      "properties": {
+        "embedding_cache_hit_rate": { "type": "number", "minimum": 0, "maximum": 1 },
+        "atom_count": { "type": "integer", "minimum": 0 },
+        "tree_depth": { "type": "integer", "minimum": 0 },
+        "tree_max_branching": { "type": "integer", "minimum": 0 },
+        "link_validate_p0_errors": { "type": "integer", "minimum": 0 },
+        "link_validate_p1_warnings": { "type": "integer", "minimum": 0 }
+      }
+    }
+  },
+  "additionalProperties": false
+}

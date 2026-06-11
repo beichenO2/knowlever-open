@@ -1,0 +1,51 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "LinkReport",
+  "description": "Stage 5 (Link Validate) 产出。errors.length > 0 时 Stage 6/7 必须拒绝运行。",
+  "type": "object",
+  "required": ["validated_at", "total_links", "errors", "warnings"],
+  "properties": {
+    "validated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "total_links": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "errors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["code", "source_page", "target", "message"],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": ["E1", "E2", "E3", "E4", "E5"],
+            "description": "E1=桩链接 E2=循环引用 E3=类型前缀错配 E4=自引用 E5=evidence offset 不一致"
+          },
+          "source_page": { "type": "string" },
+          "target": { "type": "string" },
+          "message": { "type": "string" }
+        }
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["code", "source_page", "message"],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": ["W1", "W2", "W3"],
+            "description": "W1=孤儿节点 W2=hub 过载(被引>30) W3=click 指向不存在"
+          },
+          "source_page": { "type": "string" },
+          "message": { "type": "string" }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

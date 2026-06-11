@@ -1,0 +1,12 @@
+{
+  "validated_at": "2026-05-08T12:30:00+08:00",
+  "total_links": 87,
+  "errors": [],
+  "warnings": [
+    {
+      "code": "W1",
+      "source_page": "concept-enzyme-regulation",
+      "message": "孤儿节点：无入链"
+    }
+  ]
+}
