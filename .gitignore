@@ -15,4 +15,23 @@ samples-private/*
 
 config.local.json
 
+# 内部产物：canonical 磁盘上这些目录本就被忽略，但手动 rsync 会照样复制过来。
+# 这里必须显式挡住，否则一次同步就会把 agent 工作树 / 运行时物提交进公开仓。
+.runtime/
+.worktrees/
+.planning/
+.sotagent-outbox/
+
+# 凭据与运行期文件（.env 已在上面；这条补 reader.env 这类前缀式命名）
+*.env
+.ai-proxy-token
+
+# 打包件、日志、本地数据库与事件流
+*.tgz
+*.tar.gz
+*.log
+*.sqlite
+*.sqlite-*
+*.jsonl
+
 # 提交：examples/、wiki/<topic>/、prebuilt/<topic>/、site/
